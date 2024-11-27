@@ -2,16 +2,21 @@ Package: icuPtaPred
 Title: Beta Lactamin PTA predictor in ICU
 Version: 1.0.0.0
 Authors@R: c(
-    person("Romain", "Garreau", , "romain.garreau@chu-lyon.fr", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0002-6605-4808")),
+    person("Romain", "Garreau", , "romain.garreau@chu-lyon.fr", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-6605-4808")),
     person("Laurent", "Bourguignon", , "laurent.bourguignon@chu-lyon.fr", role = "aut"),
-    person("Sylvain", "Goutelle", , "sylvain.goutelle@chu-lyon.fr", role = "aut", comment = c(ORCID = "0000-0002-1853-2932"))
+    person("Sylvain", "Goutelle", , "sylvain.goutelle@chu-lyon.fr", role = "aut",
+           comment = c(ORCID = "0000-0002-1853-2932"))
   )
-Description: This is a shiny application designed to facilitate drug adaptation of beta-lactamin given by continuous infusion in ICU.
+Description: This is a shiny application designed to facilitate drug
+    adaptation of beta-lactamin given by continuous infusion in ICU.
 License: AGPL (>= 3)
 Imports: 
+    bs4Dash,
     config,
     golem,
-    shiny
+    shiny,
+    shinyjs
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
