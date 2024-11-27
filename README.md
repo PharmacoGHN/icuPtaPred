@@ -28,10 +28,10 @@ devtools::install_github("PharmacoGHN/blicm-don")
 ## Authors and acknowledgment
 Actual contributor :
 
-Dr. R. Garreau, Pharm.D, Ph.D - Owner and Main Maintainer  
-Pr. A. Friggeri, M.D, Ph.D - Owner 
-Pr. S. Goutelle, Pharm.D, Ph.D - Owner
-L. Leyenberger, Pharmacy Resident, Msc. - Owner
+   - Dr. R. Garreau, Pharm.D, Ph.D - Owner and Main Maintainer  
+   - Pr. A. Friggeri, M.D, Ph.D - Owner  
+   - Pr. S. Goutelle, Pharm.D, Ph.D - Owner  
+   - L. Leyenberger, Pharmacy Resident, Msc. - Owner
 
 ## License
 General Copyright law applies
