@@ -7,11 +7,11 @@ The application is not hosted for the moment but will be available [here]()
 
 ## Currently supported drug are :
 
-- Piperacillin-Tazobactam
-- Cefepim
-- Ceftazidim
-- Meropenem
-- Cefotaxim
+- [ ] Piperacillin-Tazobactam
+- [ ] Cefepim
+- [ ] Ceftazidim
+- [ ] Meropenem
+- [ ] Cefotaxim
 
 ## Installation
 
