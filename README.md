@@ -2,6 +2,7 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![codecov](https://codecov.io/gh/PharmacoGHN/icuPtaPred/graph/badge.svg?token=KU5a47P0ek)](https://codecov.io/gh/PharmacoGHN/icuPtaPred)
 [![R-CMD-check](https://github.com/PharmacoGHN/icuPtaPred/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PharmacoGHN/icuPtaPred/actions/workflows/R-CMD-check.yaml)
+[![License: AGPL-3](https://img.shields.io/badge/license-AGPL--3-blue.svg)](https://cran.r-project.org/web/licenses/AGPL-3)
 <!-- badges: end -->
 ## Package Content  
 
