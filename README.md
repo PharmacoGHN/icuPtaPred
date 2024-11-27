@@ -1,5 +1,6 @@
 <!-- badges: start -->
   [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+  [![codecov](https://codecov.io/gh/PharmacoGHN/icuPtaPred/graph/badge.svg?token=KU5a47P0ek)](https://codecov.io/gh/PharmacoGHN/icuPtaPred)
 <!-- badges: end -->
 ## Package Content  
 

@@ -1,3 +1,4 @@
 # icuPtaPred (development version)
 
-* Initial CRAN submission.
+# Version 1.0.0
+- First Software Version

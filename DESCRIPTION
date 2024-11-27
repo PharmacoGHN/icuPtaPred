@@ -1,17 +1,22 @@
 Package: icuPtaPred
-Title: An Amazing Shiny App
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "firstname",
-           family = "lastname",
-           role = c("aut", "cre"),
-           email = "your@email.com")
-Description: What the package does (one paragraph).
-License: What license is it under?
+Title: Beta Lactamin PTA predictor in ICU
+Version: 1.0.0.0
+Authors@R: c(
+    person("Romain", "Garreau", , "romain.garreau@chu-lyon.fr", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0002-6605-4808")),
+    person("Laurent", "Bourguignon", , "laurent.bourguignon@chu-lyon.fr", role = "aut"),
+    person("Sylvain", "Goutelle", , "sylvain.goutelle@chu-lyon.fr", role = "aut", comment = c(ORCID = "0000-0002-1853-2932"))
+  )
+Description: This is a shiny application designed to facilitate drug adaptation of beta-lactamin given by continuous infusion in ICU.
+License: AGPL (>= 3)
 Imports: 
     config,
     golem,
     shiny
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/testthat/parallel: true
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
