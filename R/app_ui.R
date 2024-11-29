@@ -3,13 +3,20 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @import bs4Dash
 #' @noRd
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    h1("first app")
+    bs4Dash::dashboardPage(
+      dark = TRUE,
+      header = dashboardHeader(title = "PTA App"),
+      sidebar = dashboardSidebar(skin = "dark"),
+      body = dashboardBody()
+
+    )
   )
 }
 
