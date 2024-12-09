@@ -18,10 +18,23 @@ mod_ptaPred_ui <- function(id) {
             status = "olive",
             solidHeader = TRUE,
             title = "dose",
-            numericInput("drug_dose", "Dose Antibiotique (mg)", value = 1000, step = 1, min = 0, max = 32000)
+            selectInput("beta_lactamin", "Beta lactamin",  choices = c("Amox", "Cefepim"), selected = character(0)),
+            selectInput("administration_route", "Voie Administration",  choices = c("Per Os" = "PO", "Intraveneux" = "IV", "Sous Cutane" = "SC","Intramusculaire" = "IM"), selected = "IV"),
+            selectInput("administration_interval", "Interval Administration",  choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
+            numericInput("drug_dose", "Dose Antibiotique (mg)", value = 1000, step = 1, min = 0, max = 32000),
+            br(),
+            selectInput("bacteria_select", "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist")
+          ),
+          box(
+            width = 12,
+            status = "olive",
+            solidHeader = TRUE,
+            title = "patient_info"
+            # add all patient info to be computed in pop pk model (no bayesian?)
           )
         ),
-        column(width = 8,
+        column(width = 1), 
+        column(width = 7,
           box(
             width = 12,
             status = "olive",
@@ -31,7 +44,7 @@ mod_ptaPred_ui <- function(id) {
         )
       ), 
       fluidRow(
-        cat("Disclamer\n
+        renderText("Disclamer\n
           1. Aide a la decision\n
           2. ne prend pas en compte l ecologie locale\n
           3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model"
