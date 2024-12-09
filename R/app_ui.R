@@ -13,8 +13,20 @@ app_ui <- function(request) {
     bs4Dash::dashboardPage(
       dark = TRUE,
       header = dashboardHeader(title = "PTA App"),
-      sidebar = dashboardSidebar(skin = "dark"),
-      body = dashboardBody()
+      sidebar = dashboardSidebar(
+        skin = "dark",
+        status = "olive",
+        sidebarMenu(
+          menuItem("PTA" ,tabName = "ptaGenerator", icon = icon("gear")),
+          menuItem("Model Info", tabName = "model_information"),
+          menuItem("Settings", tabName = "app_settings")
+        )
+      ),
+      body = dashboardBody(
+        tabItems(
+          tabItem(tabName = "ptaGenerator", mod_ptaPred_ui("ptaPred_1"))
+        )
+      )
 
     )
   )
