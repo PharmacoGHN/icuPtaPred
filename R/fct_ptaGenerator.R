@@ -1,4 +1,4 @@
-#' ptaGenerator 
+#' ptaGenerator
 #'
 #' @description A fct function
 #'
@@ -9,17 +9,17 @@ ptaGenerator <- function() {
 
 }
 
-#' rangeMIC 
+#' rangeMIC
 #'
 #' @description Internal function that generate the MIC range to be plotted against
-#' 
+#'
 #' @param min min MIC value, by default = 0.0625 mg/L
 #' @param max max MIC Value, by default = 64 mg/L
 #' @param step multiplicative coefficient to get the next MIC value (from min to max)
-#' @param default
-#' @param continuous
-#' @param drug
-#' 
+#' @param continuous if TRUE, the MIC range will be continuous
+#' @param drug not supported at the moment
+#' @param bacteria not supported at the moment, will be used to get ECOFF with automated extraction from EUCAST
+#'
 #' @return rangeMIC
 #'
 #' @noRd
@@ -27,9 +27,9 @@ rangeMIC <- function(
   min = 0.0625,
   max = 64,
   step = 2,
-  default = TRUE,
   continuous = FALSE,
-  drug = c("cefotaxim", "ceftriaxon", "pipTaz","cefepim")
+  drug = c("cefotaxim", "ceftriaxon", "pipTaz","cefepim"),
+  bacteria
 ) {
 
   if (continuous) {
