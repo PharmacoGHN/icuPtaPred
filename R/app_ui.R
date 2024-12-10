@@ -11,7 +11,6 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     bs4Dash::dashboardPage(
-      dark = TRUE,
       header = dashboardHeader(title = "PTA App"),
       sidebar = dashboardSidebar(
         skin = "dark",
