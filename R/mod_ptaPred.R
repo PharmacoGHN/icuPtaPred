@@ -17,7 +17,7 @@ mod_ptaPred_ui <- function(id) {
             width = 12,
             status = "olive",
             solidHeader = TRUE,
-            title = "dose",
+            title = "Information sur le Traitement",
             selectInput("beta_lactamin", "Beta lactamin",  choices = c("Amox", "Cefepim"), selected = character(0)),
             selectInput("administration_route", "Voie Administration",  choices = c("Per Os" = "PO", "Intraveneux" = "IV", "Sous Cutane" = "SC","Intramusculaire" = "IM"), selected = "IV"),
             selectInput("administration_interval", "Interval Administration",  choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
@@ -29,20 +29,27 @@ mod_ptaPred_ui <- function(id) {
             width = 12,
             status = "olive",
             solidHeader = TRUE,
-            title = "patient_info"
+            title = "Information Patient",
+            numericInput(inputId = "age", label = "Age (ans)", value = 0, min = 0, max = 1000, step = 1),
+            numericInput(inputId = "height", label = "Taille (cm)", value = 0, min = 0, max = 1000, step = 1),
+            numericInput(inputId = "weight", label = "Poids (kg)", value = 0, min = 0, max = 1000, step = 1),
+            numericInput(inputId = "creatinine", label = "Creatinine (umol/L)", value = 0, min = 0, max = 1000, step = 1)
+            # choice ethnicity
             # add all patient info to be computed in pop pk model (no bayesian?)
           )
         ),
-        column(width = 1), 
+        column(width = 1),
         column(width = 7,
           box(
             width = 12,
             status = "olive",
-            solidHeader = TRUE, 
-            title = "PTA output"
+            solidHeader = TRUE,
+            title = "PTA output",
+            actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")
           )
+          
         )
-      ), 
+      ),
       fluidRow(
         renderText("Disclamer\n
           1. Aide a la decision\n
