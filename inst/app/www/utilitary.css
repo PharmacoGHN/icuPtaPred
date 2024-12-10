@@ -1,0 +1,21 @@
+.information-panel {
+    /* set box properties */
+    width: 100%;
+    border: solid; /* Border color and thickness */
+    border-color: #2c98c2;
+    border-style: groove;
+    border-radius: 5px; /* Rounded corners */
+    background-color: #eecf95; /* Light background color */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+
+    /* set text properties */ 
+    font-size: 16px; /* Font size for text */
+    color: #101010; /* Text color */
+    padding: 15px; /* Space inside the container */
+    width: fit-content; /* Adjust width based on content */
+    word-break: normal;
+
+    /* Box margin information */
+    margin: 10px auto; /* Center with some spacing */
+  }
+   
