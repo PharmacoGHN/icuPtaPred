@@ -24,7 +24,7 @@ bsa <- function(height,
                 capped = FALSE,
                 formula = "dubois") {
   if (!is.logical(capped)) {
-    rlang::abort(message = "Error : capped should be TRUE or FALSE")
+    stop(message = "Error : capped should be TRUE or FALSE")
   }
 
   # Dubois, Arch Intern Med. 1916; 17:863-871
