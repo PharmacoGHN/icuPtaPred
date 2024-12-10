@@ -16,9 +16,9 @@ app_ui <- function(request) {
         skin = "dark",
         status = "olive",
         sidebarMenu(
-          menuItem("PTA" ,tabName = "ptaGenerator", icon = icon("gear")),
-          menuItem("Model Info", tabName = "model_information"),
-          menuItem("Settings", tabName = "app_settings")
+          menuItem("PTA", tabName = "ptaGenerator", icon = icon("chart-line")),
+          menuItem("Model Info", tabName = "model_information", icon = icon("info")),
+          menuItem("Settings", tabName = "app_settings", icon = shiny::icon("gear"))
         )
       ),
       body = dashboardBody(
@@ -51,6 +51,7 @@ golem_add_external_resources <- function() {
       path = app_sys("app/www"),
       app_title = "icuPtaPred"
     )
+    #tags$link(rel = "stylesheet", type = "text/css", href = "www/utilitary.css")
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
   )
