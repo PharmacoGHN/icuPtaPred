@@ -9,11 +9,20 @@ model_bank <- list(
       tvv = "4.8 * tbw / 9",
       eta_cl = 0.39,
       eta_v = 0.35
+    ),
+    guohua_2023 = list(
+      tvcl = "0.526 + 2 * cg_lbw/54",
+      eta_cl = 0.293
     )
   ),
   cefotaxim = list(NA),
   meropenem = list(NA),
-  piptazo = list(NA)
+  piptazo = list(
+    klastrup_2020 = list(
+      tvcl = "2.25 + 0.119 * cg_tbw",
+      eta_cl = 0.533
+    )
+  )
 )
 
 # object to get clearance model_bank[[drug]][[model]][[parameters]]
