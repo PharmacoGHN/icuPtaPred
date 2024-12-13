@@ -16,6 +16,7 @@ Imports:
     bs4Dash,
     config,
     dplyr,
+    ggplot2,
     golem,
     rvest,
     shiny
