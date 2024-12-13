@@ -19,17 +19,20 @@ ptaGenerator <- function() {
 #' @param continuous if TRUE, the MIC range will be continuous
 #' @param drug not supported at the moment
 #' @param bacteria not supported at the moment, will be used to get ECOFF with automated extraction from EUCAST
+#' @param manual if FALSE the MIC range is direclty taken from the EUCAST distribution
 #'
 #' @return rangeMIC
 #'
 #' @noRd
+#' 
 rangeMIC <- function(
   min = 0.0625,
   max = 64,
   step = 2,
   continuous = FALSE,
-  drug = c("cefotaxim", "ceftriaxon", "pipTaz", "cefepim"),
-  bacteria
+  drug = c("cefotaxim", "ceftriaxon", "pipTaz", "cefepim", "meropenem"),
+  bacteria,
+  manual = TRUE
 ) {
 
   if (continuous) {
