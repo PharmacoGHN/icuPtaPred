@@ -27,14 +27,14 @@ create_patient_data <- function(
   weight_unit
 ) {
 
-  lbw <- weight_formula(weight, height, sex, weight_unit, formula = "")
-  ajbw <- weight_formula(weight, height, sex, weight_unit, formula = "")
-  ibw <- weight_formula(weight, height, sex, weight_unit, formula = "")
+  lbw <- weight_formula(weight, height, sex, weight_unit, formula = "LBW")
+  ajbw <- weight_formula(weight, height, sex, weight_unit, formula = "AJBW")
+  ibw <- weight_formula(weight, height, sex, weight_unit, formula = "IBW")
 
   patient_data <- list(
     sex = sex,
     age = age,
-    bmi = weight / (height ^ 2),
+    bmi = round(weight / (height / 100) ^ 2, digits = 1),
     weight =  list(
       tbw = weight,
       lbw = lbw,
@@ -53,13 +53,11 @@ create_patient_data <- function(
     )
   )
 
-  # create the permanent object class patient.data
-
   return(patient_data)
 }
 
 
-#' get_model_info
+#' get_model_parameters
 #'
 #' @description A fct that call PK model and calculate specific clearance
 #' based on given patient characteristics
@@ -68,6 +66,32 @@ create_patient_data <- function(
 #'
 #' @noRd
 
-get_model_info <- function(patient_data, model) {
-  
+get_model_parameters <- function(patient_data, drug, model, model_bank) {
+
+  #get patient_info and shorten data
+  d <- patient_data
+
+  #get all available parameters
+  sex <- d[["sex"]]
+  age <- d[["age"]]
+  bmi <- d[["bmi"]]
+  tbw <- d[["weight"]][["tbw"]]
+  lbw <- d[["weight"]][["lbw"]]
+  ajbw <- d[["weight"]][["ajbw"]]
+  ibw <- d[["weight"]][["ibw"]]
+  cg_tbw <- d[["renal_function"]][["cg_tbw"]]
+  cg_lbw <- d[["renal_function"]][["cg_lbw"]]
+  cg_ibw <- d[["renal_function"]][["cg_ibw"]]
+  cg_ajbw <- d[["renal_function"]][["cg_ajbw"]]
+  mdrd <- d[["renal_function"]][["mdrd"]]
+  ckd_2009 <- d[["renal_function"]][["ckd_2009"]]
+  ckd_2021 <- d[["renal_function"]][["ckd_2021"]]
+  schwartz <- d[["renal_function"]][["schat=rtz"]]
+
+  # get model parameters and let possibility to add other parameters if needed
+  model_parameters <- list(
+    tvcl <- eval(parse(text = model_bank[[drug]][[model]][["tvcl"]])),
+    eta_cl = model_bank[[drug]][[model]][["eta_cl"]],
+  )
+  return(model_parameters)
 }
