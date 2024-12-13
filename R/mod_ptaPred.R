@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @importFrom stats rnorm
 #' @import ggplot2
 
 mod_ptaPred_ui <- function(id) {
@@ -110,7 +111,7 @@ mod_ptaPred_server <- function(id) {
       )
 
       # calculate css
-      cl_distribution <- rnorm(10000, mean = tvcl, sd = eta_cl)
+      cl_distribution <- stats::rnorm(10000, mean = model_parameters$tvcl, sd = model_parameters$eta_cl)
       css_distribution <- cl_distribution
       css_mic_distribution <- css_distribution / range
     })

@@ -86,12 +86,12 @@ get_model_parameters <- function(patient_data, drug, model, model_bank) {
   mdrd <- d[["renal_function"]][["mdrd"]]
   ckd_2009 <- d[["renal_function"]][["ckd_2009"]]
   ckd_2021 <- d[["renal_function"]][["ckd_2021"]]
-  schwartz <- d[["renal_function"]][["schat=rtz"]]
+  schwartz <- d[["renal_function"]][["schwartz"]]
 
   # get model parameters and let possibility to add other parameters if needed
   model_parameters <- list(
-    tvcl <- eval(parse(text = model_bank[[drug]][[model]][["tvcl"]])),
-    eta_cl = model_bank[[drug]][[model]][["eta_cl"]],
+    tvcl = eval(parse(text = model_bank[[drug]][[model]][["tvcl"]])),
+    eta_cl = model_bank[[drug]][[model]][["eta_cl"]]
   )
   return(model_parameters)
 }
