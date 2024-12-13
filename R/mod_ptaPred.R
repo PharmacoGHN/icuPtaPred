@@ -7,6 +7,8 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @import ggplot2
+
 mod_ptaPred_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -15,22 +17,23 @@ mod_ptaPred_ui <- function(id) {
     ),
     fluidPage(
       fluidRow(
-        column(width = 4,
+        column(
+          width = 3,
           box(
             width = 12,
             status = "olive",
             solidHeader = TRUE,
             title = "Information sur le Traitement",
-            selectInput(ns("beta_lactamin"), "Beta lactamin",  choices = c("Amox", "Cefepim"), selected = character(0)),
-            selectInput(ns("administration_route"), "Voie Administration",  choices = c("Per Os" = "PO", "Intraveneux" = "IV", "Sous Cutane" = "SC","Intramusculaire" = "IM"), selected = "IV"),
-            selectInput(ns("administration_interval"), "Interval Administration",  choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
+            selectInput(ns("beta_lactamin"), "Beta lactamin", choices = c("Amox", "Cefepim"), selected = character(0)),
+            selectInput(ns("administration_route"), "Voie Administration", choices = c("Per Os" = "PO", "Intraveneux" = "IV", "Sous Cutane" = "SC", "Intramusculaire" = "IM"), selected = "IV"),
+            selectInput(ns("administration_interval"), "Interval Administration", choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
             numericInput(ns("drug_dose"), "Dose Antibiotique (mg)", value = 1000, step = 1, min = 0, max = 32000),
             br(),
             selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist")
           ),
           box(
             width = 12,
-            status = "olive",
+            status = "lightblue",
             solidHeader = TRUE,
             title = "Information Patient",
             numericInput(ns("age"), label = "Age (ans)", value = 0, min = 0, max = 1000, step = 1),
@@ -42,22 +45,28 @@ mod_ptaPred_ui <- function(id) {
           )
         ),
         column(
-          width = 7,
-          offset = 1,
+          width = 6,
           box(
             width = 12,
-            status = "olive",
-            solidHeader = TRUE,
-            title = "PTA output",
-            actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")
+            background = "secondary",
+            collapsible = FALSE,
+            box(
+              width = 12,
+              solidHeader = FALSE,
+              title = "PTA output"
+            ),
+            box(
+              width = 12,
+              solidHeader = FALSE,
+              title = "PTA Probability output"
+            ),
+            footer = fluidRow(
+              actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")
+            )
           )
-        )
-      ),
-      fluidRow(
-        column(8),
+        ),
         column(
           width = 3,
-          offset = 1,
           tagList(
             div(
               class = "information-panel pull-right",
@@ -76,10 +85,35 @@ mod_ptaPred_ui <- function(id) {
 #' ptaPred Server Functions
 #'
 #' @noRd
-mod_ptaPred_server <- function(id){
-  moduleServer(id, function(input, output, session){
+mod_ptaPred_server <- function(id) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    observeEvent(input$compute_pta, {
+      # get patient data and
+      patient_data <- create_patient_data(
+        sex = input$sex,
+        age = input$age,
+        weight = input$weight,
+        height = input$height,
+        creatinine = input$creatinine,
+        creat_unit = "uM/L",
+        weight_unit = "kg"
+      )
+
+      # model information
+      model_parameters <- get_model_parameters(
+        patient_data,
+        drug = input$beta_lactamin,
+        model = 1,
+        model_bank = model_bank
+      )
+
+      # calculate css
+      cl_distribution <- rnorm(10000, mean = tvcl, sd = eta_cl)
+      css_distribution <- cl_distribution
+      css_mic_distribution <- css_distribution / range
+    })
   })
 }
 
