@@ -1,0 +1,8 @@
+linters: linters_with_defaults(
+    indentation_linter(
+        indent = 2L,
+        hanging_indent_style = c("tidy"),
+        assignment_as_infix = TRUE),
+    line_length_linter(length = 180L),
+    brace_linter(allow_single_line = TRUE)) 
+encoding: "UTF-8"
