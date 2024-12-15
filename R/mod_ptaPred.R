@@ -27,7 +27,6 @@ mod_ptaPred_ui <- function(id) {
             title = "Information sur le Traitement",
             selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0)),
             selectInput(ns("administration_route"), labels("administration_route", "label", lang), choices = labels("administration_route", "choices", lang), selected = "IV"),
-            #selectInput(ns("administration_interval"), "Interval Administration", choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
             numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 1000, step = 0.125, min = 0, max = 32),
             br(),
             selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist")
