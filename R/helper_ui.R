@@ -52,7 +52,7 @@ ui_data <- list(
       urinary_creat = "Creatinine urinaire (mmol/L)",
       urinary_output = "Volume urinaire (mL)",
       admin_route = "Voie d administration",
-      dose_input = "Dose administree",
+      dose_input = "Dose Antibiotique (g)",
       renal_calc = "Estimer la fonction renale",
       administration_route = "Voie Administration"
     )
