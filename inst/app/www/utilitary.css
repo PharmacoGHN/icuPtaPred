@@ -1,4 +1,4 @@
-.information-panel {
+.disclamer-panel {
     /* set box properties */
     width: 100%;
     border: solid; /* Border color and thickness */
@@ -19,3 +19,25 @@
     margin: 10px auto; /* Center with some spacing */
   }
    
+.information-panel {
+  /*set information panel type for patient info on main page*/
+
+    /* set box properties */
+    width: 100%;
+    border: solid; /* Border color and thickness */
+    border-color: #4cc3f1;
+    border-style: groove;
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f3e9d6; /* Light background color */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+
+    /* set text properties */ 
+    font-size: 16px; /* Font size for text */
+    color: #101010; /* Text color */
+    padding: 15px; /* Space inside the container */
+    width: fit-content; /* Adjust width based on content */
+    word-break: normal;
+
+    /* Box margin information */
+    margin: 10px auto; /* Center with some spacing */
+}
