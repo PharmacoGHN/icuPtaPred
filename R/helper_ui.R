@@ -22,7 +22,8 @@ ui_data <- list(
         "Cefotaxime" = "cefotaxim",
         "Meropenem" = "meropenem",
         "Piperacilline Tazobactam" = "piptazo"
-      )
+      ),
+      administration_interval = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue")
     ),
     renal_function_formula = c(
       "Cockcroft and Gault" = "CG",
@@ -54,7 +55,8 @@ ui_data <- list(
       admin_route = "Voie d administration",
       dose_input = "Dose Antibiotique (g)",
       renal_calc = "Estimer la fonction renale",
-      administration_route = "Voie Administration"
+      administration_route = "Voie Administration",
+      administration_interval = "frequence dAdministration"
     )
   )
 )
