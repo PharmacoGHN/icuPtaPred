@@ -25,10 +25,10 @@ mod_ptaPred_ui <- function(id) {
             status = "olive",
             solidHeader = TRUE,
             title = "Information sur le Traitement",
-            selectInput(ns("beta_lactamin"), "Beta lactamin", choices = c("Amox", "Cefepim"), selected = character(0)),
-            selectInput(ns("administration_route"), "Voie Administration", choices = c("Per Os" = "PO", "Intraveneux" = "IV", "Sous Cutane" = "SC", "Intramusculaire" = "IM"), selected = "IV"),
-            selectInput(ns("administration_interval"), "Interval Administration", choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
-            numericInput(ns("drug_dose"), "Dose Antibiotique (mg)", value = 1000, step = 1, min = 0, max = 32000),
+            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0)),
+            selectInput(ns("administration_route"), labels("administration_route", "label", lang), choices = labels("administration_route", "choices", lang), selected = "IV"),
+            #selectInput(ns("administration_interval"), "Interval Administration", choices = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue"), selected = "continue"),
+            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 1000, step = 0.125, min = 0, max = 32),
             br(),
             selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist")
           ),
@@ -37,10 +37,11 @@ mod_ptaPred_ui <- function(id) {
             status = "lightblue",
             solidHeader = TRUE,
             title = "Information Patient",
-            numericInput(ns("age"), label = "Age (ans)", value = 0, min = 0, max = 1000, step = 1),
-            numericInput(ns("height"), label = "Taille (cm)", value = 0, min = 0, max = 1000, step = 1),
-            numericInput(ns("weight"), label = "Poids (kg)", value = 0, min = 0, max = 1000, step = 1),
-            numericInput(ns("creatinine"), label = "Creatinine (umol/L)", value = 0, min = 0, max = 1000, step = 1)
+            numericInput(ns("age"), label = labels("age", "label", lang), value = 0, min = 0, max = 1000, step = 1),
+            numericInput(ns("height"), label = labels("height", "label", lang), value = 0, min = 0, max = 1000, step = 1),
+            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 0, min = 0, max = 1000, step = 1),
+            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 0, min = 0, max = 1000, step = 1),
+            selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
             # choice ethnicity
             # add all patient info to be computed in pop pk model (no bayesian?)
           )
@@ -71,6 +72,13 @@ mod_ptaPred_ui <- function(id) {
           tagList(
             div(
               class = "information-panel pull-right",
+              p("Information Patient", style = "font-weight: bold; font-size: 18px;"),
+              htmlOutput(outputId = "patient_information")
+            )
+          ),
+          tagList(
+            div(
+              class = "disclamer-panel pull-right",
               p("Disclamer", style = "font-weight: bold; font-size: 16px;"),
               p("1. Aide a la decision"),
               p("2. ne prend pas en compte l ecologie locale"),
