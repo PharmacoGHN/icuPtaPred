@@ -25,24 +25,25 @@ ui_data <- list(
       )
     ),
     renal_function_formula = c(
-        "Cockcroft and Gault" = "CG",
-        "MDRD" = "MDRD",
-        "CKD EPI (2009)" = "CKD_2009",
-        "CKD EPI (2021)" = "CKD_2021",
-        "UV/P" = "UVP",
-        "Schwartz" = "schwartz",
-        "None" = "none"
+      "Cockcroft and Gault" = "CG",
+      "MDRD" = "MDRD",
+      "CKD EPI (2009)" = "CKD_2009",
+      "CKD EPI (2021)" = "CKD_2021",
+      "UV/P" = "UVP",
+      "Schwartz" = "schwartz",
+      "None" = "none"
     ),
     weight_formula_choices = c(
-        "Total body weight" = "None",
-        "Ideal Body Weight" = "IBW",
-        "Adjusted Body Weight" = "AJBW",
-        "Lean Body Weight (Janmahasatian 2005)" = "LBW",
-        "BSA (Dubois 1916)" = "BSA"
+      "Total body weight" = "None",
+      "Ideal Body Weight" = "IBW",
+      "Adjusted Body Weight" = "AJBW",
+      "Lean Body Weight (Janmahasatian 2005)" = "LBW",
+      "BSA (Dubois 1916)" = "BSA"
     ),
     label = list(
-      sex = "sexe",
-      drug = "Medicament",
+      sex = "Sexe",
+      age = "Age",
+      drug = "Antibiotique",
       weight = "Poids total (kg)",
       weight_formula = "Formule de poids",
       height = "Taille (cm)",
@@ -52,7 +53,8 @@ ui_data <- list(
       urinary_output = "Volume urinaire (mL)",
       admin_route = "Voie d administration",
       dose_input = "Dose administree",
-      renal_calc = "Estimer la fonction renale"
+      renal_calc = "Estimer la fonction renale",
+      administration_route = "Voie Administration"
     )
   )
 )
