@@ -16,6 +16,12 @@ ui_data <- list(
         "Per Os" = "PO",
         "Perfusion Continue" = "CI"
       ),
+      target = c(
+        "Css > 10 x CMI" = "ten_mic",
+        "Css > 4 x CMI" = "four_mic",
+        "Css > CMI" = "one_mic",
+        "Afficher toutes les cibles" = "all_mic"
+      ),
       drug = c(
         "Amoxicilline" = "amoxicillin",
         "Cefepime" = "cefepim",
@@ -56,7 +62,8 @@ ui_data <- list(
       dose_input = "Dose Antibiotique (g)",
       renal_calc = "Estimer la fonction renale",
       administration_route = "Voie Administration",
-      administration_interval = "frequence dAdministration"
+      administration_interval = "frequence dAdministration",
+      target = "Cible Css/CMI"
     )
   )
 )
