@@ -1,3 +1,6 @@
+# load package
+library(ggplot2)
+
 # set language
 lang <- "fr"
 
