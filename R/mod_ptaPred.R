@@ -129,15 +129,39 @@ mod_ptaPred_server <- function(id) {
       # model_parameters
       tvcl <- 0.526 + 2 * cg_lbw / 54
       eta_cl <- 0.293
+      tv_css <- input$drug_dose / (tvcl * 24) # typical css
+      mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # to change
+      css_mic <- tv_css / mic
+      concentration_df <- data.frame(CSS_MIC = css_mic, MIC = mic)
 
       # calculate css
       set.seed(16897)
       cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl)
       css_distribution <-  input$drug_dose / (cl_distribution * 24)
+      #css over mic distribution
 
       # plot pta with css/mic
       output$pta_output <- renderPlot({
-        hist(css_distribution, breaks = 500, col = "#a9eca9")
+        ggplot(data = concentration_df, aes(x = .data$MIC, y = .data$CSS_MIC)) +
+          geom_line(col = "#2db391", lty = 1, lwd = 1) +
+          geom_hline(aes(yintercept = 8, linetype = "ECOFF"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
+          geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
+          scale_linetype_manual(
+            name = "Breakpoint",
+            values = c(2, 2),
+            guide = guide_legend(override.aes = list(color = c("#960b0b", "red")))
+          ) +
+          labs(linetype = NULL) +
+          scale_x_log10(breaks = mic, labels = mic) +
+          scale_y_log10() +
+          xlab("MIC (mg/L)") +
+          ylab("Css/MIC") +
+          theme_classic(base_size = 14) +
+          theme(
+            legend.position = "inside",
+            legend.justification.inside = c(0.9,0.9),
+            legend.box.background = element_rect()
+          )
       })
 
       # plot pta with css/mic probability quantile based on user selection
