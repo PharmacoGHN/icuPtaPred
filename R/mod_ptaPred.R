@@ -68,6 +68,10 @@ mod_ptaPred_ui <- function(id) {
               col_4(
                 selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
                 offset = 1
+              ),
+              col_3(
+                offset = 1,
+                sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01)
               )
             )
           )
@@ -159,7 +163,7 @@ mod_ptaPred_server <- function(id) {
           theme_classic(base_size = 14) +
           theme(
             legend.position = "inside",
-            legend.justification.inside = c(0.9,0.9),
+            legend.justification.inside = c(0.9, 0.9),
             legend.box.background = element_rect()
           )
       })

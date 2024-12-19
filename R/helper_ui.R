@@ -66,7 +66,8 @@ ui_data <- list(
       renal_calc = "Estimer la fonction renale",
       administration_route = "Voie Administration",
       administration_interval = "frequence dAdministration",
-      target = "Cible Css/CMI"
+      target = "Cible Css/CMI",
+      conf_interval = "Interval de Confiance"
     )
   )
 )
