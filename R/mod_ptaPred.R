@@ -136,6 +136,9 @@ mod_ptaPred_server <- function(id) {
       tv_css <- input$drug_dose / (tvcl * 24) # typical css
       mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # to change
       css_mic <- tv_css / mic
+      # generate tv_css/mic for two dose above and below the current dose given.
+      css_mic_above <- (input$drug_dose + 500) / (tvcl * 24)
+      css_mic_below <- (input$drug_dose + 500) / (tvcl * 24)
 
 
       # calculate css
