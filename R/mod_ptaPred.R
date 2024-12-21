@@ -181,12 +181,13 @@ mod_ptaPred_server <- function(id) {
       output$pta_output_probability <- renderPlot({
         ggplot(data = concentration_df, aes(x = .data$MIC, y = .data$CSS_MIC)) +
           geom_line(col = "#2db391", lty = 1, lwd = 1) +
-          geom_hline(aes(yintercept = 8, linetype = "ECOFF"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
           geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
+          geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
+          geom_vline(aes(xintercept = 8, linetype = "ECOFF"), lwd = 1, col = "black") +
           scale_linetype_manual(
             name = "Breakpoint",
-            values = c(2, 2),
-            guide = guide_legend(override.aes = list(color = c("#960b0b", "red")))
+            values = c(2, 2, 2),
+            guide = guide_legend(override.aes = list(color = c("#960b0b", "red", "black")))
           ) +
           labs(linetype = NULL) +
           scale_x_log10(breaks = mic, labels = mic) +
