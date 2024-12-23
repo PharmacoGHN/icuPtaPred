@@ -109,105 +109,83 @@ mod_ptaPred_server <- function(id) {
 
     observeEvent(input$compute_pta, {
       # general info
-      creat_unit <- "uM/L"
-      weight_unit <- "kg"
-
-      # all weight calculated
-      tbw <- input$weight
-      lbw <- weight_formula(input$weight, input$height, input$sex, weight_unit, formula = "LBW")
-      ajbw <- weight_formula(input$weight, input$height, input$sex, weight_unit, formula = "AJBW")
-      ibw <- weight_formula(input$weight, input$height, input$sex, weight_unit, formula = "IBW")
-      bmi <- round(input$weight / (input$height / 100) ^ 2, digits = 1)
-      bsa <- bsa(input$height, input$weight)
-
-      # calculate all clearance
-      cg_tbw <- renal_function(input$sex, input$age, tbw, input$height, input$creatinine, formula = "CG", creat_unit = creat_unit)
-      cg_ajbw <- renal_function(input$sex, input$age, ajbw, input$height, input$creatinine, formula = "CG", creat_unit = creat_unit)
-      cg_ibw <- renal_function(input$sex, input$age, ibw, input$height, input$creatinine, formula = "CG", creat_unit = creat_unit)
-      cg_lbw <- renal_function(input$sex, input$age, lbw, input$height, input$creatinine, formula = "CG", creat_unit = creat_unit)
-      mdrd <- renal_function(input$sex, input$age, tbw, input$height, input$creatinine, formula = "MDRD", creat_unit = creat_unit)
-      ckd_2009 <- renal_function(input$sex, input$age, tbw, input$height, input$creatinine, formula = "CKD_2009", creat_unit = creat_unit)
-      ckd_2021 <- renal_function(input$sex, input$age, tbw, input$height, input$creatinine, formula = "CKD_2021", creat_unit = creat_unit)
-      schwartz <- renal_function(input$sex, input$age, tbw, input$height, input$creatinine, formula = "schwartz", creat_unit = creat_unit)
+      biological <- calc_biological(
+        weight = input$weight,
+        height = input$height,
+        sex = input$sex,
+        age = input$age,
+        creatinine = input$creatinine,
+        weight_unit = "kg",
+        creat_unit = "mg/dL"
+      )
 
       # model_parameters
-      tvcl <- 0.526 + 2 * cg_lbw / 54
+      tvcl <- 0.526 + 2 * biological$cg_lbw / 54
       eta_cl <- 0.293
       tv_css <- input$drug_dose / (tvcl * 24) # typical css
       mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # to change
       css_mic <- tv_css / mic
       # generate tv_css/mic for two dose above and below the current dose given.
-      css_mic_above <- (input$drug_dose + 500) / (tvcl * 24)
-      css_mic_below <- (input$drug_dose + 500) / (tvcl * 24)
+
+      # Calculate CSS/MIC values for different dose adjustments (+2 to -2 doses diffirence)
+      dose_adjustment <- c(1000, 500, -500, -1000)
+      css_mic_values <- (input$drug_dose + dose_adjustment) / (tvcl * 24)
 
 
       # calculate css
       set.seed(16897)
       cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl)
-      css_distribution <-  input$drug_dose / (cl_distribution * 24)
+      css_distribution <- input$drug_dose / (cl_distribution * 24)
       q <- stats::quantile(css_distribution, probs = c(0.025, 0.975))
-      #css over mic distribution
+      # css over mic distribution
 
-      #create datagframe with all value
+      # create datagframe with all value
       concentration_df <- data.frame(
         CSS_MIC = css_mic,
         MIC = mic,
         perc_2.5 = q[1] / mic,
-        perc_97.5 = q[2] / mic
+        perc_97.5 = q[2] / mic,
+        css_mic_above2 <- css_mic_values[1],
+        css_mic_above1 <- css_mic_values[2],
+        css_mic_below1 <- css_mic_values[3],
+        css_mic_below2 <- css_mic_values[4]
       )
+
+
+      basic_plot <- ggplot(data = concentration_df, aes(x = .data$MIC, y = .data$CSS_MIC)) +
+        geom_line(col = "#2db391", lty = 1, lwd = 1) +
+        geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
+        geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
+        geom_vline(aes(xintercept = 8, linetype = "ECOFF"), lwd = 1, col = "black") +
+        scale_linetype_manual(
+          name = "Breakpoint",
+          values = c(2, 2, 2),
+          guide = guide_legend(override.aes = list(color = c("#960b0b", "red", "black")))
+        ) +
+        labs(linetype = NULL) +
+        scale_x_log10(breaks = mic, labels = mic) +
+        scale_y_log10() +
+        xlab("MIC (mg/L)") +
+        ylab("Css/MIC") +
+        theme_classic(base_size = 14) +
+        theme(
+          legend.position = "inside",
+          legend.justification.inside = c(0.9, 0.9),
+          legend.box.background = element_rect()
+        )
 
       # plot pta with css/mic
       output$pta_output <- renderPlot({
-        ggplot(data = concentration_df, aes(x = .data$MIC, y = .data$CSS_MIC)) +
-          geom_line(col = "#2db391", lty = 1, lwd = 1) +
-          geom_hline(aes(yintercept = 8, linetype = "ECOFF"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
-          geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
-          scale_linetype_manual(
-            name = "Breakpoint",
-            values = c(2, 2),
-            guide = guide_legend(override.aes = list(color = c("#960b0b", "red")))
-          ) +
-          labs(linetype = NULL) +
-          scale_x_log10(breaks = mic, labels = mic) +
-          scale_y_log10() +
-          xlab("MIC (mg/L)") +
-          ylab("Css/MIC") +
-          theme_classic(base_size = 14) +
-          theme(
-            legend.position = "inside",
-            legend.justification.inside = c(0.9, 0.9),
-            legend.box.background = element_rect()
-          )
+        basic_plot
       })
 
       # plot pta with css/mic probability quantile based on user selection
       output$pta_output_probability <- renderPlot({
-        ggplot(data = concentration_df, aes(x = .data$MIC, y = .data$CSS_MIC)) +
-          geom_line(col = "#2db391", lty = 1, lwd = 1) +
-          geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
-          geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
-          geom_vline(aes(xintercept = 8, linetype = "ECOFF"), lwd = 1, col = "black") +
-          scale_linetype_manual(
-            name = "Breakpoint",
-            values = c(2, 2, 2),
-            guide = guide_legend(override.aes = list(color = c("#960b0b", "red", "black")))
-          ) +
-          labs(linetype = NULL) +
-          scale_x_log10(breaks = mic, labels = mic) +
-          scale_y_log10() +
-          xlab("MIC (mg/L)") +
-          ylab("Css/MIC") +
-          theme_classic(base_size = 14) +
-          theme(
-            legend.position = "inside",
-            legend.justification.inside = c(0.9, 0.9),
-            legend.box.background = element_rect()
-          ) +
+        basic_plot +
           geom_line(data = concentration_df, aes(y = .data$perc_2.5, x = .data$MIC), col = "#0889f1", lty = 2) +
           geom_line(data = concentration_df, aes(y = .data$perc_97.5, x = .data$MIC), col = "#0889f1", lty = 2)
       })
     })
-
   })
 }
 
