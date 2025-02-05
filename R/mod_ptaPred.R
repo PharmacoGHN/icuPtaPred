@@ -26,7 +26,7 @@ mod_ptaPred_ui <- function(id) {
             solidHeader = TRUE,
             title = "Information sur le Traitement",
             selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-            selectInput(ns("administration_route"), labels("administration_route", "label", lang), choices = labels("administration_route", "choices", lang), selected = "IV", width = "auto"),
+            #selectInput(ns("administration_route"), labels("administration_route", "label", lang), choices = labels("administration_route", "choices", lang), selected = "IV", width = "auto"),
             numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 1000, step = 0.125, min = 0, max = 32, width = "auto"),
             br(),
             selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist", width = "auto")
@@ -118,41 +118,19 @@ mod_ptaPred_server <- function(id) {
         weight_unit = "kg",
         creat_unit = "mg/dL"
       )
+      # calculate model parameters (cl and eta_cl) based on selected drug
+      model_param <- get_model_parameters("klastrup_2020", biological = biological)
 
-      # model_parameters
-      tvcl <- 0.526 + 2 * biological$cg_lbw / 54
-      eta_cl <- 0.293
-      tv_css <- input$drug_dose / (tvcl * 24) # typical css
-      mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # to change
-      css_mic <- tv_css / mic
-      # generate tv_css/mic for two dose above and below the current dose given.
-
-      # Calculate CSS/MIC values for different dose adjustments (+2 to -2 doses diffirence)
-      dose_adjustment <- c(1000, 500, -500, -1000)
-      css_mic_values <- (input$drug_dose + dose_adjustment) / (tvcl * 24)
-
-
-      # calculate css
-      set.seed(16897)
-      cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl)
-      css_distribution <- input$drug_dose / (cl_distribution * 24)
-      q <- stats::quantile(css_distribution, probs = c(0.025, 0.975))
-      # css over mic distribution
-
-      # create datagframe with all value
-      concentration_df <- data.frame(
-        CSS_MIC = css_mic,
-        MIC = mic,
-        perc_2.5 = q[1] / mic,
-        perc_97.5 = q[2] / mic,
-        css_mic_above2 <- css_mic_values[1],
-        css_mic_above1 <- css_mic_values[2],
-        css_mic_below1 <- css_mic_values[3],
-        css_mic_below2 <- css_mic_values[4]
+      # calculate all concentration
+      concentration_df <- sim_concentration(
+       dose = input$drug_dose,
+       tvcl = model_param$cl,
+       eta_cl = model_param$eta_cl,
+       quantile = input$confidence_level
       )
 
 
-      basic_plot <- ggplot(data = concentration_df, aes(x = .data$MIC, y = .data$CSS_MIC)) +
+      pta_ci_plot <- ggplot(data = concentration_df, aes(x = .data$mic, y = .data$css_mic)) +
         geom_line(col = "#2db391", lty = 1, lwd = 1) +
         geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
         geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
@@ -163,7 +141,11 @@ mod_ptaPred_server <- function(id) {
           guide = guide_legend(override.aes = list(color = c("#960b0b", "red", "black")))
         ) +
         labs(linetype = NULL) +
-        scale_x_log10(breaks = mic, labels = mic) +
+        ylim(0.00001, max(concentration_df$css_mic)) +
+        xlim(0.00001, max(concentration_df$mic)) +
+        #scale_x_continuous(scales::pseudo_log_trans(base = log(10)), breaks = mic, labels = mic) + 
+        #scale_y_continuous(scales:::pseudo_log_trans(base = log(10))) +
+        scale_x_log10(breaks = concentration_df$mic, labels = concentration_df$mic) +
         scale_y_log10() +
         xlab("MIC (mg/L)") +
         ylab("Css/MIC") +
@@ -176,14 +158,14 @@ mod_ptaPred_server <- function(id) {
 
       # plot pta with css/mic
       output$pta_output <- renderPlot({
-        basic_plot
+        pta_ci_plot
       })
 
       # plot pta with css/mic probability quantile based on user selection
       output$pta_output_probability <- renderPlot({
-        basic_plot +
-          geom_line(data = concentration_df, aes(y = .data$perc_2.5, x = .data$MIC), col = "#0889f1", lty = 2) +
-          geom_line(data = concentration_df, aes(y = .data$perc_97.5, x = .data$MIC), col = "#0889f1", lty = 2)
+        pta_ci_plot +
+          geom_line(data = concentration_df, aes(y = .data$percentile_2.5, x = .data$mic), col = "#0889f1", lty = 2) +
+          geom_line(data = concentration_df, aes(y = .data$percentile_97.5, x = .data$mic), col = "#0889f1", lty = 2)
       })
     })
   })
