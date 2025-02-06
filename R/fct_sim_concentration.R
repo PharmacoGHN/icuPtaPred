@@ -6,7 +6,7 @@
 #'
 #' @noRd
 
-sim_concentration <- function(dose, tvcl, eta_cl, quantile = c(0.025, 0.975), mic = NA) {
+sim_concentration <- function(dose, tvcl, eta_cl, quantile = c(0.025, 0.975), mic = NA, dose_increment = 0) {
 
   # set default mic is none is selected
   if (length(mic) == 1 && is.na(mic)) mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # default range value
@@ -21,17 +21,31 @@ sim_concentration <- function(dose, tvcl, eta_cl, quantile = c(0.025, 0.975), mi
   css_distribution <- dose / (cl_distribution * 24)
   quant <- stats::quantile(css_distribution, probs = quantile)
 
+  # add simulation of 2 dosing above and below if these are not 0
+  dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
+  tv_css_range <- dose_range / (tvcl * 24)
+
+  # generate dataframe containing several dose target attainment
+  css_mic_range <- data.frame(
+    css_mic_below2 = tv_css_range[1] / mic,
+    css_mic_below1 = tv_css_range[2] / mic,
+    css_mic = tv_css_range[3] / mic,
+    css_mic_above1 = tv_css_range[4] / mic,
+    css_mic_above2 = tv_css_range[5] / mic
+  )
+
   # create the output file containing css distribution summary
-  concentration_df <- data.frame(
+  quantile_df <- data.frame(
     css_mic = css_mic,
     mic = mic,
     percentile_2.5 = quant[1] / mic,
-    percentile_97.5 = quant[2] / mic#,
-    # css_mic_above2 <- css_mic_values[1],
-    # css_mic_above1 <- css_mic_values[2],
-    # css_mic_below1 <- css_mic_values[3],
-    # css_mic_below2 <- css_mic_values[4]
+    percentile_97.5 = quant[2] / mic
   )
+
+  # bind both data.frame
+  concentration_df <- quantile_df |>
+    dplyr::left_join(css_mic_range)
+
 
   return(round(concentration_df, digits = 1))
 }

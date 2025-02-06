@@ -8,24 +8,24 @@ test_that("sim_concentration returns expected output", {
 
   expected_sim_conc_df <- as.data.frame(
     tibble::tribble(
-      ~css_mic, ~mic, ~percentile_2.5, ~percentile_97.5,
-      33.3,     0.1,   24.0,            54.9,
-      16.7,     0.2,   12.0,            27.5,
-       8.3,     0.5,    6.0,            13.7,
-       4.2,     1.0,    3.0,             6.9,
-       2.1,     2.0,    1.5,             3.4,
-       1.0,     4.0,    0.7,             1.7,
-       0.5,     8.0,    0.4,             0.9
+      ~css_mic, ~mic, ~percentile_2.5, ~percentile_97.5, ~css_mic_below2, ~css_mic_below1, ~css_mic_above1, ~css_mic_above2,
+      33.3,     0.1,   24.0,                       54.9,               0,            16.7,              50,            66.7,
+      16.7,     0.2,   12.0,                       27.5,               0,             8.3,              25,            33.3,
+       8.3,     0.5,    6.0,                       13.7,               0,             4.2,            12.5,            16.7,
+       4.2,     1.0,    3.0,                        6.9,               0,             2.1,             6.2,             8.3,
+       2.1,     2.0,    1.5,                        3.4,               0,               1,             3.1,             4.2,
+       1.0,     4.0,    0.7,                        1.7,               0,             0.5,             1.6,             2.1,
+       0.5,     8.0,    0.4,                        0.9,               0,             0.3,             0.8,               1
     )
   )
 
-  result <- sim_concentration(dose, tvcl, eta_cl, quantile, mic)
+  result <- sim_concentration(dose, tvcl, eta_cl, quantile, mic, dose_increment = 500)
 
   # Check that the result is a dataframe
   expect_s3_class(result, "data.frame")
 
   # Check column names
-  expect_equal(colnames(result), c("css_mic", "mic", "percentile_2.5", "percentile_97.5"))
+  expect_equal(colnames(result), c("css_mic", "mic", "percentile_2.5", "percentile_97.5","css_mic_below2", "css_mic_below1", "css_mic_above1", "css_mic_above2"))
 
   # Check that the number of rows matches mic length
   expect_equal(nrow(result), length(mic))
