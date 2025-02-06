@@ -120,13 +120,14 @@ mod_ptaPred_server <- function(id) {
       )
       # calculate model parameters (cl and eta_cl) based on selected drug
       model_param <- get_model_parameters("klastrup_2020", biological = biological)
-
+      
       # calculate all concentration
       concentration_df <- sim_concentration(
-       dose = input$drug_dose,
-       tvcl = model_param$cl,
-       eta_cl = model_param$eta_cl,
-       quantile = input$confidence_level
+        dose = input$drug_dose,
+        tvcl = model_param$cl,
+        eta_cl = model_param$eta_cl,
+        quantile = input$confidence_level,
+        dose_increment = 500
       )
 
 
@@ -141,12 +142,8 @@ mod_ptaPred_server <- function(id) {
           guide = guide_legend(override.aes = list(color = c("#960b0b", "red", "black")))
         ) +
         labs(linetype = NULL) +
-        ylim(0.00001, max(concentration_df$css_mic)) +
-        xlim(0.00001, max(concentration_df$mic)) +
-        #scale_x_continuous(scales::pseudo_log_trans(base = log(10)), breaks = mic, labels = mic) + 
-        #scale_y_continuous(scales:::pseudo_log_trans(base = log(10))) +
-        scale_x_log10(breaks = concentration_df$mic, labels = concentration_df$mic) +
-        scale_y_log10() +
+        scale_x_log10(breaks = concentration_df$mic, labels = concentration_df$mic, limits = c(max(0.01, min(concentration_df$mic)), max(concentration_df$mic))) +
+        scale_y_log10(limits = c(max(0.01, min(concentration_df$css_mic_below2)), max(concentration_df$css_mic_above2))) +
         xlab("MIC (mg/L)") +
         ylab("Css/MIC") +
         theme_classic(base_size = 14) +
@@ -156,16 +153,23 @@ mod_ptaPred_server <- function(id) {
           legend.box.background = element_rect()
         )
 
+
       # plot pta with css/mic
       output$pta_output <- renderPlot({
-        pta_ci_plot
+        pta_ci_plot +
+          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below1), col = "#20846b", lty = 1, lwd = 1) +
+          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below2), col = "#1f8269", lty = 1, lwd = 1) +
+          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above1), col = "#32c5a0", lty = 1, lwd = 1) +
+          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above2), col = "#2fe3b6", lty = 1, lwd = 1)
+          # add legend with color for each dose.
       })
 
       # plot pta with css/mic probability quantile based on user selection
       output$pta_output_probability <- renderPlot({
         pta_ci_plot +
-          geom_line(data = concentration_df, aes(y = .data$percentile_2.5, x = .data$mic), col = "#0889f1", lty = 2) +
-          geom_line(data = concentration_df, aes(y = .data$percentile_97.5, x = .data$mic), col = "#0889f1", lty = 2)
+          geom_ribbon(data = concentration_df, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic), fill = "#0889f1", alpha = 0.1, col = "#0889f1")
+          # geom_line(data = concentration_df, aes(y = .data$percentile_2.5, x = .data$mic), col = "#0889f1", lty = 2) +
+          #geom_line(data = concentration_df, aes(y = .data$percentile_97.5, x = .data$mic), col = "#0889f1", lty = 2)
       })
     })
   })
