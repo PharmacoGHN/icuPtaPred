@@ -30,7 +30,7 @@ ui_data <- list(
         "Cefepime" = "cefepim",
         "Cefotaxime" = "cefotaxim",
         "Meropenem" = "meropenem",
-        "Piperacilline Tazobactam" = "piptazo"
+        "Piperacilline Tazobactam" = "pipetazo"
       ),
       administration_interval = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue")
     ),
