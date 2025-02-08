@@ -40,16 +40,16 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
   # automatic selection of dose increment based on selected drug.
   # This dose increment is in gram
-  dose_increment <- deplyr::case_when(
-    drug == "amoxicillin" ~ 0.5,
-    drug == "cefepim" ~ 1,
-    drug == "cefazoline" ~ 0.5,
-    drug == "cefotaxim" ~ 0.5,
-    drug == "ceftazidim" ~ 1,
-    drug == "ceftaroline" ~ 1,
-    drug == "ceftobiprol" ~ 1,
-    drug == "pipetazo" ~ 2,
-    drug == "meropenem" ~ 0.5,
+  dose_increment <- dplyr::case_when(
+    drug == "amoxicillin" ~ 500,
+    drug == "cefepim" ~ 1000,
+    drug == "cefazoline" ~ 500,
+    drug == "cefotaxim" ~ 500,
+    drug == "ceftazidim" ~ 1000,
+    drug == "ceftaroline" ~ 1000,
+    drug == "ceftobiprol" ~ 1000,
+    drug == "pipetazo" ~ 2000,
+    drug == "meropenem" ~ 500,
     .default = 0
   )
   return(list(cl = cl, eta_cl = eta_cl, dose_increment = dose_increment))
