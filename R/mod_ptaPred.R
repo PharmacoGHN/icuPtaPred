@@ -19,15 +19,14 @@ mod_ptaPred_ui <- function(id) {
     fluidPage(
       fluidRow(
         column(
-          width = 3,
+          width = 2,
           box(
             width = 12,
             status = "olive",
             solidHeader = TRUE,
             title = "Information sur le Traitement",
             selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-            #selectInput(ns("administration_route"), labels("administration_route", "label", lang), choices = labels("administration_route", "choices", lang), selected = "IV", width = "auto"),
-            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 1000, step = 0.125, min = 0, max = 32, width = "auto"),
+            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto"),
             br(),
             selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist", width = "auto")
           ),
@@ -36,17 +35,18 @@ mod_ptaPred_ui <- function(id) {
             status = "lightblue",
             solidHeader = TRUE,
             title = "Information Patient",
-            numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 1000, step = 1),
-            numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 1000, step = 1),
-            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 1000, step = 1),
-            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1000, step = 1),
+            numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
+            numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
+            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
+            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
             selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
             # choice ethnicity
             # add all patient info to be computed in pop pk model (no bayesian?)
           )
         ),
         column(
-          width = 6,
+          width = 7,
+          offset = 1,
           box(
             width = 12,
             background = "secondary",
@@ -75,25 +75,6 @@ mod_ptaPred_ui <- function(id) {
               )
             )
           )
-        ),
-        column(
-          width = 3,
-          tagList(
-            div(
-              class = "information-panel pull-right",
-              p("Information Patient", style = "font-weight: bold; font-size: 18px;"),
-              htmlOutput(outputId = "patient_information")
-            )
-          ),
-          tagList(
-            div(
-              class = "disclamer-panel pull-right",
-              p("Disclamer", style = "font-weight: bold; font-size: 16px;"),
-              p("1. Aide a la decision"),
-              p("2. ne prend pas en compte l ecologie locale"),
-              p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
-            )
-          )
         )
       )
     )
@@ -107,6 +88,26 @@ mod_ptaPred_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    # modal open on app launch to warn people
+    observe({
+      showModal(
+        modalDialog(
+          size = "xl",
+          div(
+            class = "disclamer-panel pull-right",
+            p("Disclamer", style = "font-weight: bold; font-size: 16px; text-aling: center;"),
+            p("1. Aide a la decision"),
+            p("2. ne prend pas en compte l ecologie locale"),
+            p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
+          ),
+          easyClose = FALSE,
+          modalButton("Accept"),
+          footer = NULL
+        )
+      )
+    })
+
+    # PTA computing and plotting code
     observeEvent(input$compute_pta, {
       # general info
       biological <- calc_biological(
@@ -119,15 +120,15 @@ mod_ptaPred_server <- function(id) {
         creat_unit = "mg/dL"
       )
       # calculate model parameters (cl and eta_cl) based on selected drug
-      model_param <- get_model_parameters("klastrup_2020", biological = biological)
-      
+      model_param <- get_model_parameters("klastrup_2020", biological = biological, drug = input$beta_lactamin)
+
       # calculate all concentration
       concentration_df <- sim_concentration(
         dose = input$drug_dose,
         tvcl = model_param$cl,
         eta_cl = model_param$eta_cl,
         quantile = input$confidence_level,
-        dose_increment = 500
+        dose_increment = model_param$dose_increment
       )
 
 
@@ -161,15 +162,15 @@ mod_ptaPred_server <- function(id) {
           geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below2), col = "#1f8269", lty = 1, lwd = 1) +
           geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above1), col = "#32c5a0", lty = 1, lwd = 1) +
           geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above2), col = "#2fe3b6", lty = 1, lwd = 1)
-          # add legend with color for each dose.
+        # add legend with color for each dose.
       })
 
       # plot pta with css/mic probability quantile based on user selection
       output$pta_output_probability <- renderPlot({
         pta_ci_plot +
           geom_ribbon(data = concentration_df, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic), fill = "#0889f1", alpha = 0.1, col = "#0889f1")
-          # geom_line(data = concentration_df, aes(y = .data$percentile_2.5, x = .data$mic), col = "#0889f1", lty = 2) +
-          #geom_line(data = concentration_df, aes(y = .data$percentile_97.5, x = .data$mic), col = "#0889f1", lty = 2)
+        # geom_line(data = concentration_df, aes(y = .data$percentile_2.5, x = .data$mic), col = "#0889f1", lty = 2) +
+        # geom_line(data = concentration_df, aes(y = .data$percentile_97.5, x = .data$mic), col = "#0889f1", lty = 2)
       })
     })
   })
