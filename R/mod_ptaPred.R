@@ -9,6 +9,7 @@
 #' @importFrom shiny NS tagList
 #' @importFrom stats rnorm
 #' @import ggplot2
+#' @import plotly
 
 mod_ptaPred_ui <- function(id) {
   ns <- NS(id)
@@ -55,13 +56,13 @@ mod_ptaPred_ui <- function(id) {
               width = 12,
               solidHeader = FALSE,
               title = "PTA output",
-              plotOutput(ns("pta_output"))
+              plotlyOutput(ns("pta_output"))
             ),
             box(
               width = 12,
               solidHeader = FALSE,
               title = "PTA Probability output",
-              plotOutput(ns("pta_output_probability"))
+              plotlyOutput(ns("pta_output_probability"))
             ),
             footer = fluidRow(
               col_2(actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")),
@@ -132,7 +133,7 @@ mod_ptaPred_server <- function(id) {
       )
 
 
-      pta_ci_plot <- ggplot(data = concentration_df, aes(x = .data$mic, y = .data$css_mic)) +
+      pta_plot <- ggplot(data = concentration_df, aes(x = .data$mic, y = .data$css_mic)) +
         geom_line(col = "#2db391", lty = 1, lwd = 1) +
         geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
         geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
@@ -154,24 +155,20 @@ mod_ptaPred_server <- function(id) {
           legend.box.background = element_rect()
         )
 
+      pta_multiple_doses <- pta_plot +
+        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below1), col = "#20846b", lty = 1, lwd = 1) +
+        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below2), col = "#1f8269", lty = 1, lwd = 1) +
+        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above1), col = "#32c5a0", lty = 1, lwd = 1) +
+        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above2), col = "#2fe3b6", lty = 1, lwd = 1)
+
+      pta_ci_plot <- pta_plot +
+        geom_ribbon(data = concentration_df, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic), fill = "#0889f1", alpha = 0.1, col = "#0889f1")
 
       # plot pta with css/mic
-      output$pta_output <- renderPlot({
-        pta_ci_plot +
-          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below1), col = "#20846b", lty = 1, lwd = 1) +
-          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below2), col = "#1f8269", lty = 1, lwd = 1) +
-          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above1), col = "#32c5a0", lty = 1, lwd = 1) +
-          geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above2), col = "#2fe3b6", lty = 1, lwd = 1)
-        # add legend with color for each dose.
-      })
+      output$pta_output <- renderPlotly({ plotly::ggplotly(pta_multiple_doses) })
 
       # plot pta with css/mic probability quantile based on user selection
-      output$pta_output_probability <- renderPlot({
-        pta_ci_plot +
-          geom_ribbon(data = concentration_df, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic), fill = "#0889f1", alpha = 0.1, col = "#0889f1")
-        # geom_line(data = concentration_df, aes(y = .data$percentile_2.5, x = .data$mic), col = "#0889f1", lty = 2) +
-        # geom_line(data = concentration_df, aes(y = .data$percentile_97.5, x = .data$mic), col = "#0889f1", lty = 2)
-      })
+      output$pta_output_probability <- renderPlotly({ plotly::ggplotly(pta_ci_plot) })
     })
   })
 }
