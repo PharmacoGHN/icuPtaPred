@@ -89,24 +89,27 @@ mod_ptaPred_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # modal open on app launch to warn people
-    observe({
+    
+    if (Sys.getenv("PRODUCTION_MODE") == "TRUE") {
+      # modal open on app launch to warn people
+      observe({
       showModal(
         modalDialog(
-          size = "xl",
-          div(
-            class = "disclamer-panel pull-right",
-            p("Disclamer", style = "font-weight: bold; font-size: 16px; text-aling: center;"),
-            p("1. Aide a la decision"),
-            p("2. ne prend pas en compte l ecologie locale"),
-            p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
-          ),
-          easyClose = FALSE,
-          modalButton("Accept"),
-          footer = NULL
+        size = "xl",
+        div(
+          class = "disclamer-panel pull-right",
+          p("Disclamer", style = "font-weight: bold; font-size: 16px; text-align: center;"),
+          p("1. Aide a la decision"),
+          p("2. ne prend pas en compte l ecologie locale"),
+          p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
+        ),
+        easyClose = FALSE,
+        modalButton("Accept"),
+        footer = NULL
         )
       )
-    })
+      })
+    }
 
     # PTA computing and plotting code
     observeEvent(input$compute_pta, {

@@ -23,7 +23,8 @@ app_ui <- function(request) {
       ),
       body = dashboardBody(
         tabItems(
-          tabItem(tabName = "ptaGenerator", mod_ptaPred_ui("ptaPred_1"))
+          tabItem(tabName = "ptaGenerator", mod_ptaPred_ui("ptaPred_1")),
+          tabItem(tabName = "model_information", mod_model_information_ui("model_information_1"))
         )
       )
 
