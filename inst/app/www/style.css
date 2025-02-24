@@ -1,0 +1,18 @@
+.title-frame {
+    border: 5px groove #1b69b7;
+    border-radius: 10px;
+    background-color: #cce5ff;
+    padding: 10px;
+  }
+
+.title-frame-section {
+  border-radius: 10px;
+  background-color: #f4c4a2;
+  padding: 10px;
+}
+
+.title-display {
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+}
