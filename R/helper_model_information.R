@@ -1,6 +1,3 @@
-# Load necessary libraries
-library(tibble)
-
 # Create a tibble to store information about the pharmacokinetics model
 
 model_information <- list(
@@ -32,16 +29,16 @@ model_information <- list(
       Population_Studied = "Population placeholder"
     ),
     Udy_2015 = tibble::tibble(
-      Title = "Title placeholder for Udy et al., 2015",
+      Title = "Augmented Renal Clearance: Implications for Antibiotic Dosing in Critically Ill Patients",
       Authors = "Udy, et al.",
       Year = 2015,
-      Journal = "Journal placeholder",
-      DOI = NA,
-      URL = "https://pubmed.ncbi.nlm.nih.gov/25632974/",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
-      Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Journal = "Critical Care",
+      DOI = "10.1186/s13054-015-0750-y",
+      URL = "https://doi.org/10.1186/s13054-015-0750-y",
+      Abstract = "This study investigates augmented renal clearance in critically ill patients and its impact on antibiotic pharmacokinetics. The findings emphasize the need for dose adjustments to achieve optimal therapeutic outcomes in patients exhibiting enhanced renal elimination.",
+      Clearance_Formula = "N/A",
+      Model_Description = "The study characterizes augmented renal clearance and discusses its implications on the dosing regimens of renally excreted drugs in critically ill patients.",
+      Population_Studied = "Critically ill patients"
     )
   ),
   "cefepim" = list(
@@ -59,16 +56,16 @@ model_information <- list(
     ),
     # Added references for cefepim studies:
     An_2023 = tibble::tibble(
-      Title = "Title placeholder for An et al., JAC 2023",
+      Title = "Population Pharmacokinetics of Cefepime in Pediatric Intensive Care Patients",
       Authors = "An, et al.",
       Year = 2023,
       Journal = "Journal of Antimicrobial Chemotherapy",
-      DOI = NA,
+      DOI = "10.1093/jac/dkad106",
       URL = "https://pubmed.ncbi.nlm.nih.gov/37071586/",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
-      Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Abstract = "This study evaluated the pharmacokinetics of cefepime in pediatric intensive care patients, identifying key covariates affecting drug clearance and supporting dosing regimen optimization.",
+      Clearance_Formula = "$$ CL = 0.65 \\times \\left(\\frac{WT}{70}\\right)^{0.75} \\; (L/h) $$",
+      Model_Description = "A population pharmacokinetic model that integrates weight and renal function parameters to predict cefepime clearance.",
+      Population_Studied = "Pediatric intensive care patients"
     ),
     Barreto_2023 = tibble::tibble(
       Title = "Title placeholder for Barreto et al., AAC 2023",
