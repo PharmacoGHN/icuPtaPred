@@ -40,6 +40,8 @@ mod_ptaPred_ui <- function(id) {
             numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
             numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
             numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
+            numericInput(ns("urine_output"), label = labels("urine_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
+            numericInput(ns("urine_creatinine"), label = labels("urine_creatinine", "label", lang), value = 0, min = 0, max = 1500, step = 1),
             selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
             # choice ethnicity
             # add all patient info to be computed in pop pk model (no bayesian?)
@@ -87,25 +89,23 @@ mod_ptaPred_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    
+    # TODO
+    # add validator for creatinine value
+    # if too low, ask people to enable the mg/dl unit button
+
+    # create the warning message to display on launch
+    warning_message <- div(
+      class = "disclamer-panel pull-right",
+      p("Disclamer", style = "font-weight: bold; font-size: 16px; text-align: center;"),
+      p("1. Aide a la decision"),
+      p("2. ne prend pas en compte l ecologie locale"),
+      p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
+    )
+
     if (Sys.getenv("PRODUCTION_MODE") == "TRUE") {
       # modal open on app launch to warn people
       observe({
-      showModal(
-        modalDialog(
-        size = "xl",
-        div(
-          class = "disclamer-panel pull-right",
-          p("Disclamer", style = "font-weight: bold; font-size: 16px; text-align: center;"),
-          p("1. Aide a la decision"),
-          p("2. ne prend pas en compte l ecologie locale"),
-          p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
-        ),
-        easyClose = FALSE,
-        modalButton("Accept"),
-        footer = NULL
-        )
-      )
+        showModal(modalDialog(size = "xl", warning_message, easyClose = FALSE, modalButton("Accept"), footer = NULL))
       })
     }
 
@@ -118,6 +118,8 @@ mod_ptaPred_server <- function(id) {
         sex = input$sex,
         age = input$age,
         creatinine = input$creatinine,
+        urine_creat = input$urine_creatinine,
+        urine_output = input$urine_output,
         weight_unit = "kg",
         creat_unit = "mg/dL"
       )
