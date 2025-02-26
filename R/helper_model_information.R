@@ -131,16 +131,19 @@ model_information <- list(
       Population_Studied = "Population placeholder"
     ),
     Fukumoto_2023 = tibble::tibble(
-      Title = "Title placeholder for Fukumoto et al., 2023",
+      Title = "Population Pharmacokinetic Model and Dosing Simulation of Meropenem Using Measured Creatinine Clearance for Patients with Sepsis",
       Authors = "Fukumoto, et al.",
       Year = 2023,
-      Journal = "Journal placeholder",
+      Journal = "Ther Drug Monit",
       DOI = "10.1097/FTD.0000000000001040",
       URL = "https://pubmed.ncbi.nlm.nih.gov/36253888/",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
+      Abstract = "<br> <strong> <i> Purpose :     </i> </strong> Creatinine clearance (CCr) and pharmacokinetic parameters are markedly affected by pathophysiological changes in patients with sepsis. However, only a few reports have assessed renal function in patients with sepsis using the measured CCr. Furthermore, the administration regimen has not been sufficiently evaluated using a population PK (PPK) model across renal function broad ranges. Therefore, this study was performed to construct a meropenem PPK model for patients with sepsis using the measured CCr and evaluate the optimized meropenem dosing regimen based on the CCr.
+                  <br> <strong> <i> Methods :     </i> </strong> Patients with sepsis who received intravenous meropenem at the Showa University Hospital were enrolled in this prospective observational study. The PPK model was constructed using blood samples and clinical information of patients. The probability of target attainment (PTA) indicates the likelihood of achieving 50% time above the minimum inhibitory concentration (% T > MIC) based on 10,000 virtual patients using Monte Carlo simulations. The PTA for each meropenem regimen was 50% T > MIC based on different renal functions using the Monte Carlo simulation.
+                  <br> <strong> <i> Results :     </i> </strong> One hundred samples were collected from 31 patients. The final PPK model incorporating the measured CCr as a covariate in CL displayed the best fit. The recommended dosing regimen to achieve a PTA of 50% T > MIC of 4 mcg/mL was 1 g every 8 hours as a 3-hour prolonged infusion for patients with CCr 85-130 mL/min and 1 g every 8 hours as an 8-hour continuous infusion for patients with CCr ≥ 130 mL/min.
+                  <br> <strong> <i> Conclusions : </i> </strong> This model precisely predicted meropenem concentrations in patients with sepsis by accurately evaluating renal function using the measured CCr. Extended dosing was demonstrated to be necessary to achieve a PTA of 50% T > MIC for patients with CCr ≥ 85 mL/min. Meropenem effectiveness can be maximized in patients with sepsis by selecting the appropriate dosing regimen based on renal function and the MIC.",
+      Clearance_Formula = "$$CL = 13.5 \\times \\left( \\frac{CCR}{87.6} \\right) ^ {0.67} \\qquad \\qquad With \\quad CCR = Urine Output \\times \\frac{Urine Cr}{SCr} \\times \\frac{1.73m²}{BSA} $$",
       Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Population_Studied = "Intensive Care sepsis patients"
     ),
     Lan_2022 = tibble::tibble(
       Title = "Title placeholder for Lan et al., JPS 2022",
