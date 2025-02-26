@@ -19,6 +19,18 @@ app_ui <- function(request) {
           menuItem("PTA", tabName = "ptaGenerator", icon = icon("chart-line")),
           menuItem("Model Info", tabName = "model_information", icon = icon("info")),
           menuItem("Settings", tabName = "app_settings", icon = shiny::icon("gear"))
+        ),
+        # Add GitHub issue link at the bottom of sidebar
+        rep_br(35),
+        div(
+          style = "padding: 15px;",
+          actionLink(
+            "reportIssue",
+            label = span(icon("github"), " Report Issue"),
+            onclick = paste0("window.open('", "https://github.com/PharmacoGHN/icuPtaPred/issues", "', '_blank')")
+          ),
+          p(style = "font-size: 0.8em; margin-top: 5px; color: white;", 
+            "Click to report bugs or suggest improvements on GitHub.")
         )
       ),
       body = dashboardBody(
@@ -27,7 +39,6 @@ app_ui <- function(request) {
           tabItem(tabName = "model_information", mod_model_information_ui("model_information_1"))
         )
       )
-
     )
   )
 }
