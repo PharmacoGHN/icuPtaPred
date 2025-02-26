@@ -30,11 +30,11 @@ mod_model_information_ui <- function(id) {
             h3(textOutput(ns("title")), class = "title-display")
           ),
           br(),
-          p(strong("Authors: "), textOutput(ns("authors"))),
-          p(strong("Abstract: "), textOutput(ns("abstract"))),
-          p(strong("Clearance Formula: "), uiOutput(ns("clearance_formula"))),
-          p(strong("Model Description: "), textOutput(ns("model_description"))),
-          p(strong("Population Studied: "), textOutput(ns("population_studied")))
+          p(tags$div(class = "subtitle-display", "Authors: "), uiOutput(ns("authors"))),
+          p(tags$div(class = "subtitle-display", "Abstract: "), uiOutput(ns("abstract"))),
+          p(tags$div(class = "subtitle-display", "Clearance Formula: "), uiOutput(ns("clearance_formula"))),
+          p(tags$div(class = "subtitle-display", "Model Description: "), textOutput(ns("model_description"))),
+          p(tags$div(class = "subtitle-display", "Population Studied: "), textOutput(ns("population_studied")))
         )
       )
     )
@@ -46,6 +46,7 @@ mod_model_information_ui <- function(id) {
 #' @param id Module id.
 #'
 #' @noRd
+
 mod_model_information_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -70,30 +71,23 @@ mod_model_information_server <- function(id) {
     })
     output$authors <- renderUI({
       authors <- paste0(
-        selected_model()$Authors, ", ",
-        selected_model()$Journal,
-        selected_model()$Year, ". ", "DOI: ",
-        selected_model()$DOI
+        selected_model()$Authors, "  ",
+        selected_model()$Journal, ",  ",
+        selected_model()$Year, ".       "
       )
-      
-
       golem::cat_dev(authors, "\n")
-      #tagList(
-        a(authors,
-          # paste(
-          # selected_model()$Authors, ",",
-          # selected_model()$Journal,
-          # selected_model()$Year, ".", "DOI: ",
-          # selected_model()$DOI
-          # ),
-          href = "https://journals.asm.org/doi/10.1128/aac.02556-19"#,
-          #target = "_blank"
+
+      #
+      tagList(
+        authors, "DOI: ",
+        a(
+          selected_model()$DOI,
+          href = if (!is.null(selected_model()$URL)) selected_model()$URL,
+          target = "_blank"
         )
-      #)
+      )
     })
-    output$abstract <- renderText({
-      selected_model()$Abstract
-    })
+    output$abstract <- renderUI({ HTML(selected_model()$Abstract) })
     output$clearance_formula <- renderUI({
       withMathJax(selected_model()$Clearance_Formula)
     })

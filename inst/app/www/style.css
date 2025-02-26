@@ -16,3 +16,11 @@
   font-style: italic;
   text-align: center;
 }
+
+.subtitle-display {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 16px;
+  text-decoration: underline;
+  color: #1b69b7;
+}
