@@ -10,8 +10,8 @@
 #'
 #' @param date can take any date value. Default value is Sys.Date()
 #' @param time can take any time value. Default value is Sys.time()
-#' 
-#' @noRd 
+#'
+#' @noRd
 
 date_time_format <- function(date = Sys.Date(),
                              time = Sys.time()) {
@@ -25,7 +25,7 @@ date_time_format <- function(date = Sys.Date(),
 #' This function will return TRUE if values of vector are unique
 #'
 #' @param vector correspond to the input vector
-#' 
+#'
 #' @noRd
 
 is_unique <- function(vector) {
@@ -45,4 +45,25 @@ labels <- function(
   language = c("fr", "en")
 ) {
   return(ui_data[[language]][[arg]][[name]])
+}
+
+#' getSdFromCV
+#'
+#' @description convert coefficient of variation to standard deviation in case of log normal distribution
+#'
+#' @noRd
+
+
+get_sd_from_cv <- function(cv) {
+  return(sqrt(log(cv^2 + 1)))
+}
+
+#' getCvFromSd
+#'
+#' @description convert standard deviation to coefficient of variation in case of log normal distribution
+#'
+#' @noRd
+
+get_cv_from_sd <- function(sd) {
+  return(sqrt(exp(sd^2) - 1))
 }
