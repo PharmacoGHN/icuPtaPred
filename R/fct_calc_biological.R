@@ -9,12 +9,14 @@
 #' @param creatinine .
 #' @param weight_unit .
 #' @param creat_unit .
+#' @param urine_creat .
+#' @param urine_output .
 #'
 #' @return The return value, if any, from executing the function.
 #'
 #' @noRd
 
-calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, creat_unit) {
+calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, creat_unit, urine_creat, urine_output) {
   tbw <- weight
   lbw <- weight_formula(weight, height, sex, weight_unit, formula = "LBW")
   ajbw <- weight_formula(weight, height, sex, weight_unit, formula = "AJBW")
@@ -29,6 +31,7 @@ calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, c
   ckd_2009 <- renal_function(sex, age, tbw, height, creatinine, formula = "CKD_2009", creat_unit = creat_unit)
   ckd_2021 <- renal_function(sex, age, tbw, height, creatinine, formula = "CKD_2021", creat_unit = creat_unit)
   schwartz <- renal_function(sex, age, tbw, height, creatinine, formula = "schwartz", creat_unit = creat_unit)
+  uvp <- renal_function(sex, age, tbw, height, creatinine, formula = "UVP", creat_unit = creat_unit, urine_creat = urine_creat, urine_output = urine_output)
 
   output <- list(
     tbw = tbw,
@@ -44,7 +47,8 @@ calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, c
     mdrd = mdrd,
     ckd_2009 = ckd_2009,
     ckd_2021 = ckd_2021,
-    schwartz = schwartz
+    schwartz = schwartz,
+    uvp = uvp
   )
 
   return(output)
