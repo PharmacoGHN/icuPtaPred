@@ -128,11 +128,11 @@ mod_ptaPred_server <- function(id) {
 
       # calculate all concentration
       concentration_df <- sim_concentration(
-        dose = input$drug_dose,
+        dose = input$drug_dose * 1000, # convert from g to mg
         tvcl = model_param$cl,
         eta_cl = model_param$eta_cl,
         quantile = input$confidence_level,
-        dose_increment = model_param$dose_increment
+        dose_increment = model_param$dose_increment * 1000 # convert from g to mg
       )
 
 
