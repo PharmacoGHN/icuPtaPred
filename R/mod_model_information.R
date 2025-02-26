@@ -24,7 +24,7 @@ mod_model_information_ui <- function(id) {
           selectInput(ns("model"), "Select Model:", choices = "No model currently available")
         ),
         column(
-          width = 9,
+          width = 7,
           div(
             class = "title-frame-section",
             h3(textOutput(ns("title")), class = "title-display")
@@ -66,18 +66,15 @@ mod_model_information_server <- function(id) {
     })
 
     # Update the UI with the selected model information
-    output$title <- renderText({
-      selected_model()$Title
-    })
+    output$title <- renderText({ selected_model()$Title })
     output$authors <- renderUI({
-      authors <- paste0(
-        selected_model()$Authors, "  ",
-        selected_model()$Journal, ",  ",
-        selected_model()$Year, ".       "
-      )
+
+      # Combine Authors, Journal, Year
+      authors <- paste0(selected_model()$Authors, "  ", selected_model()$Journal, ",  ", selected_model()$Year, ".     ")
+      #Debug message, only in dev mode
       golem::cat_dev(authors, "\n")
 
-      #
+      # display the author, the DOI and URL if available with a hyperlink
       tagList(
         authors, "DOI: ",
         a(
@@ -87,15 +84,9 @@ mod_model_information_server <- function(id) {
         )
       )
     })
-    output$abstract <- renderUI({ HTML(selected_model()$Abstract) })
-    output$clearance_formula <- renderUI({
-      withMathJax(selected_model()$Clearance_Formula)
-    })
-    output$model_description <- renderText({
-      selected_model()$Model_Description
-    })
-    output$population_studied <- renderText({
-      selected_model()$Population_Studied
-    })
+    output$abstract <- renderUI({ div(class = "justify-text", HTML(selected_model()$Abstract )) })
+    output$clearance_formula <- renderUI({ withMathJax(selected_model()$Clearance_Formula) })
+    output$model_description <- renderText({ selected_model()$Model_Description })
+    output$population_studied <- renderText({ selected_model()$Population_Studied })
   })
 }

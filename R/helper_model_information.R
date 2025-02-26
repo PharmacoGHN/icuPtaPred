@@ -9,7 +9,20 @@ model_information <- list(
       Journal = "Journal of Antimicrobial Chemotherapy",
       DOI = "10.1128/AAC.02556-19",
       URL = "https://journals.asm.org/doi/10.1128/aac.02556-19",
-      Abstract = "This study presents a pharmacokinetic model of piperacillin-tazobactam in critically ill patients. The model describes the pharmacokinetics of both piperacillin and tazobactam, taking into account factors such as renal function and body weight.",
+      Abstract = "
+      <br> <b> Introduction : </b> Pharmacokinetic changes are often seen in patients with severe infections. Administration by continuous infusion has been suggested to optimize
+      antibiotic exposure and pharmacokinetic/pharmacodynamic (PK/PD) target attainment for β-lactams. 
+      <br> <strong> Methods : </strong> In an observational study, unbound piperacillin concentrations (n = 196) were assessed in 78
+      critically ill patients following continuous infusion of piperacillin-tazobactam (ratio 8:1). The initial dose of 8, 12, or 16 g (piperacillin component) was determined
+      by individual creatinine clearance (CRCL). Piperacillin concentrations were compared to the EUCAST clinical breakpoint MIC for Pseudomonas aeruginosa (16 mg/liter),
+      and the following PK/PD targets were evaluated: 100% free time (fT) > 1× MIC and 100% fT > 4× MIC. A population pharmacokinetic model was developed using NONMEM 7.4.3
+      consisting of a one-compartment disposition model with linear elimination separated into nonrenal and renal (linearly increasing with patient CRCL) clearances.
+      Target attainment was predicted and visualized for all individuals based on the utilized CRCL dosing algorithm.
+      <br> <strong> Results : </strong> The target of 100% fT > 1× MIC was achieved for all patients based on the administered dose, but few patients achieved the target of
+      100% fT > 4× MIC. Probability of target attainment for a simulated cohort of patients showed that increasing the daily dose by 4-g increments (piperacillin component) 
+      did not result in substantially improved target attainment for the 100% fT > 4× MIC target. 
+      <br> <strong> Conclusion : </strong> To conclude, in patients with high CRCL combined with high-MIC bacterial infections, even a continuous infusion (CI) 
+      regimen with a daily dose of 24 g may be insufficient to achieve therapeutic concentrations.",
       Key_Findings = "The model accurately predicts the pharmacokinetics of piperacillin and tazobactam in critically ill patients, and can be used to optimize dosing regimens.",
       Clearance_Formula = "$$ CL = 2.25 + 0.119  CG_{TBW} $$",
       Model_Description = "non renal clearance = 2.25 L/h, renal clearance = 0.119 x CRCL calculated with Cockcroft and Gault using the Total Body Weight (TBW).",
