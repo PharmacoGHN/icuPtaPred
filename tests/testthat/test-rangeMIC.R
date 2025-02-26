@@ -17,7 +17,7 @@ test_that("Continuous mode returns correct MIC range", {
 
 # Test for invalid input: min greater than max
 # test_that("Min greater than max throws an error or returns empty", {
-  # expect_error(rangeMIC(min = 64, max = 0.0625), "error")
+# expect_error(rangeMIC(min = 64, max = 0.0625), "error")
 # })
 
 # Test for custom drug names (ensure it doesn’t affect computation)
