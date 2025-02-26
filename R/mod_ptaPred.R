@@ -135,7 +135,7 @@ mod_ptaPred_server <- function(id) {
         dose_increment = model_param$dose_increment * 1000 # convert from g to mg
       )
 
-
+      # Create the base PTA plot
       pta_plot <- ggplot(data = concentration_df, aes(x = .data$mic, y = .data$css_mic)) +
         geom_line(col = "#2db391", lty = 1, lwd = 1) +
         geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
@@ -158,6 +158,7 @@ mod_ptaPred_server <- function(id) {
           legend.box.background = element_rect()
         )
 
+      # Create the PTA plot with the different css/mic lines and display
       pta_multiple_doses <- pta_plot +
         geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below1), col = "#20846b", lty = 1, lwd = 1) +
         geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below2), col = "#1f8269", lty = 1, lwd = 1) +
@@ -166,7 +167,7 @@ mod_ptaPred_server <- function(id) {
 
       pta_ci_plot <- pta_plot +
         geom_ribbon(data = concentration_df, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic), fill = "#0889f1", alpha = 0.1, col = "#0889f1")
-
+      
       # plot pta with css/mic
       output$pta_output <- renderPlotly({ plotly::ggplotly(pta_multiple_doses) })
 
