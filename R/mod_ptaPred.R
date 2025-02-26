@@ -46,36 +46,34 @@ mod_ptaPred_ui <- function(id) {
           )
         ),
         column(
-          width = 7,
-          offset = 1,
-          box(
+          width = 8,
+          column(
             width = 12,
-            background = "secondary",
-            collapsible = FALSE,
             box(
               width = 12,
-              solidHeader = FALSE,
+              solidHeader = TRUE,
+              status = "olive",
+              collapsible = FALSE,
               title = "PTA output",
               plotlyOutput(ns("pta_output"))
             ),
             box(
               width = 12,
-              solidHeader = FALSE,
+              solidHeader = TRUE,
+              status = "olive",
+              collapsible = FALSE,
               title = "PTA Probability output",
               plotlyOutput(ns("pta_output_probability"))
-            ),
-            footer = fluidRow(
-              col_2(actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")),
-              col_4(
-                selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
-                offset = 1
-              ),
-              col_3(
-                offset = 1,
-                sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01)
-              )
             )
           )
+        ),
+        column(
+          width = 2,
+          br(),
+          selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
+          sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
+          rep_br(2),
+          actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")
         )
       )
     )
