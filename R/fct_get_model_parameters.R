@@ -57,3 +57,22 @@ get_model_parameters <- function(model, biological, drug = NULL) {
   )
   return(list(cl = cl, eta_cl = eta_cl, dose_increment = dose_increment))
 }
+
+
+
+drug_threshold <- function(drug) {
+  toxicity <- switch(drug,
+    "amoxicillin" = NA,
+    "cefepim" = 20, # Lamoth et al. 2010
+    "cefazoline" = NA,
+    "cefotaxim" = NA,
+    "ceftazidim" = NA,
+    "ceftaroline" = NA,
+    "ceftobiprol" = NA,
+    "pipetazo" = 157,
+    "meropenem" = 45, #Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
+    0
+  )
+
+  return(toxicity)
+}

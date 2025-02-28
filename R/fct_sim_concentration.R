@@ -6,7 +6,15 @@
 #'
 #' @noRd
 
-sim_concentration <- function(dose, tvcl, eta_cl, quantile = c(0.025, 0.975), mic = NA, dose_increment = 0) {
+sim_concentration <- function(
+  dose,
+  tvcl,
+  eta_cl,
+  quantile = c(0.025, 0.975),
+  mic = NA,
+  dose_increment = 0,
+  toxicity_threshold
+) {
 
   # set default mic is none is selected
   if (length(mic) == 1 && is.na(mic)) mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # default range value
@@ -42,10 +50,12 @@ sim_concentration <- function(dose, tvcl, eta_cl, quantile = c(0.025, 0.975), mi
     percentile_97.5 = quant[2] / mic
   )
 
+
   # bind both data.frame
   concentration_df <- quantile_df |>
-    dplyr::left_join(css_mic_range)
+    dplyr::left_join(css_mic_range) |>
+    dplyr::bind_cols(toxicity_threshold = toxicity_threshold / mic)
 
 
-  return(round(concentration_df, digits = 1))
+  return(round(concentration_df, digits = 4))
 }
