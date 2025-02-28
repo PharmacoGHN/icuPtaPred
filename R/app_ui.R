@@ -23,14 +23,13 @@ app_ui <- function(request) {
         # Add GitHub issue link at the bottom of sidebar
         rep_br(35),
         div(
-          style = "padding: 15px;",
+          style = "padding: 15px; position: absolute; bottom: 0; left: 0; width: 100%; background-color: #3d9970; ",
           actionLink(
             "reportIssue",
-            label = span(icon("github"), " Report Issue"),
+            label = span(icon("github"), " Report Issue", style = "color: white; align: center;"),
             onclick = paste0("window.open('", "https://github.com/PharmacoGHN/icuPtaPred/issues", "', '_blank')")
           ),
-          p(style = "font-size: 0.8em; margin-top: 5px; color: white;", 
-            "Click to report bugs or suggest improvements on GitHub.")
+          p(style = "font-size: 0.8em; margin-top: 5px; color: white; align: center;", "Click to report bugs or suggest improvements on GitHub.")
         )
       ),
       body = dashboardBody(
