@@ -24,16 +24,6 @@ mod_ptaPred_ui <- function(id) {
           width = 2,
           box(
             width = 12,
-            status = "olive",
-            solidHeader = TRUE,
-            title = "Information sur le Traitement",
-            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto"),
-            br(),
-            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist", width = "auto")
-          ),
-          box(
-            width = 12,
             status = "lightblue",
             solidHeader = TRUE,
             title = "Information Patient",
@@ -41,8 +31,10 @@ mod_ptaPred_ui <- function(id) {
             numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
             numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
             numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
-            numericInput(ns("urine_output"), label = labels("urine_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
-            numericInput(ns("urine_creatinine"), label = labels("urine_creatinine", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "mg/dL"),
+            #numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
+            numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
             selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
             # choice ethnicity
             # add all patient info to be computed in pop pk model (no bayesian?)
@@ -72,6 +64,18 @@ mod_ptaPred_ui <- function(id) {
         ),
         column(
           width = 2,
+          box(
+            width = 12,
+            status = "olive",
+            solidHeader = TRUE,
+            title = "Information sur le Traitement",
+            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
+            selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
+            uiOutput(ns("model_choice")),
+            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto"),
+            br(),
+            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist", width = "auto")
+          ),
           br(),
           selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
           sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
@@ -93,7 +97,6 @@ mod_ptaPred_server <- function(id) {
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
     validator$add_rule("drug_dose", function(value) { if (value == 0) "Dose must be greater than 0" })
-    # TDOO [Validate - Creatinine] ___________________________________
     validator$add_rule("height", function(value) { if (value < 10) "Height must be in cm" })
     validator$add_rule("height", function(value) { if (value > 250) "Height must be less than 250 cm" })
     validator$add_rule("weight", function(value) { if (value < 1) "Weight must be in kg" })
@@ -103,11 +106,11 @@ mod_ptaPred_server <- function(id) {
 
     validator$enable()
 
+    # [Model Choice] _______________________________________________
+    observeEvent(input$beta_lactamin, {
+      updateSelectInput(session, "model_selected", choices = names(model_information[[input$beta_lactamin]]))
+    })
 
-
-    # TODO
-    # add validator for creatinine value
-    # if too low, ask people to enable the mg/dl unit button
 
     # create the warning message to display on launch
     # [Warning - Disclamer] ______________________________________
@@ -130,6 +133,8 @@ mod_ptaPred_server <- function(id) {
     # PTA computing and plotting code
     observeEvent(input$compute_pta, {
 
+      golem::cat_dev("[Module : ptPred] [Creatinine Unit] The creatinine unit is : ", input$creatinine_unit, "\n")
+
       if (!validator$is_valid()) showNotification("Please fix the error displayed before continuing", duration = 10, type = "error", closeButton = TRUE)
       if (validator$is_valid()) {
         # general info
@@ -142,10 +147,16 @@ mod_ptaPred_server <- function(id) {
           urine_creat = input$urine_creatinine,
           urine_output = input$urine_output,
           weight_unit = "kg",
-          creat_unit = "mg/dL"
+          creat_unit = input$creatinine_unit
         )
+
+        # TODO fix all model and get all model working
         # calculate model parameters (cl and eta_cl) based on selected drug
-        model_param <- get_model_parameters("klastrup_2020", biological = biological, drug = input$beta_lactamin)
+        model_param <- get_model_parameters(
+          model = input$model_selected,
+          biological = biological,
+          drug = input$beta_lactamin
+        )
 
         # calculate all concentration
         concentration_df <- sim_concentration(
@@ -159,7 +170,7 @@ mod_ptaPred_server <- function(id) {
 
         # Debugging in dev mode
         golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n")
-        golem::cat_dev("[Module : ptPred] [Line 130] The output of the concentration_df object is : \n")
+        golem::cat_dev("[Module : ptPred] [Line 154] The output of the concentration_df object is : \n")
         golem::print_dev(concentration_df)
 
         # [PTA Plot] ___________________________________________________________
