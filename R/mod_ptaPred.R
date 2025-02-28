@@ -10,6 +10,7 @@
 #' @importFrom stats rnorm
 #' @import ggplot2
 #' @import plotly
+#' @import shinyvalidate
 
 mod_ptaPred_ui <- function(id) {
   ns <- NS(id)
@@ -75,7 +76,7 @@ mod_ptaPred_ui <- function(id) {
           selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
           sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
           rep_br(2),
-          actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white;")
+          actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
         )
       )
     )
@@ -88,12 +89,28 @@ mod_ptaPred_ui <- function(id) {
 mod_ptaPred_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+    
+    # [Validator] _______________________________________________
+    validator <- InputValidator$new()
+    validator$add_rule("drug_dose", function(value) { if (value == 0) "Dose must be greater than 0" })
+    # TDOO [Validate - Creatinine] ___________________________________
+    validator$add_rule("height", function(value) { if (value < 10) "Height must be in cm" })
+    validator$add_rule("height", function(value) { if (value > 250) "Height must be less than 250 cm" })
+    validator$add_rule("weight", function(value) { if (value < 1) "Weight must be in kg" })
+    validator$add_rule("weight", function(value) { if (value > 500) "Weight must be less than 500 kg" })
+    validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0" })
+    validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120" })
+
+    validator$enable()
+
+
 
     # TODO
     # add validator for creatinine value
     # if too low, ask people to enable the mg/dl unit button
 
     # create the warning message to display on launch
+    # [Warning - Disclamer] ______________________________________
     warning_message <- div(
       class = "disclamer-panel pull-right",
       p("Disclamer", style = "font-weight: bold; font-size: 16px; text-align: center;"),
@@ -109,70 +126,47 @@ mod_ptaPred_server <- function(id) {
       })
     }
 
+    # [PTA Calculation] ______________________________________________________
     # PTA computing and plotting code
     observeEvent(input$compute_pta, {
-      # general info
-      biological <- calc_biological(
-        weight = input$weight,
-        height = input$height,
-        sex = input$sex,
-        age = input$age,
-        creatinine = input$creatinine,
-        urine_creat = input$urine_creatinine,
-        urine_output = input$urine_output,
-        weight_unit = "kg",
-        creat_unit = "mg/dL"
-      )
-      # calculate model parameters (cl and eta_cl) based on selected drug
-      model_param <- get_model_parameters("klastrup_2020", biological = biological, drug = input$beta_lactamin)
 
-      # calculate all concentration
-      concentration_df <- sim_concentration(
-        dose = input$drug_dose * 1000, # convert from g to mg
-        tvcl = model_param$cl,
-        eta_cl = model_param$eta_cl,
-        quantile = input$confidence_level,
-        dose_increment = model_param$dose_increment * 1000 # convert from g to mg
-      )
+      if (!validator$is_valid()) showNotification("Please fix the error displayed before continuing", duration = 10, type = "error", closeButton = TRUE)
+      if (validator$is_valid()) {
+        # general info
+        biological <- calc_biological(
+          weight = input$weight,
+          height = input$height,
+          sex = input$sex,
+          age = input$age,
+          creatinine = input$creatinine,
+          urine_creat = input$urine_creatinine,
+          urine_output = input$urine_output,
+          weight_unit = "kg",
+          creat_unit = "mg/dL"
+        )
+        # calculate model parameters (cl and eta_cl) based on selected drug
+        model_param <- get_model_parameters("klastrup_2020", biological = biological, drug = input$beta_lactamin)
 
-      # Create the base PTA plot
-      pta_plot <- ggplot(data = concentration_df, aes(x = .data$mic, y = .data$css_mic)) +
-        geom_line(col = "#2db391", lty = 1, lwd = 1) +
-        geom_hline(aes(yintercept = 102, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
-        geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
-        geom_vline(aes(xintercept = 8, linetype = "ECOFF"), lwd = 1, col = "black") +
-        scale_linetype_manual(
-          name = "Breakpoint",
-          values = c(2, 2, 2),
-          guide = guide_legend(override.aes = list(color = c("#960b0b", "red", "black")))
-        ) +
-        labs(linetype = NULL) +
-        scale_x_log10(breaks = concentration_df$mic, labels = concentration_df$mic, limits = c(max(0.01, min(concentration_df$mic)), max(concentration_df$mic))) +
-        scale_y_log10(limits = c(max(0.01, min(concentration_df$css_mic_below2)), max(concentration_df$css_mic_above2))) +
-        xlab("MIC (mg/L)") +
-        ylab("Css/MIC") +
-        theme_classic(base_size = 14) +
-        theme(
-          legend.position = "inside",
-          legend.justification.inside = c(0.9, 0.9),
-          legend.box.background = element_rect()
+        # calculate all concentration
+        concentration_df <- sim_concentration(
+          dose = input$drug_dose * 1000, # convert from g to mg
+          tvcl = model_param$cl,
+          eta_cl = model_param$eta_cl,
+          quantile = input$confidence_level,
+          dose_increment = model_param$dose_increment * 1000, # convert from g to mg
+          toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
         )
 
-      # Create the PTA plot with the different css/mic lines and display
-      pta_multiple_doses <- pta_plot +
-        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below1), col = "#20846b", lty = 1, lwd = 1) +
-        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_below2), col = "#1f8269", lty = 1, lwd = 1) +
-        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above1), col = "#32c5a0", lty = 1, lwd = 1) +
-        geom_line(data = concentration_df, mapping = aes(x = .data$mic, y = .data$css_mic_above2), col = "#2fe3b6", lty = 1, lwd = 1)
+        # Debugging in dev mode
+        golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n")
+        golem::cat_dev("[Module : ptPred] [Line 130] The output of the concentration_df object is : \n")
+        golem::print_dev(concentration_df)
 
-      pta_ci_plot <- pta_plot +
-        geom_ribbon(data = concentration_df, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic), fill = "#0889f1", alpha = 0.1, col = "#0889f1")
-      
-      # plot pta with css/mic
-      output$pta_output <- renderPlotly({ plotly::ggplotly(pta_multiple_doses) })
-
-      # plot pta with css/mic probability quantile based on user selection
-      output$pta_output_probability <- renderPlotly({ plotly::ggplotly(pta_ci_plot) })
+        # [PTA Plot] ___________________________________________________________
+        plot <- plot.pta(concentration_df)
+        output$pta_output <- renderPlotly({ plotly::ggplotly(plot$pta_multiple_doses) }) # plot pta with css/mic
+        output$pta_output_probability <- renderPlotly({ plotly::ggplotly(plot$pta_ci_plot) }) # plot pta with css/mic probability quantile based on user selection
+      }
     })
   })
 }
