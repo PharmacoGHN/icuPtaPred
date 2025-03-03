@@ -70,7 +70,11 @@ mic_distribution <- function(antibiotic, bact, eucast) {
   ecoff <- df_mic_specific$`(T)ECOFF`
   ecoff_ci <- df_mic_specific$`Confidence interval`
 
-  output <- list(df_mic_specific, ecoff, ecoff_ci)
+  output <- list(
+    mic_distribution = df_mic_specific,
+    ecoff = ecoff,
+    ecoff_ci = ecoff_ci
+  )
 
   return(output)
 }
