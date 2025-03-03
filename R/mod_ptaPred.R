@@ -74,7 +74,7 @@ mod_ptaPred_ui <- function(id) {
             uiOutput(ns("model_choice")),
             numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto"),
             br(),
-            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = c("Traitement Probabiliste" = "probabilist", "other"), selected = "probabilist", width = "auto")
+            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = character(0), selected = "probabilist", width = "auto")
           ),
           br(),
           selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
@@ -134,6 +134,7 @@ mod_ptaPred_server <- function(id) {
         showModal(modalDialog(size = "xl", warning_message, easyClose = FALSE, modalButton("Accept"), footer = NULL))
       })
     }
+
 
     # [PTA Calculation] ______________________________________________________
     # PTA computing and plotting code
