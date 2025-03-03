@@ -10,14 +10,14 @@
 get_model_parameters <- function(model, biological, drug = NULL) {
   cl <- switch(model,
     # Cefepim
-    "an_2023" = 4, # (2 * biological$cg_lbw / 54 + 0.526), # simplified only patient without CRRT
+    "Barreto_2023" = 7.84, #eGFR cyst-creat not supported at the moment.
     "cacqueray_2022" = 1.21 * (biological$tbw / 9)^0.75 * (biological$schwartz / 153)^0.37,
-    "guohua_2023" = 0.526 + 2 * biological$cg_lbw / 54,
+    "an_2023" = 0.526 + 2 * biological$cg_lbw / 54,
 
     # Ceftazidime
-    "Buning_2021" = 1,
-    "Launay_2024" = 1,
-    "Cojutti_2024" = 1,
+    "Buning_2021" = 3.42 * (biological$ckd_2009 / 73)^0.772, # TODO add trauma and hematology malignancy
+    "Launay_2024" = 4.45 * (biological$ckd_2009 / 73.9)^0.9,
+    "Cojutti_2024" = 5 * (biological$ekfc / 70) ^ 0.7,
 
     # Ceftolozane
     "Chandorkar_2015" = 1,
@@ -33,22 +33,22 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
     # Piperacillin
     "klastrup_2020" = (2.25 + 0.119 * biological$cg_tbw),
-    "Sukarnjanaset_2019" = 0,
-    "Udy_2015" = 1,
+    "Sukarnjanaset_2019" = 5.37 + (0.06 * (biological$cg_tbw - 55)), #Median Arterial Pressure disabled for the moment
+    "Udy_2015" = 16.3 * (biological$cg_tbw / 100),
     # default value if no match
     1
   )
 
   eta_cl <- switch(model,
     # Cefepim eta CL
-    "an_2023" = get_sd_from_cv(0.299),
+    "Barreto_2023" = 1, #get_sd_from_cv(0.299),
     "cacqueray_2022" = 0.39,
-    "guohua_2023" = 0.293,
+    "an_2023" = get_sd_from_cv(0.299),
 
     # Ceftazidime
-    "Buning_2021" = 1,
-    "Launay_2024" = 1,
-    "Cojutti_2024" = 1,
+    "Buning_2021" = get_sd_from_cv(0.36),
+    "Launay_2024" = 0.46, #standard deviation
+    "Cojutti_2024" = get_sd_from_cv(0.6792),
 
     # Ceftolozane
     "Chandorkar_2015" = 1,
@@ -64,8 +64,8 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
     # Piperacillin
     "klastrup_2020" = 0.533,
-    "Sukarnjanaset_2019" = 1,
-    "Udy_2015" = 1,
+    "Sukarnjanaset_2019" = get_sd_from_cv(0.285),
+    "Udy_2015" = get_cv_from_sd(0.56),
 
     # default value if no match
     1
@@ -78,7 +78,7 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     drug == "cefepim" ~ 1.000,
     drug == "cefazoline" ~ 0.500,
     drug == "cefotaxim" ~ 0.500,
-    drug == "ceftazidim" ~ 1.000,
+    drug == "ceftazidime" ~ 1.000,
     drug == "ceftaroline" ~ 1.000,
     drug == "ceftobiprol" ~ 1.000,
     drug == "pipetazo" ~ 2.000,
@@ -96,7 +96,7 @@ drug_threshold <- function(drug) {
     "cefepim" = 20, # Lamoth et al. 2010
     "cefazoline" = NA,
     "cefotaxim" = NA,
-    "ceftazidim" = NA,
+    "ceftazidime" = NA,
     "ceftaroline" = NA,
     "ceftobiprol" = NA,
     "pipetazo" = 157,

@@ -53,7 +53,8 @@ model_information <- list(
         achieved a CFR of 90% for the P. aeruginosa infection.
       ",
       Clearance_Formula = "$$ CL = 5.37 + \\left( 0.06 \\times (Cl_{CR} - 55)  \\right) + \\left( 0.05 + (MAP - 68) \\right) $$",
-      Model_Description = "MAP = Mean arterial pressure; CL = Clearance; CLCr = Creatinine clearance.",
+      Model_Description = "MAP = Mean arterial pressure; CL = Clearance; CLCr = Creatinine clearance.
+      <br> MAP parameters is currently disabled from CL calculation",
       Population_Studied = "Critically ill patients; Pharmacodynamics; Piperacillin; Population pharmacokinetics; Sepsis; β-Lactams."
     ),
     Udy_2015 = tibble::tibble(
@@ -248,38 +249,79 @@ model_information <- list(
   "ceftazidime" = list(
     # Added references for ceftazidime studies:
     Buning_2021 = tibble::tibble(
-      Title = "Title placeholder for Buning et al., Antibiotics 2021",
+      Title = "Population Pharmacokinetics and Probability of Target Attainment of Different Dosing Regimens of Ceftazidime in Critically Ill Patients with a Proven or Suspected Pseudomonas aeruginosa Infection",
       Authors = "Buning, et al.",
       Year = 2021,
       Journal = "Antibiotics",
-      DOI = NA,
+      DOI = "10.3390/antibiotics10060612",
       URL = "https://www.mdpi.com/2079-6382/10/6/612",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
-      Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Abstract = "
+      <br> <strong> Objectives : </strong> Altered pharmacokinetics (PK) of hydrophilic antibiotics in critically ill patients is common, with possible consequences for
+        efficacy and resistance. We aimed to describe ceftazidime population PK in critically ill patients with a proven or suspected Pseudomonas aeruginosa
+        infection and to establish optimal dosing.
+      <br> <strong> Methods : </strong> Blood samples were collected for ceftazidime concentration measurement. A population PK model was constructed, and probability of target
+        attainment (PTA) was assessed for targets 100% T > MIC and 100% T > 4 × MIC in the first 24 h. 
+      <br> <strong> Results : </strong> Ninety-six patients yielded 368 ceftazidime concentrations. In a one-compartment model, variability in ceftazidime clearance (CL) showed
+        association with CVVH. For patients not receiving CVVH, variability in ceftazidime CL was 103.4% and showed positive associations with creatinine clearance and with the
+        comorbidities hematologic malignancy, trauma or head injury, explaining 65.2% of variability. For patients treated for at least 24 h and assuming a worst-case MIC of 8 
+        mg/L, PTA was 77% for 100% T > MIC and 14% for 100% T > 4 × MIC. Patients receiving loading doses before continuous infusion demonstrated higher PTA than patients who did
+        not (100% T > MIC: 95% (n = 65) vs. 13% (n = 15); p < 0.001 and 100% T > 4 × MIC: 20% vs. 0%; p = 0.058). The considerable IIV in ceftazidime PK in ICU patients could
+        largely be explained by renal function, CVVH use and several comorbidities. 
+      <br> <strong> Conclusion : </strong> Critically ill patients are at risk for underexposure to ceftazidime when empirically aiming
+        for the breakpoint MIC for P. aeruginosa. A loading dose is recommended.",
+      Clearance_Formula = "$$ CL_{nonCVVH} = 3.42 \\times \\left( \\frac{CKDEPI_i}{73} \\rigth)^{0.72} \\times 1.57^{hemat} \\times 2^{trauma} $$",
+      Model_Description = "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration; hemat = hematologic malignancy; trauma = trauma or head injury.
+       <br> <strong> Trauma and Hematology malignancy not supported at the moment </strong>",
+      Population_Studied = "Critically ill patients, CVVH, trauma, hematologic malignancy"
     ),
     Launay_2024 = tibble::tibble(
-      Title = "Title placeholder for Launay et al., Antibiotics 2024",
+      Title = "Loading Dose of Ceftazidime Needs to Be Increased in Critically Ill Patients: A Retrospective Study to Evaluate Recommended Loading Dose with Pharmacokinetic Modelling",
       Authors = "Launay, et al.",
       Year = 2024,
       Journal = "Antibiotics",
-      DOI = NA,
+      DOI = "10.3390/antibiotics13080756",
       URL = "https://www.mdpi.com/2079-6382/13/8/756",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
-      Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Abstract = "
+      <br> <strong> Objectivs </strong> To rapidly achieve ceftazidime target concentrations, a 2 g loading dose (LD) is recommended before continuous infusion, but its adequacy
+        in critically ill patients, given their unique pharmacokinetics, needs investigation. This study included patients from six ICUs in Saint-Etienne and Paris,
+        France, who received continuous ceftazidime infusion with plasma concentration measurements.
+      <br> <strong> Methods </strong>  Using MONOLIX and R, a pharmacokinetic (PK) model was developed, and the literature on ICU patient PK models was reviewed. Simulations
+        calculated the LD needed to reach a 60 mg/L target concentration and assessed ceftazidime exposure for various regimens.
+      <br> <strong> </strong> Among 86 patients with 223 samples, ceftazidime PK was best described by a one-compartment model with glomerular filtration rate explaining clearance
+        variability. Typical clearance and volume of distribution were 4.45 L/h and 88 L, respectively. The literature median volume of distribution was 37.2 L. Simulations
+        indicated that a Loading dose higher than 2 g was needed to achieve 60 mg/L in 80% of patients, with a median LD of 4.9 g. 
+      <br> <strong> </strong> Our model showed a 4 g LD followed by 6 g/day infusion reached effective concentrations within 1 h, while a 2 g LD caused an 18 h delay
+        in achieving target steady state.",
+      Clearance_Formula = "$$ CL = 4.45 \\times \\left( \\frac{CKDEPI_i}{73.9} \\rigth)^{0.9} $$",
+      Model_Description = "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration, 2009 formula is used.",
+      Population_Studied = "Critically ill patients, continuous infusion"
     ),
     Cojutti_2024 = tibble::tibble(
-      Title = "Title placeholder for Cojutti et al., JAP 2024",
+      Title = "
+        An innovative population pharmacokinetic/pharmacodynamic strategy for attaining aggressive joint PK/PD target of continuous infusion
+        ceftazidime/avibactam against KPC- and OXA-48- producing Enterobacterales and preventing resistance development in critically ill patients",
       Authors = "Cojutti, et al.",
       Year = 2024,
       Journal = "Journal of Antimicrobial Pharmacology",
-      DOI = NA,
+      DOI = "10.1093/jac/dkae290",
       URL = "https://pubmed.ncbi.nlm.nih.gov/39159014/",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
+      Abstract = "
+      <br> <strong> Objectives: </strong> Ceftazidime/avibactam is a key antibiotic for carbapenemase-producing Enterobacterales (CPE) Gram-negative infections, but
+        current dosing may be suboptimal to grant activity. This study explores the population pharmacokinetics/pharmacodynamics (PK/PD) of continuous infusion (CI)
+        ceftazidime/avibactam for maximizing treatment efficacy in critically ill patients.
+      <br> <strong> Methods: </strong> A retrospective analysis of adult patients receiving CI ceftazidime/avibactam and therapeutic drug monitoring (TDM) of both
+        compounds was performed. Population PK/PD modelling identified the most accurate method for estimating ceftazidime/avibactam clearance based on kidney function
+        and Monte Carlo simulations investigated the relationship between various CI dosing regimens and aggressive joint PK/PD target attainment of ceftazidime/avibactam.
+      <br> <strong> Results: </strong> The European Kidney Function Consortium (EKFC) equation best described kidney function for ceftazidime/avibactam clearance.
+        The findings challenge the current approach of only reducing the ceftazidime/avibactam dose based on kidney function by identifying dose adjustments in patients
+        with augmented kidney function. Our CI ceftazidime/avibactam dosing strategies, adjusted by TDM, showed promise for achieving optimal aggressive joint PK/PD
+        targets and potentially improving clinical/microbiological outcomes against KPC- and OXA-48-producing Enterobacterales. The risk of neurotoxicity associated with
+        these strategies appears acceptable.
+      <br> <strong> Conclusions: </strong> This study suggests that adjusting ceftazidime/avibactam dosing regimen based solely on eCLcr might be suboptimal for critically
+        ill patients. Higher daily doses delivered by CI and adjusted based on TDM have the potential to improve aggressive joint PK/PD target attainment and potentially
+        clinical/microbiological outcomes. Further investigations are warranted to confirm these findings and establish optimal TDM-guided dosing strategies for
+        ceftazidime/avibactam in clinical practice.",
+      Clearance_Formula = "$$ CL_{caz} = 5 \\times \\frac{EKFC}{70}^{0.7} $$",
       Model_Description = "Model description placeholder.",
       Population_Studied = "Population placeholder"
     )
