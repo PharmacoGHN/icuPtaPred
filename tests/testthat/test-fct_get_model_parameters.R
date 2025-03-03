@@ -52,6 +52,25 @@ test_that("get_model_parameters returns correct values for Cojutti_2024", {
 })
 
 # Ceftolozane model testing ______________________________________________
+test_that("get_model_parameters returns correct values for Chandorkar_2015", {
+  result <- get_model_parameters("Chandorkar_2015", biological) # CL = 5.11 * 1.215 * (biological$cg_tbw / 109) ^ 0.715
+  expect_equal(result$cl, 4.52, tolerance = 0.01)
+  expect_equal(result$eta_cl, 0.321, tolerance = 0.01)
+
+  result_2 <- get_model_parameters("Chandorkar_2015", biological_2)
+  expect_equal(result_2$cl, 5.19, tolerance = 0.01)
+  expect_equal(result_2$eta_cl, 0.321, tolerance = 0.01)
+})
+
+test_that("get_model_parameters returns correct values for Zhang_2021", {
+  result <- get_model_parameters("Zhang_2021", biological) # CL = 4.84 * (biological$cg_tbw / 100) ^ 0.701
+  expect_equal(result$cl, 3.77, tolerance = 0.01)
+  expect_equal(result$eta_cl, 0.411, tolerance = 0.01)
+
+  result_2 <- get_model_parameters("Zhang_2021", biological_2)
+  expect_equal(result_2$cl, 4.32, tolerance = 0.01)
+  expect_equal(result_2$eta_cl, 0.411, tolerance = 0.01)
+})
 
 # Cefepim model testing ______________________________________________
 test_that("get_model_parameters returns correct values for cacqueray_2022", {
@@ -134,7 +153,7 @@ test_that("get_model_parameters returns correct dose_increment values", {
   expect_equal(get_model_parameters("klastrup_2020", biological, "cefepim")$dose_increment, 1.000)
   expect_equal(get_model_parameters("klastrup_2020", biological, "cefazoline")$dose_increment, 0.500)
   expect_equal(get_model_parameters("klastrup_2020", biological, "cefotaxim")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "ceftazidim")$dose_increment, 1.000)
+  expect_equal(get_model_parameters("klastrup_2020", biological, "ceftazidime")$dose_increment, 1.000)
   expect_equal(get_model_parameters("klastrup_2020", biological, "ceftaroline")$dose_increment, 1.000)
   expect_equal(get_model_parameters("klastrup_2020", biological, "ceftobiprol")$dose_increment, 1.000)
   expect_equal(get_model_parameters("klastrup_2020", biological, "pipetazo")$dose_increment, 2.000)
@@ -147,7 +166,7 @@ test_that("get_model_parameters returns correct toxicity_threshold values", {
   expect_equal(drug_threshold("cefepim"), 20)
   expect_equal(drug_threshold("cefazoline"), NA)
   expect_equal(drug_threshold("cefotaxim"), NA)
-  expect_equal(drug_threshold("ceftazidim"), NA)
+  expect_equal(drug_threshold("ceftazidime"), NA)
   expect_equal(drug_threshold("ceftaroline"), NA)
   expect_equal(drug_threshold("ceftobiprol"), NA)
   expect_equal(drug_threshold("pipetazo"), 157)

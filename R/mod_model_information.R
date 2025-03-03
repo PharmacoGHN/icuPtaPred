@@ -71,8 +71,8 @@ mod_model_information_server <- function(id) {
 
       # Combine Authors, Journal, Year
       authors <- paste0(selected_model()$Authors, "  ", selected_model()$Journal, ",  ", selected_model()$Year, ".     ")
-      #Debug message, only in dev mode
-      golem::cat_dev(authors, "\n")
+      #Debug message, only in dev model
+      golem::cat_dev("the selected model is ",authors, "\n")
 
       # display the author, the DOI and URL if available with a hyperlink
       tagList(

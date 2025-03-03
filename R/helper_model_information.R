@@ -269,7 +269,7 @@ model_information <- list(
         largely be explained by renal function, CVVH use and several comorbidities. 
       <br> <strong> Conclusion : </strong> Critically ill patients are at risk for underexposure to ceftazidime when empirically aiming
         for the breakpoint MIC for P. aeruginosa. A loading dose is recommended.",
-      Clearance_Formula = "$$ CL_{nonCVVH} = 3.42 \\times \\left( \\frac{CKDEPI_i}{73} \\rigth)^{0.72} \\times 1.57^{hemat} \\times 2^{trauma} $$",
+      Clearance_Formula = "$$ CL_{nonCVVH} = 3.42 \\times \\left( \\frac{CKDEPI_i}{73} \\right)^{0.72} \\times 1.57^{hemat} \\times 2^{trauma} $$",
       Model_Description = "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration; hemat = hematologic malignancy; trauma = trauma or head injury.
        <br> <strong> Trauma and Hematology malignancy not supported at the moment </strong>",
       Population_Studied = "Critically ill patients, CVVH, trauma, hematologic malignancy"
@@ -292,7 +292,7 @@ model_information <- list(
         indicated that a Loading dose higher than 2 g was needed to achieve 60 mg/L in 80% of patients, with a median LD of 4.9 g. 
       <br> <strong> </strong> Our model showed a 4 g LD followed by 6 g/day infusion reached effective concentrations within 1 h, while a 2 g LD caused an 18 h delay
         in achieving target steady state.",
-      Clearance_Formula = "$$ CL = 4.45 \\times \\left( \\frac{CKDEPI_i}{73.9} \\rigth)^{0.9} $$",
+      Clearance_Formula = "$$ CL = 4.45 \\times \\left( \\frac{CKDEPI_i}{73.9} \\right)^{0.9} $$",
       Model_Description = "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration, 2009 formula is used.",
       Population_Studied = "Critically ill patients, continuous infusion"
     ),
@@ -333,24 +333,55 @@ model_information <- list(
       Authors = "Chandorkar, et al.",
       Year = 2015,
       Journal = "ACCP Journal",
-      DOI = NA,
+      DOI = "10.1002/jcph.395",
       URL = "https://pubmed.ncbi.nlm.nih.gov/25196976/",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
-      Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Abstract = "
+      <br> <strong> Background : </strong> Ceftolozane/tazobactam is a novel antipseudomonal cephalosporin and β-lactamase inhibitor in clinical development for treatment of
+       complicated urinary tract (cUTI) and intra-abdominal (cIAI) infections and nosocomial pneumonia. 
+      <br> <strong> Methods : </strong> The population pharmacokinetics of ceftolozane/tazobactam were characterized in healthy volunteers, subjects with varying degrees
+        of renal function, and patients with cIAI or cUTI. Serum concentration data from 376 adults who received ceftolozane/tazobactam
+        in doses ranging from 500 to 3000 mg were analyzed to identify factors contributing to the pharmacokinetic variability.
+      <br> <strong> Results : </strong> Ceftolozane/tazobactam pharmacokinetics were well described by a linear two-compartment model with first-order elimination
+        and moderate between-subject variability in both clearance and volume of distribution (Vc). For both ceftolozane and tazobactam,
+        clearance was highly correlated with renal function with creatinine clearance influencing exposure, and infection influencing Vc.
+        Body weight was an additional covariate affecting the Vc of ceftolozane. Other covariates tested, such as age, body weight, sex,
+        ethnicity, and presence of infection, had no clinically relevant effects on exposure.       
+      <br> <strong> Conclusion </strong> The final pharmacokinetic models adequately described the plasma concentrations of ceftolozane
+       and tazobactam and form the basis for further modeling and simulation including evaluation of probability of target attainment
+       in a diverse population with varying demographics, degrees of renal function, and infection status.",
+      Clearance_Formula = "$$ CL = 5.11 \\times \\left( \\frac{CL_{CR}}{109} \\right)^{0.715} \\times 1.22^{infection} $$",
+      Model_Description = "CL = Clearance; CLCR = Creatinine clearance; infection = presence of infection.",
+      Population_Studied = "Healthy volunteers, subjects with varying degrees of renal function, and patients with cIAI or cUTI"
     ),
     Zhang_2021 = tibble::tibble(
-      Title = "Title placeholder for Zhang et al., ACCP 2021",
+      Title = "Ceftolozane/tazobactam probability of target attainment and outcomes in participants with augmented renal clearance from the randomized phase 3 ASPECT-NP trial",
       Authors = "Zhang, et al.",
       Year = 2021,
-      Journal = "Critical Care",
-      DOI = NA,
-      URL = "https://ccforum.biomedcentral.com/articles/10.1186/s13054-021-03773-5",
-      Abstract = "Abstract placeholder.",
-      Clearance_Formula = "Formula placeholder",
-      Model_Description = "Model description placeholder.",
-      Population_Studied = "Population placeholder"
+      Journal = "J Clin Pharmacol",
+      DOI = "10.1002/jcph.1733",
+      URL = "https://accp1.onlinelibrary.wiley.com/doi/10.1002/jcph.1733",
+      Abstract = "
+        <br> <strong> Background : </strong> Ceftolozane/tazobactam (C/T) is a combination of a novel cephalosporin with
+          tazobactam, recently approved for the treatment of hospital-acquired and ventilator-associated pneumonia. The plasma
+          pharmacokinetics (PK) of a 3-g dose of C/T (2 g ceftolozane and 1 g tazobactam) administered via a 1-hour infusion every 8 hours in adult
+          patients with nosocomial pneumonia (NP) were evaluated in a phase 3 study (ASPECT-NP; NCT02070757). The present work describes the development
+          of population PK models for ceftolozane and tazobactam in plasma and pulmonary epithelial lining fluid (ELF). 
+        <br> <strong> Methods/ Results : </strong> The concentration-time profiles of both agents were well characterized by 2-compartment models with
+          zero-order input and first-order elimination. Consistent with the elimination pathway, renal function estimated by creatinine clearance significantly
+          affected the clearance of ceftolozane and tazobactam. The central volumes of distribution for both agents and the peripheral volume of distribution
+          for tazobactam were approximately 2-fold higher in patients with pneumonia compared with healthy participants. A hypothetical link model was developed
+          to describe ceftolozane and tazobactam disposition in ELF in healthy participants and patients with pneumonia. Influx (from plasma to the ELF compartment)
+          and elimination (from the ELF compartment) rate constants were approximately 97% lower for ceftolozane and 52% lower for tazobactam in patients with
+          pneumonia versus healthy participants. 
+        <br> <strong> Conclusion : </strong> These population PK models adequately described the plasma and ELF concentrations of ceftolozane and 
+          tazobactam, thus providing a foundation for further modeling and simulation, including the probability of target attainment assessments 
+          to support dose recommendations of C/T in adult patients with NP.
+        ",
+      Clearance_Formula = "$$ CL = 4.84 \\times \\left( \\frac{CR_{CL}}{100} \\right)^{0.701} \\times 1.18^{UTI} \\times 1.43^{cIAI} \\times 0.32^{ESRD} $$",
+      Model_Description = "CL = Clearance; CRCL = Creatinine clearance; UTI = urinary tract infection;
+      cIAI = complicated intra-abdominal infection; ESRD = end-stage renal disease.
+      ESRD is currently disabled from CL calculation",
+      Population_Studied = "Adult patients with nosocomial pneumonia"
     )
   )
 )

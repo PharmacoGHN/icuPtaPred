@@ -104,6 +104,11 @@ mod_ptaPred_server <- function(id) {
     validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0" })
     validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120" })
     validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported" })
+    validator$add_rule("model_selected", function(value) { if (value == "Gijsen_2021") "Not currently supported" })
+    validator$add_rule("model_selected", function(value) { if (value == "Minichmayr_2018") "Not currently supported" })
+    validator$add_rule("model_selected", function(value) { if (value == "Ehrmann_2019") "Not currently supported" })
+    validator$add_rule("model_selected", function(value) { if (value == "Huang_2025") "Not currently supported" })
+    validator$add_rule("model_selected", function(value) { if (value == "Lan_2022") "Not currently supported" })
 
     validator$enable()
 

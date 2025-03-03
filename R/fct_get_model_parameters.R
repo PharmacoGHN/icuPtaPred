@@ -20,12 +20,12 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Cojutti_2024" = 5 * (biological$ekfc / 70) ^ 0.7,
 
     # Ceftolozane
-    "Chandorkar_2015" = 1,
-    "Zhang_2021" = 1,
+    "Chandorkar_2015" = 5.11 * 1.215 * (biological$cg_tbw / 109) ^ 0.715,
+    "Zhang_2021" = 4.84 * (biological$cg_tbw / 100) ^ 0.701,
 
     # Meropenem
     "Gijsen_2021" = 1,
-    "Minichmayr_2024" = 1,
+    "Minichmayr_2018" = 1,
     "Ehrmann_2019" = 1,
     "Huang_2025" = 1,
     "Lan_2022" = 1,
@@ -51,8 +51,8 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Cojutti_2024" = get_sd_from_cv(0.6792),
 
     # Ceftolozane
-    "Chandorkar_2015" = 1,
-    "Zhang_2021" = 1,
+    "Chandorkar_2015" = get_sd_from_cv(0.33),
+    "Zhang_2021" = get_sd_from_cv(0.429),
 
     # Meropenem
     "Gijsen_2021" = 1,
@@ -73,17 +73,19 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
   # automatic selection of dose increment based on selected drug.
   # This dose increment is in gram
-  dose_increment <- dplyr::case_when(
-    drug == "amoxicillin" ~ 0.500,
-    drug == "cefepim" ~ 1.000,
-    drug == "cefazoline" ~ 0.500,
-    drug == "cefotaxim" ~ 0.500,
-    drug == "ceftazidime" ~ 1.000,
-    drug == "ceftaroline" ~ 1.000,
-    drug == "ceftobiprol" ~ 1.000,
-    drug == "pipetazo" ~ 2.000,
-    drug == "meropenem" ~ 0.500,
-    .default = 0
+  dose_increment <- switch(drug,
+    "amoxicillin" = 0.500,
+    "cefepim" = 1.000,
+    "cefazoline" = 0.500,
+    "cefotaxim" = 0.500,
+    "ceftazidime" = 1.000,
+    "ceftaroline" = 1.000,
+    "ceftobiprol" = 1.000,
+    "ceftolozane" = 1.000,
+    "pipetazo" = 2.000,
+    "meropenem" = 0.500,
+    # default value if no match
+    0
   )
   return(list(cl = cl, eta_cl = eta_cl, dose_increment = dose_increment))
 }
@@ -99,6 +101,7 @@ drug_threshold <- function(drug) {
     "ceftazidime" = NA,
     "ceftaroline" = NA,
     "ceftobiprol" = NA,
+    "ceftolozane" = NA,
     "pipetazo" = 157,
     "meropenem" = 45, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
     0
