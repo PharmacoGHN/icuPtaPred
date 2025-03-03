@@ -23,16 +23,18 @@
 #'
 #' @noRd
 
-renal_function <- function(sex,
-                           age,
-                           weight,
-                           height,
-                           creat,
-                           ethnicity = "Caucasian",
-                           formula,
-                           creat_unit = "uM/L",
-                           urine_creat = 0,
-                           urine_output = 0) {
+renal_function <- function(
+  sex,
+  age,
+  weight,
+  height,
+  creat,
+  ethnicity = "Caucasian",
+  formula,
+  creat_unit = "uM/L",
+  urine_creat = 0,
+  urine_output = 0
+) {
   # define creat unit : ______________________________________________
   if (isTRUE(creat_unit == "uM/L")) {
     creat_mgdl <- creat / 88.4
@@ -88,6 +90,13 @@ renal_function <- function(sex,
   if (formula == "schwartz") {
     k <- ifelse(age < 12, 0.55, 0.7)
     out <- k * height / creat_mgdl
+  }
+
+  # European Kidney Function Consortium (EKFC) formula
+  if (formula == "EKFC") {
+    exponent <- ifelse((creat_mgdl / k) < 1, -0.322, -1.132)
+    age_exponent <- ifelse(age > 40, (age - 40), 0)
+    out <- 107.3 * (creat_mgdl / k)^exponent * 0.990^age_exponent
   }
 
   # if none is required for the model (in case the model only has non renal clearance)

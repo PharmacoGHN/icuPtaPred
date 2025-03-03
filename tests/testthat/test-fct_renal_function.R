@@ -87,3 +87,18 @@ testthat::test_that("Correct calculations 'none' formula", {
   # Test with creat_unit = "uM/L"
   testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 40, formula = "none", creat_unit = "uM/L"), 1)
 })
+
+testthat::test_that("Correct calculations for EKFC formula", {
+  # test condition with Age > 40
+
+  # Test condition with scr_q > 1
+  testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 0.6, formula = "EKFC", creat_unit = "mg/dL"), 95.1, tolerance = 0.1)
+  testthat::expect_equal(renal_function(sex = "Male", age = 50, weight = 90, creat = 1, formula = "EKFC", creat_unit = "mg/dL"), 86.7, tolerance = 0.1)
+  testthat::expect_equal(renal_function(sex = "Female", age = 50, weight = 90, creat = 1, formula = "EKFC", creat_unit = "mg/dL"), 64.9, tolerance = 0.1)
+
+  # Test with creat_unit = "uM/L"
+  testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 53, formula = "EKFC", creat_unit = "uM/L"), 95.1, tolerance = 0.1)
+  testthat::expect_equal(renal_function(sex = "Male", age = 50, weight = 90, creat = 88.4, formula = "EKFC", creat_unit = "uM/L"), 86.7, tolerance = 0.1)
+  testthat::expect_equal(renal_function(sex = "Female", age = 50, weight = 90, creat = 88.4, formula = "EKFC", creat_unit = "uM/L"), 64.9, tolerance = 0.1)
+
+})
