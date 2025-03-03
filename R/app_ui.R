@@ -11,7 +11,14 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     bs4Dash::dashboardPage(
-      header = dashboardHeader(title = "PTA App"),
+      header = dashboardHeader(
+        title = div(
+          style = "text-align: center; width: 100%; background-color: #3d9970; padding: 8px 0; color: white;",
+          tags$b("ICU PTA Predictor"), tags$sup(HTML("&copy; ")),
+          style = "display: inline-block;"
+        ),
+        titleWidth = "100%"
+      ),
       sidebar = dashboardSidebar(
         skin = "dark",
         status = "olive",
