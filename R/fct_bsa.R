@@ -15,7 +15,7 @@
 #' @param weight correspond to the patient weight in kg or in lbs
 #' @param capped define if the body surface area should be capped at a maximum of 2m² (False by default)
 #' @param formula correspond to the formula used to calculate bsa. At the moment the only formula supported is Dubois
-#' 
+#'
 #' @noRd
 
 

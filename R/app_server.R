@@ -7,4 +7,5 @@
 app_server <- function(input, output, session) {
   # Your application server logic
   mod_ptaPred_server("ptaPred_1")
+  mod_model_information_server("model_information_1")
 }

@@ -26,9 +26,9 @@ ui_data <- list(
         "Afficher toutes les cibles" = "all_mic"
       ),
       drug = c(
-        "Amoxicilline" = "amoxicillin",
         "Cefepime" = "cefepim",
-        "Cefotaxime" = "cefotaxim",
+        "Ceftazidime" = "ceftazidime",
+        "Ceftolozane" = "ceftolozane",
         "Meropenem" = "meropenem",
         "Piperacilline Tazobactam" = "pipetazo"
       ),

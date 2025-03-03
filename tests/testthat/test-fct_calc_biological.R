@@ -4,10 +4,12 @@ test_that("calc_biological calculates biological indices correctly", {
   weight <- 70
   height <- 170
   creatinine <- 70
+  urine_creat <- 100
+  urine_output <- 1500
   weight_unit <- "kg"
   creat_unit <- "uM/L"
 
-  result <- calc_biological(sex, age, weight, height, creatinine, weight_unit, creat_unit)
+  result <- calc_biological(sex, age, weight, height, creatinine, weight_unit, creat_unit, urine_creat, urine_output)
 
   # Test body weights
   expect_equal(result$tbw, 70)

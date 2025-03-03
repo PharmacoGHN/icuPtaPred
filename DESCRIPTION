@@ -18,8 +18,11 @@ Imports:
     dplyr,
     ggplot2,
     golem,
+    plotly,
     rvest,
-    shiny
+    shiny,
+    shinyvalidate,
+    tibble
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
