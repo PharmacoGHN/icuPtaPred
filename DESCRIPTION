@@ -21,6 +21,7 @@ Imports:
     plotly,
     rvest,
     shiny,
+    shinyvalidate,
     tibble
 Suggests: 
     testthat (>= 3.0.0)
