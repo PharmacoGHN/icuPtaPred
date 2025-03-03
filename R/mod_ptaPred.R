@@ -103,6 +103,7 @@ mod_ptaPred_server <- function(id) {
     validator$add_rule("weight", function(value) { if (value > 500) "Weight must be less than 500 kg" })
     validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0" })
     validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120" })
+    validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported" })
 
     validator$enable()
 
@@ -157,6 +158,9 @@ mod_ptaPred_server <- function(id) {
           biological = biological,
           drug = input$beta_lactamin
         )
+
+        golem::cat_dev("[Module : ptPred] [Line 154] The output of the model_param object is : \n")
+        golem::print_dev(model_param)
 
         # calculate all concentration
         concentration_df <- sim_concentration(

@@ -32,6 +32,7 @@ calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, c
   ckd_2021 <- renal_function(sex, age, tbw, height, creatinine, formula = "CKD_2021", creat_unit = creat_unit)
   schwartz <- renal_function(sex, age, tbw, height, creatinine, formula = "schwartz", creat_unit = creat_unit)
   uvp <- renal_function(sex, age, tbw, height, creatinine, formula = "UVP", creat_unit = creat_unit, urine_creat = urine_creat, urine_output = urine_output)
+  ekfc <- renal_function(sex, age, tbw, height, creatinine, formula = "EKFC", creat_unit = creat_unit)
 
   output <- list(
     tbw = tbw,
@@ -48,7 +49,8 @@ calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, c
     ckd_2009 = ckd_2009,
     ckd_2021 = ckd_2021,
     schwartz = schwartz,
-    uvp = uvp
+    uvp = uvp,
+    ekfc = ekfc
   )
 
   return(output)
