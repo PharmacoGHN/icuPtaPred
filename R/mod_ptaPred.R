@@ -80,7 +80,7 @@ mod_ptaPred_ui <- function(id) {
           selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
           sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
           rep_br(2),
-          actionButton(ns("compute_pta"), "Generer les PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
+          actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
         )
       )
     )
