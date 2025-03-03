@@ -40,8 +40,8 @@ The application is not hosted for the moment but will be available [here]()
 ## Installation
 
 ```
-install.packages("blicm-don_1.0.0.tar.gz")  
-devtools::install_github("PharmacoGHN/blicm-don")
+install.packages("icuPtaPred_1.0.0.0.tar.gz")  
+devtools::install_github("PharmacoGHN/icuPtaPred")
 ```
 
 ## Authors and acknowledgment
