@@ -8,7 +8,7 @@
 
 plot.pta <- function(data) {
   pta_plot <- ggplot(data = data) + # , aes(x = .data$mic, y = .data$css_mic)) +
-    geom_line(aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1) +
+    geom_line(mapping = aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1) +
     geom_line(mapping = aes(x = .data$mic, y = .data$toxicity_threshold), col = "#960b0b") +
     # geom_hline(aes(yintercept = .data$toxicity_threshold, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
     geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
@@ -42,3 +42,6 @@ plot.pta <- function(data) {
 
   return(list(pta_plot = pta_plot, pta_multiple_doses = pta_multiple_doses, pta_ci_plot = pta_ci_plot))
 }
+
+
+# add CFR plot

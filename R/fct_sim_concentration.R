@@ -25,7 +25,7 @@ sim_concentration <- function(
 
   # calculate cl and css distribution PK formula -> css = R0/CL
   set.seed(16897)
-  cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl)
+  cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl) # TODO CL distrubution is logNormal To update
   css_distribution <- dose / (cl_distribution * 24)
   quant <- stats::quantile(css_distribution, probs = quantile)
 
@@ -59,3 +59,6 @@ sim_concentration <- function(
 
   return(round(concentration_df, digits = 4))
 }
+
+
+# TODO add CFR calculation
