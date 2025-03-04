@@ -68,6 +68,10 @@ mic_distribution <- function(antibiotic, bact, eucast) {
   # Extraction of MIC distribution, ECOFF (and confidence interval) for the specified specie
   df_mic_specific <- dplyr::filter(df_mic, .data$bacteria == bact)
 
+  # return null if df_mic_specific is empty
+  if (nrow(df_mic_specific) == 0) {
+    return(NULL)
+  }
   # Extracting the ECOFF and confidence interval
   ecoff <- df_mic_specific$`(T)ECOFF`
   ecoff_ci <- df_mic_specific$`Confidence interval`
