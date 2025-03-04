@@ -32,7 +32,7 @@ mod_ptaPred_ui <- function(id) {
             numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
             numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
             selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "mg/dL"),
-            #numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
             numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
             numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
             selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
@@ -50,7 +50,8 @@ mod_ptaPred_ui <- function(id) {
               status = "olive",
               collapsible = FALSE,
               title = "PTA output",
-              plotlyOutput(ns("pta_output"))
+              plotlyOutput(ns("pta_output")),
+              footer = uiOutput(ns("footer_pta"))
             ),
             box(
               width = 12,
@@ -58,7 +59,8 @@ mod_ptaPred_ui <- function(id) {
               status = "olive",
               collapsible = FALSE,
               title = "PTA Probability output",
-              plotlyOutput(ns("pta_output_probability"))
+              plotlyOutput(ns("pta_output_probability")),
+              footer = uiOutput(ns("footer_pta_probability"))
             )
           )
         ),
@@ -101,19 +103,19 @@ mod_ptaPred_server <- function(id) {
 
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
-    validator$add_rule("drug_dose", function(value) { if (value == 0) "Dose must be greater than 0" })
-    validator$add_rule("height", function(value) { if (value < 10) "Height must be in cm" })
-    validator$add_rule("height", function(value) { if (value > 250) "Height must be less than 250 cm" })
-    validator$add_rule("weight", function(value) { if (value < 1) "Weight must be in kg" })
-    validator$add_rule("weight", function(value) { if (value > 500) "Weight must be less than 500 kg" })
-    validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0" })
-    validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120" })
-    validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported" })
-    validator$add_rule("model_selected", function(value) { if (value == "Gijsen_2021") "Not currently supported" })
-    validator$add_rule("model_selected", function(value) { if (value == "Minichmayr_2018") "Not currently supported" })
-    validator$add_rule("model_selected", function(value) { if (value == "Ehrmann_2019") "Not currently supported" })
-    validator$add_rule("model_selected", function(value) { if (value == "Huang_2025") "Not currently supported" })
-    validator$add_rule("model_selected", function(value) { if (value == "Lan_2022") "Not currently supported" })
+    validator$add_rule("drug_dose", function(value) { if (value == 0) "Dose must be greater than 0"})
+    validator$add_rule("height", function(value) { if (value < 10) "Height must be in cm"})
+    validator$add_rule("height", function(value) { if (value > 250) "Height must be less than 250 cm"})
+    validator$add_rule("weight", function(value) { if (value < 1) "Weight must be in kg"})
+    validator$add_rule("weight", function(value) { if (value > 500) "Weight must be less than 500 kg"})
+    validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0"})
+    validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120"})
+    validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported"})
+    validator$add_rule("model_selected", function(value) { if (value == "Gijsen_2021") "Not currently supported"})
+    validator$add_rule("model_selected", function(value) { if (value == "Minichmayr_2018") "Not currently supported"})
+    validator$add_rule("model_selected", function(value) { if (value == "Ehrmann_2019") "Not currently supported"})
+    validator$add_rule("model_selected", function(value) { if (value == "Huang_2025") "Not currently supported"})
+    validator$add_rule("model_selected", function(value) { if (value == "Lan_2022") "Not currently supported"})
 
     validator$enable()
 
@@ -171,10 +173,9 @@ mod_ptaPred_server <- function(id) {
     })
 
 
-     # [PTA Calculation] ______________________________________________________
+    # [PTA Calculation] ______________________________________________________
     # PTA computing and plotting code
     observeEvent(input$compute_pta, {
-
       if (is.null(mic_information()) && input$bacteria_select != "probabilist") {
         showNotification("No MIC distribution available for this bacteria", duration = 10, type = "error", closeButton = TRUE)
         return() # Exit the function early
@@ -227,9 +228,49 @@ mod_ptaPred_server <- function(id) {
       golem::print_dev(concentration_df)
 
       # [PTA Plot] ___________________________________________________________
-      plot <- plot.pta(concentration_df, ecoff = if(input$bacteria_select == "probabilist") NA else ecoff())
+      plot <- plot.pta(concentration_df, ecoff = if (input$bacteria_select == "probabilist") NA else ecoff())
       output$pta_output <- renderPlotly({ plotly::ggplotly(plot$pta_multiple_doses) }) # plot pta with css/mic
       output$pta_output_probability <- renderPlotly({ plotly::ggplotly(plot$pta_ci_plot) }) # plot pta with css/mic probability quantile based on user selection
+
+      # [Footer] ___________________________________________________________
+      # [Display the dose line] with corresponding colors
+      output$footer_pta <- renderUI({
+        all_dose <- c(-2, -1, 0, 1, 2) * model_param$dose_increment + input$drug_dose
+
+        # Use the specified colors
+        dose_colors <- c("#20846b", "#1f8269", "#2db391", "#32c5a0", "#2fe3b6")
+
+        # Create HTML for the colored dose line
+        dose_line <- tags$div(
+          style = "display: flex; align-items: center; justify-content: center; margin-top: 10px;",
+          lapply(seq_along(all_dose), function(i) {
+            if (all_dose[i] > 0) {
+              # Use color from our specific palette (cycling if more doses than colors)
+              color_idx <- ((i - 1) %% length(dose_colors)) + 1
+              tags$div(
+                style = paste0(
+                  "margin: 0 5px; padding: 3px 8px; background-color: ",
+                  dose_colors[color_idx],
+                  "; border-radius: 3px; color: white; font-weight: bold;"
+                ),
+                paste0(all_dose[i], " g")
+              )
+            }
+          })
+        )
+        return(dose_line)
+      })
+
+      # [Display the ECOFF] with confidence interval
+      output$footer_pta_probability <- renderUI({
+        if (input$bacteria_select != "probabilist") {
+          tags$div(
+            tags$b("ECOFF :"), ecoff(), " mg/L", tags$span(style = "margin: 0 60px;"), # Add space between elements
+            tags$b("ECOFF Confidence Interval: "), ecoff_ci(), " mg/L"
+          )
+        }
+      })
+
     })
   })
 }
