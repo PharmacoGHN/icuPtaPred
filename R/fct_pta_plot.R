@@ -6,18 +6,18 @@
 #'
 #' @noRd
 
-plot.pta <- function(data) {
+plot.pta <- function(data, ecoff = NA) {
   pta_plot <- ggplot(data = data) + # , aes(x = .data$mic, y = .data$css_mic)) +
     geom_line(mapping = aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1) +
     geom_line(mapping = aes(x = .data$mic, y = .data$toxicity_threshold), col = "#960b0b") +
     # geom_hline(aes(yintercept = .data$toxicity_threshold, linetype = "Toxicity Levels"), lwd = 1, col = "#960b0b") +
-    geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
-    geom_vline(aes(xintercept = 8, linetype = "ECOFF"), lwd = 1, col = "black") +
-    scale_linetype_manual(
-      name = "Breakpoint",
-      values = c(2, 2), # values = c(2, 2, 2),
-      guide = guide_legend(override.aes = list(color = c("red", "black"))) # c("#960b0b", "red", "black")))
-    ) +
+    #geom_hline(aes(yintercept = 8, linetype = "Efficay Threshold"), lwd = 1, col = "red") + # to modify by EUCAST ECOFF for a given bacteria
+    #geom_vline(aes(xintercept = ecoff, linetype = "ECOFF"), lwd = 1, col = "black") +
+    # scale_linetype_manual(
+    #   name = "Breakpoint",
+    #   values = c(2, 2), # values = c(2, 2, 2),
+    #   guide = guide_legend(override.aes = list(color = c("red", "black"))) # c("#960b0b", "red", "black")))
+    # ) +
     labs(linetype = NULL) +
     scale_x_log10(breaks = data$mic, labels = data$mic, limits = c(max(0.01, min(data$mic)), max(data$mic))) +
     scale_y_log10(limits = c(max(0.01, min(data$css_mic_below2)), max(data$css_mic_above2))) +
@@ -29,6 +29,8 @@ plot.pta <- function(data) {
       legend.justification.inside = c(0.9, 0.9),
       legend.box.background = element_rect()
     )
+
+  if (!is.na(ecoff)) pta_plot <- pta_plot + geom_vline(aes(xintercept = ecoff, linetype = "ECOFF"), lwd = 1, col = "black")
 
   # Create the PTA plot with the different css/mic lines and display
   pta_multiple_doses <- pta_plot +

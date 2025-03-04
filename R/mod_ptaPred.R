@@ -69,14 +69,13 @@ mod_ptaPred_ui <- function(id) {
             status = "olive",
             solidHeader = TRUE,
             title = "Information sur le Traitement",
+            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
             selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
             selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
             uiOutput(ns("model_choice")),
-            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto"),
-            br(),
-            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto")
+            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
           ),
-          br(),
+          rep_br(2),
           selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
           sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
           rep_br(2),
@@ -95,10 +94,11 @@ mod_ptaPred_server <- function(id) {
     ns <- session$ns
 
     # create reactive value to store mic data
+    mic_information <- reactiveVal()
     mic_specie <- reactiveVal()
     ecoff <- reactiveVal()
     ecoff_ci <- reactiveVal()
-    
+
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
     validator$add_rule("drug_dose", function(value) { if (value == 0) "Dose must be greater than 0" })
@@ -147,84 +147,89 @@ mod_ptaPred_server <- function(id) {
 
 
     # Retrieve Bacteria and antibiotics get the MIC distribution + the ECOFF if available
-    observeEvent(input$bacteria_select, {
-    
-      if (input$bacteria_select != "probabilist") {
-        mic_distribution <- mic_distribution(input$beta_lactamin, input$bacteria_select, eucast)
+    # Observe both bacteria and antibiotic selection changes
+    observeEvent(list(input$bacteria_select, input$beta_lactamin), {
+      if (input$bacteria_select != "probabilist" && !is.null(input$beta_lactamin) && input$beta_lactamin != "") {
+        # Store the result in the mic_distribution reactive value
+        mic_information(mic_distribution(input$beta_lactamin, input$bacteria_select, eucast))
 
-        golem::cat_dev("[Module : ptPred] [Line 145] The output of the mic_distribution object is : \n", "\n")
-        golem::print_dev(mic_distribution)
         # Update the reactive values
-        mic_specie(c(as.numeric(names(mic_distribution[["mic_distribution"]]))))
-        ecoff(mic_distribution$ecoff)
-        ecoff_ci(mic_distribution$ecoff_ci)
+        mic_specie(c(as.numeric(names(mic_information()[["mic_distribution"]]))))
+        ecoff(as.numeric(mic_information()$ecoff))
+        ecoff_ci(mic_information()$ecoff_ci)
 
-        golem::cat_dev("[Module : ptPred] [Line 151] The output of the mic_specie object is : \n", "\n")
+        # Debugging in dev mode
+        golem::cat_dev("[Module : ptPred] [Line 155] The output of the mic_information object is : \n", "\n")
+        golem::print_dev(mic_information())
+        golem::cat_dev("[Module : ptPred] [Line 158] The output of the mic_specie object is : \n", "\n")
         golem::print_dev(mic_specie())
-        golem::cat_dev("[Module : ptPred] [Line 153] The output of the ecoff object is : \n", "\n")
+        golem::cat_dev("[Module : ptPred] [Line 159] The output of the ecoff object is : \n", "\n")
         golem::print_dev(ecoff())
-        golem::cat_dev("[Module : ptPred] [Line 155] The output of the ecoff_ci object is : \n", "\n")
+        golem::cat_dev("[Module : ptPred] [Line 160] The output of the ecoff_ci object is : \n", "\n")
         golem::print_dev(ecoff_ci())
       }
     })
 
 
-    # [PTA Calculation] ______________________________________________________
+     # [PTA Calculation] ______________________________________________________
     # PTA computing and plotting code
     observeEvent(input$compute_pta, {
 
+      if (is.null(mic_information()) && input$bacteria_select != "probabilist") {
+        showNotification("No MIC distribution available for this bacteria", duration = 10, type = "error", closeButton = TRUE)
+        return() # Exit the function early
+      }
+
       golem::cat_dev("[Module : ptPred] [Creatinine Unit] The creatinine unit is : ", input$creatinine_unit, "\n", "\n")
 
-      if (!validator$is_valid()) showNotification("Please fix the error displayed before continuing", duration = 10, type = "error", closeButton = TRUE)
-      if (validator$is_valid()) {
-        # general info
-        biological <- calc_biological(
-          weight = input$weight,
-          height = input$height,
-          sex = input$sex,
-          age = input$age,
-          creatinine = input$creatinine,
-          urine_creat = input$urine_creatinine,
-          urine_output = input$urine_output,
-          weight_unit = "kg",
-          creat_unit = input$creatinine_unit
-        )
-
-        # TODO fix all model and get all model working
-        # calculate model parameters (cl and eta_cl) based on selected drug
-        model_param <- get_model_parameters(
-          model = input$model_selected,
-          biological = biological,
-          drug = input$beta_lactamin
-        )
-
-        golem::cat_dev("[Module : ptPred] [Line 172] The output of the model_param object is : \n", "\n")
-        golem::print_dev(model_param)
-        #check mic_specie in input$compute_pta event
-        golem::cat_dev("[Module : ptPred] [Line 175] The output of the mic_specie object is : \n", "\n")
-        golem::print_dev(mic_specie())
-
-        # calculate all concentration
-        concentration_df <- sim_concentration(
-          dose = input$drug_dose * 1000, # convert from g to mg
-          tvcl = model_param$cl,
-          eta_cl = model_param$eta_cl,
-          quantile = input$confidence_level,
-          mic = if (input$bacteria_select == "probabilist") NA else mic_specie(),
-          dose_increment = model_param$dose_increment * 1000, # convert from g to mg
-          toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
-        )
-
-        # Debugging in dev mode
-        golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n", "\n")
-        golem::cat_dev("[Module : ptPred] [Line 182] The output of the concentration_df object is : \n", "\n")
-        golem::print_dev(concentration_df)
-
-        # [PTA Plot] ___________________________________________________________
-        plot <- plot.pta(concentration_df)
-        output$pta_output <- renderPlotly({ plotly::ggplotly(plot$pta_multiple_doses) }) # plot pta with css/mic
-        output$pta_output_probability <- renderPlotly({ plotly::ggplotly(plot$pta_ci_plot) }) # plot pta with css/mic probability quantile based on user selection
+      if (!validator$is_valid()) {
+        showNotification("Please fix the error displayed before continuing", duration = 10, type = "error", closeButton = TRUE)
+        return()
       }
+
+      # general info
+      biological <- calc_biological(
+        weight = input$weight,
+        height = input$height,
+        sex = input$sex,
+        age = input$age,
+        creatinine = input$creatinine,
+        urine_creat = input$urine_creatinine,
+        urine_output = input$urine_output,
+        weight_unit = "kg",
+        creat_unit = input$creatinine_unit
+      )
+
+      # calculate model parameters (cl and eta_cl) based on selected drug
+      model_param <- get_model_parameters(
+        model = input$model_selected,
+        biological = biological,
+        drug = input$beta_lactamin
+      )
+
+      golem::cat_dev("[Module : ptPred] [Line 205] The output of the model_param object is : \n", "\n")
+      golem::print_dev(model_param)
+
+      # calculate all concentration
+      concentration_df <- sim_concentration(
+        dose = input$drug_dose * 1000, # convert from g to mg
+        tvcl = model_param$cl,
+        eta_cl = model_param$eta_cl,
+        quantile = input$confidence_level,
+        mic = if (input$bacteria_select == "probabilist") NA else mic_specie(),
+        dose_increment = model_param$dose_increment * 1000, # convert from g to mg
+        toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
+      )
+
+      # Debugging in dev mode
+      golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n", "\n")
+      golem::cat_dev("[Module : ptPred] [Line 215] The output of the concentration_df object is : \n", "\n")
+      golem::print_dev(concentration_df)
+
+      # [PTA Plot] ___________________________________________________________
+      plot <- plot.pta(concentration_df, ecoff = if(input$bacteria_select == "probabilist") NA else ecoff())
+      output$pta_output <- renderPlotly({ plotly::ggplotly(plot$pta_multiple_doses) }) # plot pta with css/mic
+      output$pta_output_probability <- renderPlotly({ plotly::ggplotly(plot$pta_ci_plot) }) # plot pta with css/mic probability quantile based on user selection
     })
   })
 }
