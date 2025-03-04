@@ -3,7 +3,7 @@
 # Create a tibble to store information about the pharmacokinetics model
 
 model_information <- list(
-  "pipetazo" = list(
+  "Piperacillin-tazobactam" = list(
     klastrup_2020 = tibble::tibble(
       Title = "Pharmacokinetic Model of Piperacillin-Tazobactam",
       Authors = "Klastrup, I. D., et al.",
@@ -30,7 +30,7 @@ model_information <- list(
       Model_Description = "non renal clearance = 2.25 L/h, renal clearance = 0.119 x CRCL calculated with Cockcroft and Gault using the Total Body Weight (TBW).",
       Population_Studied = "Critically ill patients"
     ),
-    # Added references for pipetazo studies:
+    # Added references for Piperacillin-tazobactam studies:
     Sukarnjanaset_2019 = tibble::tibble(
       Title = "Population pharmacokinetics and pharmacodynamics of piperacillin in critically ill patients during the early phase of sepsis",
       Authors = "Sukarnjanaset, et al.",
@@ -86,24 +86,24 @@ model_information <- list(
       Population_Studied = "Critically ill patients"
     )
   ),
-  "cefepim" = list(
+  "Cefepime" = list(
     cacqueray_2022 = tibble::tibble(
-      Title = "Cefepime population pharmacokinetics and dosing regimen optimization in critically ill children with different renal functions",
+      Title = "cefepime population pharmacokinetics and dosing regimen optimization in critically ill children with different renal functions",
       Authors = "Cacqueray, A., et al.",
       Year = 2022,
       Journal = "Clinical Microbiology and Infection",
       DOI = "10.1016/j.cmi.2022.05.007",
       URL = "https://pubmed.ncbi.nlm.nih.gov/35605841/",
       Abstract = "
-      Objective: Cefepime is commonly used in pediatric intensive care units, where unpredictable variations in the patients' pharmacokinetic (PK) variables may require drug dose adjustments. 
+      Objective: cefepime is commonly used in pediatric intensive care units, where unpredictable variations in the patients' pharmacokinetic (PK) variables may require drug dose adjustments. 
       <br> Methods: Children (aged from 1 month to 18 years; body weight >3 kg) receiving cefepime were included... ",
       Clearance_Formula = "$$\nCL = 1.21 * \\left(\\frac{TBW}{9}\\right)^{0.75} * \\left(\\frac{CLCR_{Schwartz}}{153}\\right)^{0.37}\n$$",
       Model_Description = " TBW = Total body weight; Schwartz = Schwartz formula for creatinine clearance.",
       Population_Studied = "Children (aged from 1 month to 18 years; body weight >3 kg) receiving cefepime"
     ),
-    # Added references for cefepim studies:
+    # Added references for Cefepime studies:
     An_2023 = tibble::tibble(
-      Title = "Population Pharmacokinetics of Cefepime in Pediatric Intensive Care Patients",
+      Title = "Population Pharmacokinetics of cefepime in Pediatric Intensive Care Patients",
       Authors = "An, et al.",
       Year = 2023,
       Journal = "Journal of Antimicrobial Chemotherapy",
@@ -137,7 +137,7 @@ model_information <- list(
       DOI = "10.1128/aac.00810-23",
       URL = "https://pubmed.ncbi.nlm.nih.gov/37882514/",
       Abstract = "
-      <br> Cefepime exhibits highly variable pharmacokinetics in critically ill patients. The purpose of this study was to develop and qualify a population
+      <br> cefepime exhibits highly variable pharmacokinetics in critically ill patients. The purpose of this study was to develop and qualify a population
       pharmacokinetic model for use in the critically ill and investigate the impact of various estimated glomerular filtration rate (eGFR) equations
       using creatinine, cystatin C, or both on model parameters. 
       <br> <strong> Methods : </strong> This was a prospective study of critically ill adults hospitalized at an academic medical center treated with intravenous cefepime.
@@ -148,7 +148,7 @@ model_information <- list(
       Q was fixed at 7.09 L/h and V2 was fixed at 10.6 L, due to low observed interindividual variation in these parameters. The final model included weight as a covariate 
       for volume of distribution and the eGFRcr-cysC (mL/min) as a predictor of drug clearance. 
       <br> <strong> Conclusion </strong> In summary, a population pharmacokinetic model for cefepime was created for critically ill adults. The study demonstrated the importance
-      of cystatin C to prediction of cefepime clearance. Cefepime dosing models which use an eGFR equation inclusive of cystatin C are likely to exhibit improved accuracy and
+      of cystatin C to prediction of cefepime clearance. cefepime dosing models which use an eGFR equation inclusive of cystatin C are likely to exhibit improved accuracy and
       precision compared to dosing models which incorporate an eGFR equation with only creatinine.",
       Clearance_Formula = "
       $$ CL = 7.84 \\times \\frac{eGFR_{cr-cysC}}{7.2} $$
@@ -157,7 +157,7 @@ model_information <- list(
       Population_Studied = "Critically ill Adults"
     )
   ),
-  "meropenem" = list(
+  "Meropenem" = list(
     # Added references for meropenem studies:
     Gijsen_2021 = tibble::tibble(
       Title = "Title placeholder for Gijsen et al., IDR 2021",
@@ -246,7 +246,7 @@ model_information <- list(
       Population_Studied = "Population placeholder"
     )
   ),
-  "ceftazidime" = list(
+  "Ceftazidime" = list(
     # Added references for ceftazidime studies:
     Buning_2021 = tibble::tibble(
       Title = "Population Pharmacokinetics and Probability of Target Attainment of Different Dosing Regimens of Ceftazidime in Critically Ill Patients with a Proven or Suspected Pseudomonas aeruginosa Infection",
@@ -326,7 +326,7 @@ model_information <- list(
       Population_Studied = "Population placeholder"
     )
   ),
-  "ceftolozane" = list(
+  "Ceftolozane" = list(
     # Added references for ceftolozane studies:
     Chandorkar_2015 = tibble::tibble(
       Title = "Title placeholder for Chandorkar et al., ACCP 2015",

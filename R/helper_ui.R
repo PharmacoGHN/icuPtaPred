@@ -26,11 +26,11 @@ ui_data <- list(
         "Afficher toutes les cibles" = "all_mic"
       ),
       drug = c(
-        "Cefepime" = "cefepim",
-        "Ceftazidime" = "ceftazidime",
-        "Ceftolozane" = "ceftolozane",
-        "Meropenem" = "meropenem",
-        "Piperacilline Tazobactam" = "pipetazo"
+        "Cefepime" = "Cefepime",
+        "Ceftazidime" = "Ceftazidime",
+        "Ceftolozane" = "Ceftolozane",
+        "Meropenem" = "Meropenem",
+        "Piperacilline Tazobactam" = "Piperacillin-tazobactam"
       ),
       administration_interval = c("q48h", "q24h", "q12h", "q8h", "q6h", "q4h", "continue")
     ),

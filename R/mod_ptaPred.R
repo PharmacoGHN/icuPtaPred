@@ -74,7 +74,7 @@ mod_ptaPred_ui <- function(id) {
             uiOutput(ns("model_choice")),
             numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto"),
             br(),
-            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = character(0), selected = "probabilist", width = "auto")
+            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto")
           ),
           br(),
           selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
@@ -93,6 +93,11 @@ mod_ptaPred_ui <- function(id) {
 mod_ptaPred_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    # create reactive value to store mic data
+    mic_specie <- reactiveVal()
+    ecoff <- reactiveVal()
+    ecoff_ci <- reactiveVal()
     
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
@@ -143,14 +148,23 @@ mod_ptaPred_server <- function(id) {
 
     # Retrieve Bacteria and antibiotics get the MIC distribution + the ECOFF if available
     observeEvent(input$bacteria_select, {
+    
       if (input$bacteria_select != "probabilist") {
         mic_distribution <- mic_distribution(input$beta_lactamin, input$bacteria_select, eucast)
 
-        golem::cat_dev("[Module : ptPred] [Line 145] The output of the mic_distribution object is : \\n")
+        golem::cat_dev("[Module : ptPred] [Line 145] The output of the mic_distribution object is : \n", "\n")
         golem::print_dev(mic_distribution)
-        mic_specie <- as.numeric(names(mic_distribution[["mic_distribution"]]))
-        ecoff <- mic_distribution$ecoff
-        ecoff_ci <- mic_distribution$ecoff_ci
+        # Update the reactive values
+        mic_specie(as.numeric(names(mic_distribution[["mic_distribution"]])))
+        ecoff(mic_distribution$ecoff)
+        ecoff_ci(mic_distribution$ecoff_ci)
+
+        golem::cat_dev("[Module : ptPred] [Line 151] The output of the mic_specie object is : \n", "\n")
+        golem::print_dev(mic_specie())
+        golem::cat_dev("[Module : ptPred] [Line 153] The output of the ecoff object is : \n", "\n")
+        golem::print_dev(ecoff())
+        golem::cat_dev("[Module : ptPred] [Line 155] The output of the ecoff_ci object is : \n", "\n")
+        golem::print_dev(ecoff_ci())
       }
     })
 
@@ -159,7 +173,7 @@ mod_ptaPred_server <- function(id) {
     # PTA computing and plotting code
     observeEvent(input$compute_pta, {
 
-      golem::cat_dev("[Module : ptPred] [Creatinine Unit] The creatinine unit is : ", input$creatinine_unit, "\n")
+      golem::cat_dev("[Module : ptPred] [Creatinine Unit] The creatinine unit is : ", input$creatinine_unit, "\n", "\n")
 
       if (!validator$is_valid()) showNotification("Please fix the error displayed before continuing", duration = 10, type = "error", closeButton = TRUE)
       if (validator$is_valid()) {
@@ -184,7 +198,7 @@ mod_ptaPred_server <- function(id) {
           drug = input$beta_lactamin
         )
 
-        golem::cat_dev("[Module : ptPred] [Line 172] The output of the model_param object is : \\n")
+        golem::cat_dev("[Module : ptPred] [Line 172] The output of the model_param object is : \n", "\n")
         golem::print_dev(model_param)
 
         # calculate all concentration
@@ -193,14 +207,14 @@ mod_ptaPred_server <- function(id) {
           tvcl = model_param$cl,
           eta_cl = model_param$eta_cl,
           quantile = input$confidence_level,
-          mic = ifelse(input$bacteria_select == "probabilist", NA, mic_specie),
+          mic = ifelse(input$bacteria_select == "probabilist", NA, mic_specie()),
           dose_increment = model_param$dose_increment * 1000, # convert from g to mg
           toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
         )
 
         # Debugging in dev mode
-        golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\\n")
-        golem::cat_dev("[Module : ptPred] [Line 182] The output of the concentration_df object is : \\n")
+        golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n", "\n")
+        golem::cat_dev("[Module : ptPred] [Line 182] The output of the concentration_df object is : \n", "\n")
         golem::print_dev(concentration_df)
 
         # [PTA Plot] ___________________________________________________________
