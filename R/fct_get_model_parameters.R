@@ -9,7 +9,7 @@
 
 get_model_parameters <- function(model, biological, drug = NULL) {
   cl <- switch(model,
-    # Cefepim
+    # Cefepime
     "Barreto_2023" = 7.84, #eGFR cyst-creat not supported at the moment.
     "cacqueray_2022" = 1.21 * (biological$tbw / 9)^0.75 * (biological$schwartz / 153)^0.37,
     "an_2023" = 0.526 + 2 * biological$cg_lbw / 54,
@@ -40,7 +40,7 @@ get_model_parameters <- function(model, biological, drug = NULL) {
   )
 
   eta_cl <- switch(model,
-    # Cefepim eta CL
+    # Cefepime eta CL
     "Barreto_2023" = 1, #get_sd_from_cv(0.299),
     "cacqueray_2022" = 0.39,
     "an_2023" = get_sd_from_cv(0.299),
@@ -75,15 +75,15 @@ get_model_parameters <- function(model, biological, drug = NULL) {
   # This dose increment is in gram
   dose_increment <- case_when(
     drug == "amoxicillin" ~ 0.500,
-    drug == "cefepim" ~ 1.000,
+    drug == "Cefepime" ~ 1.000,
     drug == "cefazoline" ~ 0.500,
     drug == "cefotaxim" ~ 0.500,
-    drug == "ceftazidime" ~ 1.000,
+    drug == "Ceftazidime" ~ 1.000,
     drug == "ceftaroline" ~ 1.000,
     drug == "ceftobiprol" ~ 1.000,
-    drug == "ceftolozane" ~ 1.000,
-    drug == "pipetazo" ~ 2.000,
-    drug == "meropenem" ~ 0.500,
+    drug == "Ceftolozane" ~ 1.000,
+    drug == "Piperacillin-tazobactam" ~ 2.000,
+    drug == "Meropenem" ~ 0.500,
     TRUE ~ 0 # default value if no match
   )
   return(list(cl = cl, eta_cl = eta_cl, dose_increment = dose_increment))
@@ -94,15 +94,15 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 drug_threshold <- function(drug) {
   toxicity <- switch(drug,
     "amoxicillin" = NA,
-    "cefepim" = 20, # Lamoth et al. 2010
+    "Cefepime" = 20, # Lamoth et al. 2010
     "cefazoline" = NA,
     "cefotaxim" = NA,
-    "ceftazidime" = NA,
+    "Ceftazidime" = NA,
     "ceftaroline" = NA,
     "ceftobiprol" = NA,
-    "ceftolozane" = NA,
-    "pipetazo" = 157,
-    "meropenem" = 45, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
+    "Ceftolozane" = NA,
+    "Piperacillin-tazobactam" = 157,
+    "Meropenem" = 45, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
     0
   )
 

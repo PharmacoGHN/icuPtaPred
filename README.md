@@ -17,7 +17,7 @@ The application is not hosted for the moment but will be available [here]()
   - [x] [Klastrup et al. JAC, 2020](https://journals.asm.org/doi/10.1128/aac.02556-19)
   - [x] [Sukarnjanaset et al, JPP 2019](https://pubmed.ncbi.nlm.nih.gov/30963365/ )
   - [x] [Udy et al, 2015](https://pubmed.ncbi.nlm.nih.gov/25632974/ ) 
-- [ ] Cefepim
+- [ ] Cefepime
   - [x] [An et al JAC 2023](https://pubmed.ncbi.nlm.nih.gov/37071586/)
   - [ ] [Barreto et al, AAC 2023](https://pubmed.ncbi.nlm.nih.gov/37882514/)
 - [x] Ceftazidim

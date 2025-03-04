@@ -30,7 +30,7 @@ rangeMIC <- function(
   max = 64,
   step = 2,
   continuous = FALSE,
-  drug = c("cefotaxim", "ceftriaxon", "pipTaz", "cefepim", "meropenem"),
+  drug = c("cefotaxim", "ceftriaxon", "pipTaz", "Cefepime", "Meropenem"),
   bacteria,
   manual = TRUE
 ) {

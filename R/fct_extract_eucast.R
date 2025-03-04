@@ -67,11 +67,28 @@ mic_distribution <- function(antibiotic, bact, eucast) {
 
   # Extraction of MIC distribution, ECOFF (and confidence interval) for the specified specie
   df_mic_specific <- dplyr::filter(df_mic, .data$bacteria == bact)
+
+  # return null if df_mic_specific is empty
+  if (nrow(df_mic_specific) == 0) {
+    return(NULL)
+  }
+  # Extracting the ECOFF and confidence interval
   ecoff <- df_mic_specific$`(T)ECOFF`
   ecoff_ci <- df_mic_specific$`Confidence interval`
 
+  # Removing columns with no data
+  mic_col_to_remove <- df_mic_specific[1, ] |>
+    dplyr::select(-c("Distributions", "Observations", "(T)ECOFF", "Confidence interval")) |>
+    dplyr::select(dplyr::where(~ . == 0)) |>
+    colnames()
+
+  mic_distribution <- df_mic_specific |>
+    dplyr::select(-c("bacteria", "Distributions", "Observations", "(T)ECOFF", "Confidence interval")) |>
+    dplyr::select(-dplyr::all_of(mic_col_to_remove))
+
   output <- list(
-    mic_distribution = df_mic_specific,
+    mic_dataframe = df_mic_specific,
+    mic_distribution = mic_distribution,
     ecoff = ecoff,
     ecoff_ci = ecoff_ci
   )
