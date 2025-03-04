@@ -155,7 +155,7 @@ mod_ptaPred_server <- function(id) {
         golem::cat_dev("[Module : ptPred] [Line 145] The output of the mic_distribution object is : \n", "\n")
         golem::print_dev(mic_distribution)
         # Update the reactive values
-        mic_specie(as.numeric(names(mic_distribution[["mic_distribution"]])))
+        mic_specie(c(as.numeric(names(mic_distribution[["mic_distribution"]]))))
         ecoff(mic_distribution$ecoff)
         ecoff_ci(mic_distribution$ecoff_ci)
 
@@ -200,6 +200,9 @@ mod_ptaPred_server <- function(id) {
 
         golem::cat_dev("[Module : ptPred] [Line 172] The output of the model_param object is : \n", "\n")
         golem::print_dev(model_param)
+        #check mic_specie in input$compute_pta event
+        golem::cat_dev("[Module : ptPred] [Line 175] The output of the mic_specie object is : \n", "\n")
+        golem::print_dev(mic_specie())
 
         # calculate all concentration
         concentration_df <- sim_concentration(
@@ -207,7 +210,7 @@ mod_ptaPred_server <- function(id) {
           tvcl = model_param$cl,
           eta_cl = model_param$eta_cl,
           quantile = input$confidence_level,
-          mic = ifelse(input$bacteria_select == "probabilist", NA, mic_specie()),
+          mic = if (input$bacteria_select == "probabilist") NA else mic_specie(),
           dose_increment = model_param$dose_increment * 1000, # convert from g to mg
           toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
         )
