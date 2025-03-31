@@ -20,6 +20,9 @@ test_that("sim_concentration returns expected output", {
     )
   )
 
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl)
+  #expected_false()
+
   result <- sim_concentration(dose, tvcl, eta_cl, quantile, mic, dose_increment = 500, toxicity_threshold = 8)
 
   # Check that the result is a dataframe

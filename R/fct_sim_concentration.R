@@ -1,3 +1,21 @@
+#' calc_css_distribution
+#'
+#' @description A fct function
+#'
+#'
+
+calc_css_distribution <- function(
+    dose,
+    tvcl,
+    eta_cl) {
+  # calculate cl and css distribution PK formula -> css = R0/CL
+  set.seed(3917985)
+  cl_distribution <- tvcl * stats::rlnorm(50000, meanlog = 0, sdlog = eta_cl) # TODO CL distrubution is logNormal To update
+  css_distribution <- (dose / 24) / cl_distribution
+
+  return(css_distribution)
+}
+
 #' sim_concentration
 #'
 #' @description A fct function
@@ -7,27 +25,28 @@
 #' @noRd
 
 sim_concentration <- function(
-  dose,
-  tvcl,
-  eta_cl,
-  quantile = c(0.025, 0.975),
-  mic = NA,
-  dose_increment = 0,
-  toxicity_threshold
-) {
-
+    dose,
+    tvcl,
+    eta_cl,
+    quantile = c(0.025, 0.975),
+    mic = NA,
+    dose_increment = 0,
+    toxicity_threshold) {
   # set default mic is none is selected
   if (length(mic) == 1 && is.na(mic)) mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # default range value
 
-  # typical css over 24 hours infusion rate
-  tv_css <- dose / (tvcl * 24)
-  css_mic <- tv_css / mic
+  # # typical css over 24 hours infusion rate
+  # tv_css <- dose / (tvcl * 24)
+  # #css_mic <- tv_css / mic
 
-  # calculate cl and css distribution PK formula -> css = R0/CL
-  set.seed(16897)
-  cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl) # TODO CL distrubution is logNormal To update
-  css_distribution <- dose / (cl_distribution * 24)
+  # # calculate cl and css distribution PK formula -> css = R0/CL
+  # set.seed(16897)
+  # cl_distribution <- stats::rnorm(10000, mean = tvcl, sd = eta_cl) # TODO CL distrubution is logNormal To update
+  # css_distribution <- dose / (cl_distribution * 24)
+  # set.seed(16897)
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl)
   quant <- stats::quantile(css_distribution, probs = quantile)
+  # median_css <- stats::median(css_distribution)
 
   # add simulation of 2 dosing above and below if these are not 0
   dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
@@ -44,7 +63,7 @@ sim_concentration <- function(
 
   # create the output file containing css distribution summary
   quantile_df <- data.frame(
-    css_mic = css_mic,
+    css_mic = tv_css_range[3] / mic, # median_css / mic,
     mic = mic,
     percentile_2.5 = quant[1] / mic,
     percentile_97.5 = quant[2] / mic
