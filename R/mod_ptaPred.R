@@ -44,23 +44,28 @@ mod_ptaPred_ui <- function(id) {
           width = 8,
           column(
             width = 12,
-            box(
+            tabBox(
               width = 12,
+              height = "800px",
+              background = "white",
               solidHeader = TRUE,
               status = "olive",
+              footer = uiOutput(ns("footer_pta")),
               collapsible = FALSE,
-              title = "PTA output",
-              plotlyOutput(ns("pta_output")),
-              footer = uiOutput(ns("footer_pta"))
-            ),
-            box(
-              width = 12,
-              solidHeader = TRUE,
-              status = "olive",
-              collapsible = FALSE,
-              title = "PTA Probability output",
-              plotlyOutput(ns("pta_output_probability")),
-              footer = uiOutput(ns("footer_pta_probability"))
+              selected = "PTA output",
+              tabPanel(
+                title = "PTA output",
+                plotlyOutput(ns("pta_output"), height = "700px"),
+              ),
+              tabPanel(
+                title = "PTA output probability",
+                plotlyOutput(ns("pta_output_probability"), height = "700px"),
+                footer = uiOutput(ns("footer_pta_probability"))
+              ),
+              tabPanel(
+                title = "Cumulative Fraction of Response",
+                plotlyOutput(ns("cfr_output"), height = "700px"),
+                footer = uiOutput(ns("footer_cfr")))
             )
           )
         ),
