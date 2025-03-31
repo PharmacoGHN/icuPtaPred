@@ -40,3 +40,19 @@ plot.pta <- function(data, ecoff = NA) {
 
 
 # add CFR plot
+#' plot.cfr
+#'
+#' @description
+#' Plot the cumulative fraction rate based on eucast value if available
+#'
+#' @param data .
+#'
+#' @export
+#' @author Romain Garreau
+#'
+#'
+
+
+plot.cfr <- function(data) {
+  return(0)
+}
