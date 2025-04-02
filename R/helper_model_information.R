@@ -329,7 +329,7 @@ model_information <- list(
   "Ceftolozane" = list(
     # Added references for ceftolozane studies:
     Chandorkar_2015 = tibble::tibble(
-      Title = "Title placeholder for Chandorkar et al., ACCP 2015",
+      Title = "Population pharmacokinetics of ceftolozane/tazobactam in healthy volunteers, subjects with varying degrees of renal function and patients with bacterial infections ",
       Authors = "Chandorkar, et al.",
       Year = 2015,
       Journal = "ACCP Journal",
@@ -382,6 +382,36 @@ model_information <- list(
       cIAI = complicated intra-abdominal infection; ESRD = end-stage renal disease.
       ESRD is currently disabled from CL calculation",
       Population_Studied = "Adult patients with nosocomial pneumonia"
+    )
+  ),
+  "Cefiderocol" = list(
+    Zhar_2022 = tibble::tibble(
+      Title = "Total and Unbound Pharmacokinetics of Cefiderocol in Critically Ill Patients",
+      Authors = "Zhar, et al.",
+      Year = 2022,
+      Journal = "Pharmaceutics",
+      DOI = "10.3390/pharmaceutics14122786",
+      URL = "https://www.mdpi.com/1999-4923/14/12/2786",
+      Abstract = "
+      <br> <strong> Background:</strong>  Cefiderocol is a siderophore cephalosporin antibiotic active against Gram-negative bacteria, including extended-spectrum beta-lactamase
+        and carbapenemase-producing strains. The pharmacokinetics of cefiderocol has been studied in healthy subjects and particularly in phase II and III studies. This
+        retrospective study investigated intravenous cefiderocol population pharmacokinetics in adult patients treated by cefiderocol.
+      <br> <strong> Methods:</strong>  We studied 55 consecutive patients hospitalized in an intensive care unit. Cefiderocol plasma samples were obtained on different occasions
+        during treatment. Plasma concentration was assayed using mass spectrometry. Data analysis was performed using a non-linear mixed-effect approach via Monolix 2020R1.
+     <br> <strong> Results:</strong>  A total of 205 plasma samples were obtained from 55 patients. Eighty percent of patients received cefiderocol for ventilator-associated
+        pneumonia due to carbapenem-resistant Pseudomonas aeruginosa infection. Cefiderocol concentration time-courses were best fit to a two-compartment open model with
+        first-order elimination. Elimination clearance was positively related to renal function (estimated by the CKD formula). Adding albumin plasma binding in the model 
+        significantly improved the model assuming a ~40% unbound drug fraction given a ~40 g/L albuminemia. The final model included CKD plus cefiderocol plasma binding effects.
+        Fat-free mass was better than total body weight to influence, via the allometric rule, clearance and volume terms, but this effect was negligible.
+        The final clearance based on free circulating drug (CLU) for a typical patient, CKD = 90, was 7.38 L/h [relative standard error, RSE, 22%] with a between-subject 
+        variability of 0.47 [RSE 10%] (exponential distribution). 
+      <br> <strong> Conclusion: </strong> This study showed that albumin binding and CKD effects were significant predictors of unbound and total plasma cefiderocol concentrations.
+        Our results indicate that individual adjustment of cefiderocol can be used to reach high minimum inhibitory concentrations based on an estimation of unbound drug 
+        concentration and optimize therapeutic efficacy. 
+      ",
+      Clearance_Formula = "$$ CL_U = 7.38 \\times \\left( \\frac{CKD}{100} \\right)^{0.426} $$",
+      Model_Description = " CL = Clearance; CKD = Chronic Kidney Disease formula (CKD-EPI) used to estimate creatinine clearance.",
+      Population_Studied = "Critically ill patients with ventilator-associated pneumonia due to carbapenem-resistant Pseudomonas aeruginosa infection"
     )
   )
 )

@@ -19,6 +19,9 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Launay_2024" = 4.45 * (biological$ckd_2009 / 73.9)^0.9,
     "Cojutti_2024" = 5 * (biological$ekfc / 70) ^ 0.7,
 
+    # Cefiderocol
+    "Zhar_2022" = 7.38 * (biological$ckd_2009 / 100) ^ 0.467,
+
     # Ceftolozane
     "Chandorkar_2015" = 5.11 * 1.215 * (biological$cg_tbw / 109) ^ 0.715,
     "Zhang_2021" = 4.84 * (biological$cg_tbw / 100) ^ 0.701,
@@ -50,6 +53,9 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Launay_2024" = 0.46, #standard deviation
     "Cojutti_2024" = get_sd_from_cv(0.6792),
 
+    # Cefiderocol
+    "Zhar_2022" = 0.467,
+
     # Ceftolozane
     "Chandorkar_2015" = get_sd_from_cv(0.33),
     "Zhang_2021" = get_sd_from_cv(0.429),
@@ -74,13 +80,14 @@ get_model_parameters <- function(model, biological, drug = NULL) {
   # automatic selection of dose increment based on selected drug.
   # This dose increment is in gram
   dose_increment <- case_when(
-    drug == "amoxicillin" ~ 0.500,
+    drug == "Amoxicillin" ~ 0.500,
     drug == "Cefepime" ~ 1.000,
-    drug == "cefazoline" ~ 0.500,
-    drug == "cefotaxim" ~ 0.500,
+    drug == "Cefazoline" ~ 0.500,
+    drug == "Cefotaxim" ~ 0.500,
+    drug == "Cefiderocol" ~ 1.000,
     drug == "Ceftazidime" ~ 1.000,
-    drug == "ceftaroline" ~ 1.000,
-    drug == "ceftobiprol" ~ 1.000,
+    drug == "Ceftaroline" ~ 1.000,
+    drug == "Ceftobiprol" ~ 1.000,
     drug == "Ceftolozane" ~ 1.000,
     drug == "Piperacillin-tazobactam" ~ 2.000,
     drug == "Meropenem" ~ 0.500,
@@ -95,11 +102,12 @@ drug_threshold <- function(drug) {
   toxicity <- switch(drug,
     "amoxicillin" = NA,
     "Cefepime" = 20, # Lamoth et al. 2010
-    "cefazoline" = NA,
-    "cefotaxim" = NA,
+    "Cefazoline" = NA,
+    "Cefotaxim" = NA,
+    "Cefiderocol" = NA,
     "Ceftazidime" = NA,
-    "ceftaroline" = NA,
-    "ceftobiprol" = NA,
+    "Ceftaroline" = NA,
+    "Ceftobiprol" = NA,
     "Ceftolozane" = NA,
     "Piperacillin-tazobactam" = 157,
     "Meropenem" = 45, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
