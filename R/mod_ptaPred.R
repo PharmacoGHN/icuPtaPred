@@ -24,22 +24,41 @@ mod_ptaPred_ui <- function(id) {
           width = 2,
           box(
             width = 12,
-            status = "lightblue",
+            status = "olive",
             solidHeader = TRUE,
-            title = "Information Patient",
-            numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
-            numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
-            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
-            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
-            selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "mg/dL"),
-            # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-            numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
-            numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-            selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
-            # choice ethnicity
-            # add all patient info to be computed in pop pk model (no bayesian?)
-          )
+            title = "Information sur le Traitement",
+            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
+            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
+            selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
+            uiOutput(ns("model_choice")),
+            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
+          ),
+          rep_br(2),
+          selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
+          sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
+          rep_br(2),
+          actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
         ),
+        # column(
+        #   width = 2,
+        #   box(
+        #     width = 12,
+        #     status = "lightblue",
+        #     solidHeader = TRUE,
+        #     title = "Information Patient",
+        #     numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
+        #     numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
+        #     numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
+        #     numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
+        #     selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "mg/dL"),
+        #     # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+        #     numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
+        #     numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+        #     selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
+        #     # choice ethnicity
+        #     # add all patient info to be computed in pop pk model (no bayesian?)
+        #   )
+        # ),
         column(
           width = 8,
           column(
@@ -73,21 +92,41 @@ mod_ptaPred_ui <- function(id) {
           width = 2,
           box(
             width = 12,
-            status = "olive",
+            status = "lightblue",
             solidHeader = TRUE,
-            title = "Information sur le Traitement",
-            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
-            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-            selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
-            uiOutput(ns("model_choice")),
-            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
-          ),
-          rep_br(2),
-          selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
-          sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
-          rep_br(2),
-          actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
+            title = "Information Patient",
+            numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
+            numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
+            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
+            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
+            selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "uM/L"),
+            # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
+            numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
+            # choice ethnicity
+            # add all patient info to be computed in pop pk model (no bayesian?)
+          )
         )
+        # column(
+        #   width = 2,
+        #   box(
+        #     width = 12,
+        #     status = "olive",
+        #     solidHeader = TRUE,
+        #     title = "Information sur le Traitement",
+        #     selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
+        #     selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
+        #     selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
+        #     uiOutput(ns("model_choice")),
+        #     numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
+        #   ),
+        #   rep_br(2),
+        #   selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
+        #   sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
+        #   rep_br(2),
+        #   actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
+        # )
       )
     )
   )
@@ -140,7 +179,7 @@ mod_ptaPred_server <- function(id) {
       p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
     )
 
-    if (Sys.getenv("PRODUCTION_MODE") == "TRUE") {
+    if (golem::app_prod()) {
       # modal open on app launch to warn people
       observe({
         showModal(modalDialog(size = "xl", warning_message, easyClose = FALSE, modalButton("Accept"), footer = NULL))
