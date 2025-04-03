@@ -9,11 +9,13 @@
 
 plot.pta <- function(data, ecoff = NA) {
   pta_plot <- ggplot(data = data) +
+    ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), col = "#2b94ab", lty = 2, lwd = 0.5) + # Css>MIC
+    ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 4), col = "#0e877b", lty = 2, lwd = 0.5) + # Css > 4 x MIC
     ggplot2::geom_line(mapping = ggplot2::aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1) +
     ggplot2::geom_line(mapping = ggplot2::aes(x = .data$mic, y = .data$toxicity_threshold), col = "#960b0b") +
     ggplot2::labs(linetype = NULL) +
-    ggplot2::scale_x_log10(breaks = data$mic, labels = data$mic, limits = c(max(0.01, min(data$mic)), max(data$mic))) +
-    ggplot2::scale_y_log10(limits = c(max(0.01, min(data$css_mic_below2)), max(data$css_mic_above2))) +
+    ggplot2::scale_x_continuous(trans = "log2", breaks = data$mic, labels = data$mic, limits = c(max(0.01, min(data$mic)), max(data$mic))) +
+    ggplot2::scale_y_continuous(trans = "log2", n.breaks = 10, limits = c(max(0.01, min(data$css_mic_below2)), max(data$css_mic_above2))) +
     ggplot2::xlab("MIC (mg/L)") +
     ggplot2::ylab("Css/MIC") +
     ggplot2::theme_bw(base_size = 14) +
