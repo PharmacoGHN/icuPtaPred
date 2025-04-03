@@ -1,8 +1,8 @@
 #' calc_css_distribution
 #'
-#' @description A fct function
+#' @description function to calculate the css distribution for a given dose and tvcl
 #'
-#'
+#' @noRd
 
 calc_css_distribution <- function(
     dose,
@@ -16,9 +16,10 @@ calc_css_distribution <- function(
   return(css_distribution)
 }
 
+
 #' sim_concentration
 #'
-#' @description A fct function
+#' @description A function to simulate the concentration of a drug for a given dose by continuous infusion and tvcl
 #'
 #' @return The return value, if any, from executing the function.
 #'
@@ -32,21 +33,12 @@ sim_concentration <- function(
     mic = NA,
     dose_increment = 0,
     toxicity_threshold) {
+
   # set default mic is none is selected
   if (length(mic) == 1 && is.na(mic)) mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # default range value
 
-  # # typical css over 24 hours infusion rate
-  # tv_css <- dose / (tvcl * 24)
-  # #css_mic <- tv_css / mic
-
-  # # calculate cl and css distribution PK formula -> css = R0/CL
-  # set.seed(16897)
-  # cl_distribution <- stats::rnorm(10000, mean = tvcl, sd = eta_cl) # TODO CL distrubution is logNormal To update
-  # css_distribution <- dose / (cl_distribution * 24)
-  # set.seed(16897)
   css_distribution <- calc_css_distribution(dose, tvcl, eta_cl)
   quant <- stats::quantile(css_distribution, probs = quantile)
-  # median_css <- stats::median(css_distribution)
 
   # add simulation of 2 dosing above and below if these are not 0
   dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
@@ -69,7 +61,6 @@ sim_concentration <- function(
     percentile_97.5 = quant[2] / mic
   )
 
-
   # bind both data.frame
   concentration_df <- quantile_df |>
     dplyr::left_join(css_mic_range) |>
@@ -80,4 +71,87 @@ sim_concentration <- function(
 }
 
 
-# TODO add CFR calculation
+
+
+#' calculate_cfr
+#'
+#' @description A function to calculate the cfr for a given dose and mic value
+#'
+#' @param tvcl tvcl is the typical clearance of the drug
+#' @param eta_cl eta_cl is the variability of the clearance of the drug
+#' @param dose dose increment is the increment of the dose to be used in the simulation
+#' @param mic_dsitrbiution mic distribution is a dataframe with mic values and their distribution derived from eucast
+#' @param toxicity_threshold toxicity threshold is the toxicity threshold of the drug. Default to NULL if not known
+#'
+#' @return return a dataframe containing the cfr for each dose and mic value aswell as the proportion of patients above the toxicity threshold if known
+#'
+#' @author Romain Garreau
+#' @noRd
+
+
+# test variables
+max_dose <- 16
+dose_increment <- 2
+tvcl <- 5.5
+eta_cl <- 0.2
+mic_distribution <- data.frame(
+  mic = c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32),
+  distribution = c(10, 100, 300, 1597, 1000, 150, 3, 10, 0, 5)
+)
+
+calculate_cfr <- function(
+  tvcl,
+  eta_cl,
+  dose,
+  mic_distribution,
+  toxicity_threshold = NULL
+) {
+
+  # get mic distribution from eucast
+  mic_distribution$relative_distribution <- mic_distribution$distribution / sum(mic_distribution$distribution)
+
+  # cfr algorithm
+    # calculate css distribution for each mic value for a given dose
+    # calculate the cfr for a given dose
+    # if toxicity is known calculate the proportion of patients above the toxicity threshold
+
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl)
+
+  for (i in 1:ncol(mic_distribution)) {
+    css_distribution_mic <- css_distribution / mic_distribution$mic[i] * mic_distribution$relative_distribution[i]
+    cfr <- mean(css_distribution_mic > mic_distribution$mic[i])
+  }
+
+  # calculate the probabilities of being over the toxicity threshold
+  if (!is.null(toxicity_threshold)) {
+    toxicity_proportion <- mean(css_distribution > toxicity_threshold)
+  }
+
+  return(list(
+    cfr = cfr,
+    toxicity_proportion = toxicity_proportion
+  ))
+}
+
+
+#' calculate_cfr_multiple_dose
+#'
+#' @description A function to calculate the cfr for a given dose and mic value
+#'
+#' @param tvcl tvcl is the typical clearance of the drug
+#' @param eta_cl eta_cl is the variability of the clearance of the drug
+#' @param dose_increment dose increment is the increment of the dose to be used in the simulation
+#' @param mic_distribution mic distribution is a dataframe with mic values and their distribution derived from eucast
+#' @param toxicity_threshold toxicity threshold is the toxicity threshold of the drug. Default to NULL if not known
+#'
+#' @return return a dataframe containing the cfr for each dose and mic value aswell as the proportion of patients above the toxicity threshold if known
+#'
+#' @author Romain Garreau
+#' @noRd
+#'
+#'
+
+calculate_cfr_mulitple_doses <- function() {
+  return(NULL)
+  # TODO implement the function to calculate the cfr for multiple doses
+}
