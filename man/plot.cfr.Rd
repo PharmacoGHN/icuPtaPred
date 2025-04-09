@@ -7,7 +7,7 @@
 \method{plot}{cfr}(data)
 }
 \arguments{
-\item{data}{.}
+\item{data}{take a data.frame with the following columns: dose, cfr, toxicity_proportion}
 }
 \description{
 Plot the cumulative fraction rate based on eucast value if available

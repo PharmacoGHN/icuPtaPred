@@ -47,8 +47,9 @@ plot.pta <- function(data, ecoff = NA) {
 #' @description
 #' Plot the cumulative fraction rate based on eucast value if available
 #'
-#' @param data .
-#'
+#' @param data take a data.frame with the following columns: dose, cfr, toxicity_proportion
+#' 
+#' @import ggplot2
 #' @export
 #' @author Romain Garreau
 #'
@@ -56,5 +57,34 @@ plot.pta <- function(data, ecoff = NA) {
 
 
 plot.cfr <- function(data) {
-  return(0)
+
+  # Check if the data is a data frame
+  if (!is.data.frame(data)) {
+    stop("The input data must be a data frame.")
+  }
+
+  # check if the data has the required columns
+  required_columns <- c("dose", "cfr", "toxicity_proportion")
+  missing_columns <- setdiff(required_columns, colnames(data))
+  if (length(missing_columns) > 0) {
+    stop(paste("The data frame is missing the following columns:", paste(missing_columns, collapse = ", ")))
+  }
+
+  #TODO add cfr Css = 4xMIC
+  # create cfr plot
+  cfr_plot <- ggplot(data, aes(x = .data$dose)) +
+    geom_line(aes(y = .data$cfr), col = "#2db391", lty = 1, lwd = 1) +
+    geom_line(aes(y = .data$toxicity_proportion), col = "#960b0b") +
+    xlab("Dose (g)") +
+    ylab("CFR (%)") +
+    geom_hline(yintercept = 0.1, col = "#2b94ab", lty = 2, lwd = 0.5) +
+    geom_hline(yintercept = 0.9, col = "#0e877b", lty = 2, lwd = 0.5) +
+    theme_bw(base_size = 14) +
+    ggplot2::theme(
+      legend.position = "inside",
+      legend.justification.inside = c(0.9, 0.9),
+      legend.box.background = ggplot2::element_rect()
+    )
+
+  return(cfr_plot)
 }

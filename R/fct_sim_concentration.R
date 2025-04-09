@@ -94,15 +94,15 @@ sim_concentration <- function(
 #' @noRd
 
 
-# test variables
-max_dose <- 16
-dose_increment <- 2
-tvcl <- 5.5
-eta_cl <- 0.2
-mic_distribution <- data.frame(
-  mic = c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32),
-  distribution = c(10, 100, 300, 1597, 1000, 150, 3, 10, 0, 5)
-)
+# # test variables
+# max_dose <- 16
+# dose_increment <- 2
+# tvcl <- 5.5
+# eta_cl <- 0.2
+# mic_distribution <- data.frame(
+#   mic = c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32),
+#   distribution = c(10, 100, 300, 1597, 1000, 150, 3, 10, 0, 5)
+# )
 
 calculate_cfr <- function(
   tvcl,
@@ -158,7 +158,29 @@ calculate_cfr <- function(
 #'
 #'
 
-calculate_cfr_mulitple_doses <- function() {
-  return(NULL)
-  # TODO implement the function to calculate the cfr for multiple doses
+calculate_cfr_mulitple_doses <- function(dose_increment, dose_max, tvcl, eta_cl, mic_distribution, toxicity_threshold = NULL, n_sim = 50000) {
+
+  # create all dosing sequence
+  dosing_sequence <- seq(0, dose_max, dose_increment)
+
+  for (i in seq_along(dosing_sequence)) {
+    # calculate the cfr for each dose
+    cfr <- calculate_cfr(tvcl, eta_cl, dosing_sequence[i], mic_distribution, toxicity_threshold, n_sim)
+    # create a dataframe with the cfr and the dose and append all doses in a single dataframe
+    if (i == 1) {
+      cfr_df <- data.frame(
+        dose = dosing_sequence[i],
+        cfr = cfr$cfr,
+        toxicity_proportion = cfr$toxicity_proportion
+      )
+    } else {
+      cfr_df <- rbind(cfr_df, data.frame(
+        dose = dosing_sequence[i],
+        cfr = cfr$cfr,
+        toxicity_proportion = cfr$toxicity_proportion
+      ))
+    }
+  }
+
+  return(cfr_df)
 }

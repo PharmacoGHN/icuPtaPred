@@ -100,7 +100,7 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
 drug_threshold <- function(drug) {
   toxicity <- switch(drug,
-    "amoxicillin" = NA,
+    "Amoxicillin" = NA,
     "Cefepime" = 20, # Lamoth et al. 2010
     "Cefazoline" = NA,
     "Cefotaxim" = NA,
@@ -115,4 +115,33 @@ drug_threshold <- function(drug) {
   )
 
   return(toxicity)
+}
+
+#' max_dose
+#' @description this function calculate pk parameters and get the dose increment base on model
+#'
+#' @param drug a string with the name of the drug
+#' @return return drug the maximum dose for a given drug in gram
+#'
+#' @noRd
+#' 
+
+
+max_dose <- function(drug) {
+  max_dose <- switch(drug,
+    "Amoxicillin" = 20,
+    "Cefepime" = 20, # Lamoth et al. 2010
+    "Cefazoline" = 20,
+    "Cefotaxim" = 20,
+    "Cefiderocol" = 20,
+    "Ceftazidime" = 20,
+    "Ceftaroline" = 20,
+    "Ceftobiprol" = 20,
+    "Ceftolozane" = 20,
+    "Piperacillin-tazobactam" = 40,
+    "Meropenem" = 20, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
+    0
+  )
+
+  return(max_dose)
 }
