@@ -1,7 +1,6 @@
 testthat::test_that("extract_eucast return the right list and is up to date", {
 
    res_update_eucast <- update_eucast()
-   skip("mic_distribution is suddenly not found anymore")
    res_mic_distribution <- mic_distribution("Vancomycin", "Staphylococcus lugdunensis", res_update_eucast)
 
 
