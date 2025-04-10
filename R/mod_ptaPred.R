@@ -34,31 +34,11 @@ mod_ptaPred_ui <- function(id) {
             numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
           ),
           rep_br(2),
-          selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
+          #selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
           sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
           rep_br(2),
           actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
         ),
-        # column(
-        #   width = 2,
-        #   box(
-        #     width = 12,
-        #     status = "lightblue",
-        #     solidHeader = TRUE,
-        #     title = "Information Patient",
-        #     numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
-        #     numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
-        #     numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
-        #     numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
-        #     selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "mg/dL"),
-        #     # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-        #     numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
-        #     numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-        #     selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
-        #     # choice ethnicity
-        #     # add all patient info to be computed in pop pk model (no bayesian?)
-        #   )
-        # ),
         column(
           width = 8,
           column(
@@ -108,25 +88,6 @@ mod_ptaPred_ui <- function(id) {
             # add all patient info to be computed in pop pk model (no bayesian?)
           )
         )
-        # column(
-        #   width = 2,
-        #   box(
-        #     width = 12,
-        #     status = "olive",
-        #     solidHeader = TRUE,
-        #     title = "Information sur le Traitement",
-        #     selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
-        #     selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-        #     selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
-        #     uiOutput(ns("model_choice")),
-        #     numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
-        #   ),
-        #   rep_br(2),
-        #   selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
-        #   sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
-        #   rep_br(2),
-        #   actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
-        # )
       )
     )
   )
@@ -144,6 +105,7 @@ mod_ptaPred_server <- function(id) {
     mic_specie <- reactiveVal()
     ecoff <- reactiveVal()
     ecoff_ci <- reactiveVal()
+    mic_distribution_df <- reactiveVal()
 
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
@@ -204,6 +166,12 @@ mod_ptaPred_server <- function(id) {
         ecoff(as.numeric(mic_information()$ecoff))
         ecoff_ci(mic_information()$ecoff_ci)
 
+        # # create mic_distribution dataframe
+        # mic_distribution_df(data.frame(
+        #   mic = as.numeric(names(mic_information()[["mic_distribution"]])),
+        #   distribution = mic_information()[["mic_distribution"]]
+        # ))
+
         # Debugging in dev mode
         golem::cat_dev("[Module : ptPred] [Line 155] The output of the mic_information object is : \n", "\n")
         golem::print_dev(mic_information())
@@ -231,6 +199,16 @@ mod_ptaPred_server <- function(id) {
         showNotification("Please fix the error displayed before continuing", duration = 10, type = "error", closeButton = TRUE)
         return()
       }
+
+      #compute mic distribution datafram
+      mic_distribution_df <- data.frame(
+        mic = mic_specie,
+        distribution = mic_information()[["mic_distribution"]]
+      )
+      golem::cat_dev("[Module : ptPred] [mic_distribution_df - Line 159] The output of the  object is : \n", "\n")
+      golem::print_dev(mic_information()[["mic_distribution"]])
+      golem::cat_dev("[Module : ptPred] [mic_distribution_df - Line 159] The output of the  object is : \n", "\n")
+      golem::print_dev(mic_distribution_df)
 
       # general info
       biological <- calc_biological(
@@ -266,15 +244,29 @@ mod_ptaPred_server <- function(id) {
         toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
       )
 
+      # calculate cfr based on the selected model
+      cfr_df <- calculate_cfr_mulitple_doses(
+        dose_increment = model_param$dose_increment * 1000, # convert from g to mg
+        dose_max = max_dose(input$beta_lactamin) * 1000, # convert from g to mg
+        tvcl = model_param$cl,
+        eta_cl = model_param$eta_cl,
+        mic_distribution = mic_distribution_df,
+        toxicity_threshold = drug_threshold(input$beta_lactamin)
+      )
+
       # Debugging in dev mode
       golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n", "\n")
-      golem::cat_dev("[Module : ptPred] [Line 215] The output of the concentration_df object is : \n", "\n")
+      golem::cat_dev("[Module : ptPred] [Line 220] The output of the concentration_df object is : \n", "\n")
       golem::print_dev(concentration_df)
+      golem::cat_dev("[Module : ptPred] [Line 231] The output of the cfr_df object is : \n", "\n")
+      golem::print_dev(cfr_df)
 
       # [PTA Plot] ___________________________________________________________
       plot <- plot.pta(concentration_df, ecoff = if (input$bacteria_select == "probabilist") NA else ecoff())
+      plot_cfr <- if (input$bacteria_select == "probabilist") NA else plot.cfr(cfr_df)
       output$pta_output <- renderPlotly({ plotly::ggplotly(plot$pta_multiple_doses) }) # plot pta with css/mic
       output$pta_output_probability <- renderPlotly({ plotly::ggplotly(plot$pta_ci_plot) }) # plot pta with css/mic probability quantile based on user selection
+      output$cfr_output <- renderPlotly({ if(!is.na(plot_cfr)) plotly::ggplotly(plot_cfr) }) # plot cfr with css/mic
 
       # [Footer] ___________________________________________________________
       # [Display the dose line] with corresponding colors
