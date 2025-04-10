@@ -162,7 +162,7 @@ test_that("get_model_parameters returns correct dose_increment values", {
 })
 
 test_that("get_model_parameters returns correct toxicity_threshold values", {
-  expect_equal(drug_threshold("amoxicillin"), NA)
+  expect_equal(drug_threshold("Amoxicillin"), NA)
   expect_equal(drug_threshold("Cefepime"), 20)
   expect_equal(drug_threshold("Cefazoline"), NA)
   expect_equal(drug_threshold("Cefotaxim"), NA)
