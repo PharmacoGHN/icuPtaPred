@@ -131,23 +131,6 @@ mod_ptaPred_server <- function(id) {
     })
 
 
-    # create the warning message to display on launch
-    # [Warning - Disclamer] ______________________________________
-    warning_message <- div(
-      class = "disclamer-panel pull-right",
-      p("Disclamer", style = "font-weight: bold; font-size: 16px; text-align: center;"),
-      p("1. Aide a la decision"),
-      p("2. ne prend pas en compte l ecologie locale"),
-      p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
-    )
-
-    if (golem::app_prod()) {
-      # modal open on app launch to warn people
-      observe({
-        showModal(modalDialog(size = "xl", warning_message, easyClose = FALSE, modalButton("Accept"), footer = NULL))
-      })
-    }
-
     # load eucast and update bacteria list
     # [Eucast] ______________________________________________________
     eucast <- update_eucast()
@@ -165,12 +148,6 @@ mod_ptaPred_server <- function(id) {
         mic_specie(c(as.numeric(names(mic_information()[["mic_distribution"]]))))
         ecoff(as.numeric(mic_information()$ecoff))
         ecoff_ci(mic_information()$ecoff_ci)
-
-        # # create mic_distribution dataframe
-        # mic_distribution_df(data.frame(
-        #   mic = as.numeric(names(mic_information()[["mic_distribution"]])),
-        #   distribution = mic_information()[["mic_distribution"]]
-        # ))
 
         # Debugging in dev mode
         golem::cat_dev("[Module : ptPred] [Line 155] The output of the mic_information object is : \n", "\n")
@@ -200,13 +177,9 @@ mod_ptaPred_server <- function(id) {
         return()
       }
 
-      #compute mic distribution datafram
-      mic_distribution_df <- data.frame(
-        mic = mic_specie,
-        distribution = mic_information()[["mic_distribution"]]
-      )
+
       golem::cat_dev("[Module : ptPred] [mic_distribution_df - Line 159] The output of the  object is : \n", "\n")
-      golem::print_dev(mic_information()[["mic_distribution"]])
+      golem::print_dev(mic_information()[["mic_distribution"]][1,])
       golem::cat_dev("[Module : ptPred] [mic_distribution_df - Line 159] The output of the  object is : \n", "\n")
       golem::print_dev(mic_distribution_df)
 
@@ -244,29 +217,45 @@ mod_ptaPred_server <- function(id) {
         toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
       )
 
-      # calculate cfr based on the selected model
-      cfr_df <- calculate_cfr_mulitple_doses(
-        dose_increment = model_param$dose_increment * 1000, # convert from g to mg
-        dose_max = max_dose(input$beta_lactamin) * 1000, # convert from g to mg
-        tvcl = model_param$cl,
-        eta_cl = model_param$eta_cl,
-        mic_distribution = mic_distribution_df,
-        toxicity_threshold = drug_threshold(input$beta_lactamin)
-      )
+      #compute mic distribution datafram
+      if (input$bacteria_select != "probabilist") {
+        # create mic_distribution dataframe
+        mic_distribution_df <- data.frame(
+          mic = mic_specie(),
+          distribution = as.numeric(dplyr::slice(mic_information()[["mic_distribution"]], 1))
+        )
+
+        # calculate cfr based on the selected model
+        cfr_df <- calculate_cfr_mulitple_doses(
+          dose_increment = model_param$dose_increment * 1000, # convert from g to mg
+          dose_max = max_dose(input$beta_lactamin) * 1000, # convert from g to mg
+          tvcl = model_param$cl,
+          eta_cl = model_param$eta_cl,
+          mic_distribution = mic_distribution_df,
+          toxicity_threshold = drug_threshold(input$beta_lactamin)
+        )
+
+        # generate the cfr plot
+        plot_cfr <- plot.cfr(cfr_df)
+        output$cfr_output <- renderPlotly({ plotly::ggplotly(plot_cfr) }) # plot cfr with css/mic
+
+        # debugging in dev mode
+        golem::cat_dev("[Module : ptPred] [Line 231] The output of the cfr_df object is : \n", "\n")
+        golem::print_dev(cfr_df)
+        golem::cat_dev("[Module : ptPred] [Line 269] The output of the plot object is : \n", "\n")
+        golem::print_dev(plot_cfr)
+      }
+
 
       # Debugging in dev mode
       golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n", "\n")
       golem::cat_dev("[Module : ptPred] [Line 220] The output of the concentration_df object is : \n", "\n")
       golem::print_dev(concentration_df)
-      golem::cat_dev("[Module : ptPred] [Line 231] The output of the cfr_df object is : \n", "\n")
-      golem::print_dev(cfr_df)
 
       # [PTA Plot] ___________________________________________________________
       plot <- plot.pta(concentration_df, ecoff = if (input$bacteria_select == "probabilist") NA else ecoff())
-      plot_cfr <- if (input$bacteria_select == "probabilist") NA else plot.cfr(cfr_df)
       output$pta_output <- renderPlotly({ plotly::ggplotly(plot$pta_multiple_doses) }) # plot pta with css/mic
       output$pta_output_probability <- renderPlotly({ plotly::ggplotly(plot$pta_ci_plot) }) # plot pta with css/mic probability quantile based on user selection
-      output$cfr_output <- renderPlotly({ if(!is.na(plot_cfr)) plotly::ggplotly(plot_cfr) }) # plot cfr with css/mic
 
       # [Footer] ___________________________________________________________
       # [Display the dose line] with corresponding colors
