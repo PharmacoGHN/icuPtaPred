@@ -120,7 +120,7 @@ calculate_cfr <- function(
 
   # global variables
   cfr <- 0 # Initialize cfr variable
-  mic_distribution <- dplyr::mutate(mic_distribution, relative_distribution = .data$distribution / sum(.data$distribution))
+  mic_distribution <- dplyr::mutate(mic_distribution, relative_distribution = distribution / sum(distribution))
   css_distribution <- calc_css_distribution(dose, tvcl, eta_cl)
 
   # calculate the cfr for a single dose and all mic values
