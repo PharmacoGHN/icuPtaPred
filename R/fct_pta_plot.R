@@ -15,7 +15,12 @@ plot.pta <- function(data, ecoff = NA) {
     ggplot2::geom_line(mapping = ggplot2::aes(x = .data$mic, y = .data$toxicity_threshold), col = "#960b0b") +
     ggplot2::labs(linetype = NULL) +
     ggplot2::scale_x_continuous(trans = "log2", breaks = data$mic, labels = data$mic, limits = c(max(0.01, min(data$mic)), max(data$mic))) +
-    ggplot2::scale_y_continuous(trans = "log2", n.breaks = 10, limits = c(max(0.01, min(data$css_mic_below2)), max(data$css_mic_above2))) +
+    ggplot2::scale_y_continuous(
+      trans = "log2",
+      n.breaks = 10,
+      limits = c(max(0.01, min(data$css_mic_below2), min(data$toxicity_threshold)), #min
+                 max(data$css_mic_above2, data$percentile_97.5)) #max
+      ) +
     ggplot2::xlab("MIC (mg/L)") +
     ggplot2::ylab("Css/MIC") +
     ggplot2::theme_bw(base_size = 14) +

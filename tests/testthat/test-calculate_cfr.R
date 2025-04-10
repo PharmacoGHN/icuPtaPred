@@ -80,7 +80,7 @@ testthat::test_that("calculate_cfr works correctly", {
   expect_type(result$toxicity_proportion, "double")
 
 
-  result_cfr_multiple_dose <- calculate_cfr_mulitple_doses(
+  result_cfr_multiple_dose_expected <- calculate_cfr_mulitple_doses(
     dose_increment = dose_increment,
     dose_max = dose_max,
     tvcl = tvcl,
@@ -90,11 +90,11 @@ testthat::test_that("calculate_cfr works correctly", {
     n_sim = 0
   )
   # Check if the result is a list containing cfr and toxicity_proportion
-  expect_s3_class(result_cfr_multiple_dose, "data.frame")
-  expect_equal(nrow(result_cfr_multiple_dose), length(dosing_sequence_css))
-  expect_equal(ncol(result_cfr_multiple_dose), 3)
-  expect_type(result_cfr_multiple_dose$cfr, "double")
-  expect_type(result_cfr_multiple_dose$toxicity_proportion, "double")
-  expect_equal(result_cfr_multiple_dose$cfr, expected_cfr_multiple_dose, tolerance = 0.01)
+  expect_s3_class(result_cfr_multiple_dose_expected, "data.frame")
+  expect_equal(nrow(result_cfr_multiple_dose_expected), length(dosing_sequence_css))
+  expect_equal(ncol(result_cfr_multiple_dose_expected), 3)
+  expect_type(result_cfr_multiple_dose_expected$cfr, "double")
+  expect_type(result_cfr_multiple_dose_expected$toxicity_proportion, "double")
+  expect_equal(result_cfr_multiple_dose_expected$cfr, expected_cfr_multiple_dose, tolerance = 0.01)
   #expect_true("cfr" %in% names(result_cfr_multiple_dose))
 })

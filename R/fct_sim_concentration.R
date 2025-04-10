@@ -12,7 +12,8 @@ calc_css_distribution <- function(
   ) {
   # calculate cl and css distribution PK formula -> css = R0/CL
   set.seed(3917985)
-  cl_distribution <- ifelse(n_sim > 0, tvcl * stats::rlnorm(n_sim, meanlog = 0, sdlog = eta_cl), tvcl)
+  if (n_sim == 0) cl_distribution <- tvcl
+  if (n_sim > 0) cl_distribution <- tvcl * stats::rlnorm(n_sim, meanlog = 0, sdlog = eta_cl)
   css_distribution <- (dose / 24) / cl_distribution
 
   return(css_distribution)
