@@ -5,11 +5,11 @@
 #' @noRd
 
 calc_css_distribution <- function(
-    dose,
-    tvcl,
-    eta_cl,
-    n_sim  = 50000
-  ) {
+  dose,
+  tvcl,
+  eta_cl,
+  n_sim  = 50000
+) {
   # calculate cl and css distribution PK formula -> css = R0/CL
   set.seed(3917985)
   if (n_sim == 0) cl_distribution <- tvcl
@@ -94,17 +94,6 @@ sim_concentration <- function(
 #' @author Romain Garreau
 #' @noRd
 
-
-# # test variables
-# max_dose <- 16
-# dose_increment <- 2
-# tvcl <- 5.5
-# eta_cl <- 0.2
-# mic_distribution <- data.frame(
-#   mic = c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32),
-#   distribution = c(10, 100, 300, 1597, 1000, 150, 3, 10, 0, 5)
-# )
-
 calculate_cfr <- function(
   tvcl,
   eta_cl,
@@ -156,7 +145,6 @@ calculate_cfr <- function(
 #'
 #' @author Romain Garreau
 #' @noRd
-#'
 #'
 
 calculate_cfr_mulitple_doses <- function(dose_increment, dose_max, tvcl, eta_cl, mic_distribution, toxicity_threshold = NULL, n_sim = 50000) {
