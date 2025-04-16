@@ -9,6 +9,9 @@ testthat::test_that("calculate_cfr works correctly", {
   dose_max <- 32000 # Maximum dose in mg for piperacillin-tazobactam
   dosing_sequence <- seq(0, dose_max, by = dose_increment) # Dosing sequence from 0 to 32g with a step of 2g
   dosing_sequence_css <- dosing_sequence / 24 / tvcl # Dosing sequence in css for piperacillin-tazobactam
+  css_nsim0 <- dose / tvcl / 24
+
+
 
   # Define a sample mic_distribution dataframe based on the distribution from EUCAST
   # These are the real value for Piperacillin-tazobactam and Pseudomonas aeruginosa as of 03/04/2025
@@ -18,30 +21,22 @@ testthat::test_that("calculate_cfr works correctly", {
   ) |>
     dplyr::mutate(relative_distribution = distribution / sum(distribution))
 
-  # mic_distribution$relative_distribution <- mic_distribution$distribution / sum(mic_distribution$distribution)
-
-
   #expeted cfr value for piperacillin-tazobactam and pseudomonas aeruginosa
-  expected_cfr_nsim0 <- 1 - sum(mic_distribution$relative_distribution[10:14])
-  expected_cfr_multiple_dose <- c(
-    0,
-    1 - sum(mic_distribution$relative_distribution[8:14]),
-    1 - sum(mic_distribution$relative_distribution[9:14]),
-    1 - sum(mic_distribution$relative_distribution[10:14]),
-    1 - sum(mic_distribution$relative_distribution[10:14]),
-    1 - sum(mic_distribution$relative_distribution[11:14]),
-    1 - sum(mic_distribution$relative_distribution[11:14]),
-    1 - sum(mic_distribution$relative_distribution[11:14]),
-    1 - sum(mic_distribution$relative_distribution[11:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14]),
-    1 - sum(mic_distribution$relative_distribution[12:14])
-  )
+  rank_css_nsim0 <- min(which(mic_distribution$mic > css_nsim0))
+  expected_cfr_nsim0 <- 1 - sum(mic_distribution$relative_distribution[rank_css_nsim0:14])
+
+  # Calculate expected CFR for multiple doses using the same approach as above
+  expected_cfr_multiple_dose <- numeric(length(dosing_sequence_css))
+
+  for (i in seq_along(dosing_sequence_css)) {
+    css <- dosing_sequence_css[i]
+    if (css == 0) {
+      expected_cfr_multiple_dose[i] <- 0  # No drug, no effect
+    } else {
+      rank_css <- min(which(mic_distribution$mic > css))
+      expected_cfr_multiple_dose[i] <- 1 - sum(mic_distribution$relative_distribution[rank_css:14])
+    }
+  }
 
 
   # test section ______________________
@@ -59,7 +54,7 @@ testthat::test_that("calculate_cfr works correctly", {
   expect_type(result_nsim0, "list")
   expect_type(result_nsim0$cfr, "double")
   expect_type(result_nsim0$toxicity_proportion, "double")
-  expect_equal(result_nsim0$cfr, expected_cfr_nsim0, tolerance = 0.01)
+  expect_equal(result_nsim0$cfr, expected_cfr_nsim0, tolerance = 0.001)
   expect_equal(result_nsim0$toxicity_proportion, 0, tolerance = 0.01)
 
 

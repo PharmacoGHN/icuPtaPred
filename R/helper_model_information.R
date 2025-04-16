@@ -4,7 +4,7 @@
 
 model_information <- list(
   "Piperacillin-tazobactam" = list(
-    klastrup_2020 = tibble::tibble(
+    Klastrup_2020 = tibble::tibble(
       Title = "Pharmacokinetic Model of Piperacillin-Tazobactam",
       Authors = "Klastrup, I. D., et al.",
       Year = 2020,
