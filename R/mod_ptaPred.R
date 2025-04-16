@@ -29,8 +29,6 @@ mod_ptaPred_ui <- function(id) {
             title = "Information sur le Traitement",
             selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
             selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-            #selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
-            # uiOutput(ns("model_choice")),
             numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
           ),
           rep_br(2),
@@ -79,9 +77,6 @@ mod_ptaPred_ui <- function(id) {
             numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
             numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
             selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "uM/L"),
-            # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-            #numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
-            #numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
             selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
           )
         )
@@ -103,19 +98,10 @@ mod_ptaPred_server <- function(id) {
     ecoff <- reactiveVal()
     ecoff_ci <- reactiveVal()
     mic_distribution_df <- reactiveVal()
-    advance_user_mode <- reactiveVal(FALSE)
 
     # [Advance User Mode] _______________________________________________
-    # allow model selection
-    # output$mode_choice() <- renderUI({
-    #   conditionalPanel(
-    #     condition = "input.advanced_user_mode == true",
-    #     ns = ns,
-    #     selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto")
-    #     #selectInput(ns("model_selected"), label = "Select Model:", choices = names(model_information[[input$beta_lactamin]]), selected = default_model, width = "auto")
-    #   )
-    # })
-   
+    advance_user_mode <- reactiveVal(FALSE)
+
 
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
@@ -126,12 +112,6 @@ mod_ptaPred_server <- function(id) {
     validator$add_rule("weight", function(value) { if (value > 500) "Weight must be less than 500 kg"})
     validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0"})
     validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120"})
-    # validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported"})
-    # validator$add_rule("model_selected", function(value) { if (value == "Gijsen_2021") "Not currently supported"})
-    # validator$add_rule("model_selected", function(value) { if (value == "Minichmayr_2018") "Not currently supported"})
-    # validator$add_rule("model_selected", function(value) { if (value == "Ehrmann_2019") "Not currently supported"})
-    # validator$add_rule("model_selected", function(value) { if (value == "Huang_2025") "Not currently supported"})
-    # validator$add_rule("model_selected", function(value) { if (value == "Lan_2022") "Not currently supported"})
     validator$add_rule("beta_lactamin", function(value) { if (value == "Meropenem") "Not currently supported"})
 
     validator$enable()
@@ -211,11 +191,8 @@ mod_ptaPred_server <- function(id) {
       )
 
       # selected model
-      # if (advance_user_mode()) {
-      #   model_selected <- input$model_selected
-      # } else {
-        model_selected <- get_default_model(input$beta_lactamin)
-      # }
+
+      model_selected <- get_default_model(input$beta_lactamin)
       golem::cat_dev("[Module : ptPred] [User Mode] The selected model is : ", advance_user_mode(), "\n", "\n")
       golem::cat_dev("[Module : ptPred] [Model selected] The selected model is : ", model_selected, "\n", "\n")
 
