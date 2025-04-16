@@ -61,7 +61,7 @@ plot.pta <- function(data, ecoff = NA) {
 #'
 
 
-plot.cfr <- function(data) {
+plot.cfr <- function(data, dose_increment = 0) {
 
   # Check if the data is a data frame
   if (!is.data.frame(data)) {
@@ -75,11 +75,14 @@ plot.cfr <- function(data) {
     stop(paste("The data frame is missing the following columns:", paste(missing_columns, collapse = ", ")))
   }
 
-  #TODO add cfr Css = 4xMIC
+  # TODO add cfr Css = 4xMIC
+  # TODO add x legend break based on dose increment
+
   # create cfr plot
-  cfr_plot <- ggplot(data, aes(x = .data$dose)) +
+  cfr_plot <- ggplot(data, aes(x = .data$dose / 1000)) +
     geom_line(aes(y = .data$cfr), col = "#2db391", lty = 1, lwd = 1) +
     geom_line(aes(y = .data$toxicity_proportion), col = "#960b0b") +
+    scale_x_continuous(trans = scales::pseudo_log_trans()) +
     xlab("Dose (g)") +
     ylab("CFR (%)") +
     geom_hline(yintercept = 0.1, col = "#2b94ab", lty = 2, lwd = 0.5) +
@@ -90,6 +93,6 @@ plot.cfr <- function(data) {
       legend.justification.inside = c(0.9, 0.9),
       legend.box.background = ggplot2::element_rect()
     )
-
+    
   return(cfr_plot)
 }

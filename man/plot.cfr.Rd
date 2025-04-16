@@ -4,7 +4,7 @@
 \alias{plot.cfr}
 \title{plot.cfr}
 \usage{
-\method{plot}{cfr}(data)
+\method{plot}{cfr}(data, dose_increment = 0)
 }
 \arguments{
 \item{data}{take a data.frame with the following columns: dose, cfr, toxicity_proportion}
