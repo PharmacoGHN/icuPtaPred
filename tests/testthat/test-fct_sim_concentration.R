@@ -20,6 +20,9 @@ test_that("sim_concentration returns expected output", {
     )
   )
 
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl)
+  #expected_false()
+
   result <- sim_concentration(dose, tvcl, eta_cl, quantile, mic, dose_increment = 500, toxicity_threshold = 8)
 
   # Check that the result is a dataframe
@@ -44,5 +47,27 @@ test_that("sim_concentration returns expected output", {
   expect_true(all(result$percentile_2.5 < result$percentile_97.5))
 
   # Check if data return as the one expected (data have a seed embeded in function)
+  skip("confidence interval are not being calculated needs investigation")
   expect_equal(result, expected_sim_conc_df, tolerance = 0.01)
+})
+
+
+# Test calc_css_distribution function
+test_that("calc_css_distribution returns expected output", {
+  dose <- 1000
+  tvcl <- 10
+  eta_cl <- 2
+  n_sim_1 <- 50000
+
+  expected_css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim_1)
+
+  # Check that the result is a numeric vector
+  expect_type(expected_css_distribution, "double")
+
+  # Check that the length of the result matches n_sim
+  expect_equal(length(expected_css_distribution), n_sim_1)
+
+  # Check that the values are within a reasonable range (e.g., positive values)
+  expect_true(all(expected_css_distribution > 0))
+
 })

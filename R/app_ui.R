@@ -14,7 +14,8 @@ app_ui <- function(request) {
       header = dashboardHeader(
         title = div(
           style = "text-align: center; width: 100%; background-color: #3d9970; padding: 8px 0; color: white;",
-          tags$b("ICU PTA Predictor"), tags$sup(HTML("&copy; ")),
+            tags$b("ICU PTA Predictor"), tags$sup(HTML("&copy; ")), "\n",
+            tags$small(paste0("v", packageVersion("icuPtaPred"))),
           style = "display: inline-block;"
         ),
         titleWidth = "100%"
@@ -55,6 +56,7 @@ app_ui <- function(request) {
 #' resources inside the Shiny application.
 #'
 #' @import shiny
+#' @import bs4Dash
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
 golem_add_external_resources <- function() {

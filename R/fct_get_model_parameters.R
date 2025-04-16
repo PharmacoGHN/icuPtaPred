@@ -10,18 +10,21 @@
 get_model_parameters <- function(model, biological, drug = NULL) {
   cl <- switch(model,
     # Cefepime
-    "Barreto_2023" = 7.84, #eGFR cyst-creat not supported at the moment.
-    "cacqueray_2022" = 1.21 * (biological$tbw / 9)^0.75 * (biological$schwartz / 153)^0.37,
-    "an_2023" = 0.526 + 2 * biological$cg_lbw / 54,
+    "Barreto_2023" = 7.84, # eGFR cyst-creat not supported at the moment.
+    "Cacqueray_2022" = 1.21 * (biological$tbw / 9)^0.75 * (biological$schwartz / 153)^0.37,
+    "An_2023" = 0.526 + 2 * biological$cg_lbw / 54,
 
     # Ceftazidime
     "Buning_2021" = 3.42 * (biological$ckd_2009 / 73)^0.772, # TODO add trauma and hematology malignancy
     "Launay_2024" = 4.45 * (biological$ckd_2009 / 73.9)^0.9,
-    "Cojutti_2024" = 5 * (biological$ekfc / 70) ^ 0.7,
+    "Cojutti_2024" = 5 * (biological$ekfc / 70)^0.7,
+
+    # Cefiderocol
+    "Zhar_2022" = 7.38 * (biological$ckd_2009 / 100)^0.467,
 
     # Ceftolozane
-    "Chandorkar_2015" = 5.11 * 1.215 * (biological$cg_tbw / 109) ^ 0.715,
-    "Zhang_2021" = 4.84 * (biological$cg_tbw / 100) ^ 0.701,
+    "Chandorkar_2015" = 5.11 * 1.215 * (biological$cg_tbw / 109)^0.715,
+    "Zhang_2021" = 4.84 * (biological$cg_tbw / 100)^0.701,
 
     # Meropenem
     "Gijsen_2021" = 1,
@@ -32,8 +35,8 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Fukumoto_2023" = 1.35 * ((biological$uvp * 1.73 / biological$bsa) / 87.6)^0.67,
 
     # Piperacillin
-    "klastrup_2020" = (2.25 + 0.119 * biological$cg_tbw),
-    "Sukarnjanaset_2019" = 5.37 + (0.06 * (biological$cg_tbw - 55)), #Median Arterial Pressure disabled for the moment
+    "Klastrup_2020" = (2.25 + 0.119 * biological$cg_tbw),
+    "Sukarnjanaset_2019" = 5.37 + (0.06 * (biological$cg_tbw - 55)), # Median Arterial Pressure disabled for the moment
     "Udy_2015" = 16.3 * (biological$cg_tbw / 100),
     # default value if no match
     1
@@ -41,14 +44,17 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
   eta_cl <- switch(model,
     # Cefepime eta CL
-    "Barreto_2023" = 1, #get_sd_from_cv(0.299),
-    "cacqueray_2022" = 0.39,
-    "an_2023" = get_sd_from_cv(0.299),
+    "Barreto_2023" = 1, # get_sd_from_cv(0.299),
+    "Cacqueray_2022" = 0.39,
+    "An_2023" = get_sd_from_cv(0.299),
 
     # Ceftazidime
     "Buning_2021" = get_sd_from_cv(0.36),
-    "Launay_2024" = 0.46, #standard deviation
+    "Launay_2024" = 0.46, # standard deviation
     "Cojutti_2024" = get_sd_from_cv(0.6792),
+
+    # Cefiderocol
+    "Zhar_2022" = 0.467,
 
     # Ceftolozane
     "Chandorkar_2015" = get_sd_from_cv(0.33),
@@ -63,7 +69,7 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Fukumoto_2023" = get_sd_from_cv(0.221),
 
     # Piperacillin
-    "klastrup_2020" = 0.533,
+    "Klastrup_2020" = 0.533,
     "Sukarnjanaset_2019" = get_sd_from_cv(0.285),
     "Udy_2015" = get_cv_from_sd(0.56),
 
@@ -74,13 +80,14 @@ get_model_parameters <- function(model, biological, drug = NULL) {
   # automatic selection of dose increment based on selected drug.
   # This dose increment is in gram
   dose_increment <- case_when(
-    drug == "amoxicillin" ~ 0.500,
+    drug == "Amoxicillin" ~ 0.500,
     drug == "Cefepime" ~ 1.000,
-    drug == "cefazoline" ~ 0.500,
-    drug == "cefotaxim" ~ 0.500,
+    drug == "Cefazoline" ~ 0.500,
+    drug == "Cefotaxim" ~ 0.500,
+    drug == "Cefiderocol" ~ 1.000,
     drug == "Ceftazidime" ~ 1.000,
-    drug == "ceftaroline" ~ 1.000,
-    drug == "ceftobiprol" ~ 1.000,
+    drug == "Ceftaroline" ~ 1.000,
+    drug == "Ceftobiprol" ~ 1.000,
     drug == "Ceftolozane" ~ 1.000,
     drug == "Piperacillin-tazobactam" ~ 2.000,
     drug == "Meropenem" ~ 0.500,
@@ -93,13 +100,14 @@ get_model_parameters <- function(model, biological, drug = NULL) {
 
 drug_threshold <- function(drug) {
   toxicity <- switch(drug,
-    "amoxicillin" = NA,
+    "Amoxicillin" = NA,
     "Cefepime" = 20, # Lamoth et al. 2010
-    "cefazoline" = NA,
-    "cefotaxim" = NA,
+    "Cefazoline" = NA,
+    "Cefotaxim" = NA,
+    "Cefiderocol" = NA,
     "Ceftazidime" = NA,
-    "ceftaroline" = NA,
-    "ceftobiprol" = NA,
+    "Ceftaroline" = NA,
+    "Ceftobiprol" = NA,
     "Ceftolozane" = NA,
     "Piperacillin-tazobactam" = 157,
     "Meropenem" = 45, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
@@ -107,4 +115,57 @@ drug_threshold <- function(drug) {
   )
 
   return(toxicity)
+}
+
+#' max_dose
+#' @description this function calculate pk parameters and get the dose increment base on model
+#'
+#' @param drug a string with the name of the drug
+#' @return return drug the maximum dose for a given drug in gram
+#'
+#' @noRd
+#'
+
+
+max_dose <- function(drug) {
+  max_dose <- switch(drug,
+    "Amoxicillin" = 20,
+    "Cefepime" = 20, # Lamoth et al. 2010
+    "Cefazoline" = 20,
+    "Cefotaxim" = 20,
+    "Cefiderocol" = 20,
+    "Ceftazidime" = 20,
+    "Ceftaroline" = 20,
+    "Ceftobiprol" = 20,
+    "Ceftolozane" = 20,
+    "Piperacillin-tazobactam" = 40,
+    "Meropenem" = 20, # Scharf C et al, 2020 https://pmc.ncbi.nlm.nih.gov/articles/PMC7148485/
+    0
+  )
+
+  return(max_dose)
+}
+
+#' get_default_model
+#'
+#' @description this function return the default model for a given drug
+#'
+#' @param drug a string with the name of the drug
+#'
+#' @return return the default model for a given drug
+#' @noRd
+#'
+
+
+get_default_model <- function(drug) {
+  default_model <- switch(drug,
+    "Cefepime" = "An_2023",
+    "Ceftazidime" = "Buning_2021",
+    "Ceftolozane" = "Zhang_2021",
+    "Cefiderocol" = "Zhar_2022",
+    "Piperacillin-tazobactam" = "Klastrup_2020",
+    "Meropenem" = "Erhmann_2019",
+    character(0) # Default when no match is found
+  )
+  return(default_model)
 }

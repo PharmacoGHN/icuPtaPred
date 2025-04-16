@@ -73,22 +73,22 @@ test_that("get_model_parameters returns correct values for Zhang_2021", {
 })
 
 # Cefepime model testing ______________________________________________
-test_that("get_model_parameters returns correct values for cacqueray_2022", {
-  result <- get_model_parameters("cacqueray_2022", biological) #CL = 1.21 * (biological$tbw / 9) ^ 0.75 * (biological$schwartz / 153) ^ 0.37)
+test_that("get_model_parameters returns correct values for Cacqueray_2022", {
+  result <- get_model_parameters("Cacqueray_2022", biological) #CL = 1.21 * (biological$tbw / 9) ^ 0.75 * (biological$schwartz / 153) ^ 0.37)
   expect_equal(result$cl, 5.15, tolerance = 0.01)
   expect_equal(result$eta_cl, 0.39)
 
-  result_2 <- get_model_parameters("cacqueray_2022", biological_2)
+  result_2 <- get_model_parameters("Cacqueray_2022", biological_2)
   expect_equal(result_2$cl, 6.47, tolerance = 0.01)
   expect_equal(result_2$eta_cl, 0.39)
 })
 
-test_that("get_model_parameters returns correct values for an_2023", {
-  result <- get_model_parameters("an_2023", biological)  # Clearance  0.526 + 2 * biological$cg_lbw / 54
+test_that("get_model_parameters returns correct values for An_2023", {
+  result <- get_model_parameters("An_2023", biological)  # Clearance  0.526 + 2 * biological$cg_lbw / 54
   expect_equal(result$cl, 2.748, tolerance = 0.001)
   expect_equal(result$eta_cl, 0.293, tolerance = 0.01)
 
-  result_2 <- get_model_parameters("an_2023", biological_2)
+  result_2 <- get_model_parameters("An_2023", biological_2)
   expect_equal(result_2$cl, 3.303, tolerance = 0.001)
   expect_equal(result_2$eta_cl, 0.293, tolerance = 0.01)
 })
@@ -105,12 +105,12 @@ test_that("get_model_parameters returns correct values for Fukumoto_2023", {
 })
 
 # Piperacillin model testing ______________________________________________
-test_that("get_model_parameters returns correct values for klastrup_2020", {
-  result <- get_model_parameters("klastrup_2020", biological) # Clearance klastrup 2.25 + 0.119 * biological$cg_tbw
+test_that("get_model_parameters returns correct values for Klastrup_2020", {
+  result <- get_model_parameters("Klastrup_2020", biological) # Clearance klastrup 2.25 + 0.119 * biological$cg_tbw
   expect_equal(result$cl, 10.58, tolerance = 0.001)
   expect_equal(result$eta_cl, 0.533, tolerance = 0.01)
 
-  result_2 <- get_model_parameters("klastrup_2020", biological_2)
+  result_2 <- get_model_parameters("Klastrup_2020", biological_2)
   expect_equal(result_2$cl, 12.365, tolerance = 0.001)
   expect_equal(result_2$eta_cl, 0.533, tolerance = 0.01)
 })
@@ -149,26 +149,35 @@ test_that("get_model_parameters returns default values for unknown model", {
 
 # Test dose increment and toxicity threshold ______________________________________________
 test_that("get_model_parameters returns correct dose_increment values", {
-  expect_equal(get_model_parameters("klastrup_2020", biological, "amoxicillin")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "Cefepime")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "cefazoline")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "cefotaxim")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "Ceftazidime")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "ceftaroline")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "ceftobiprol")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "Piperacillin-tazobactam")$dose_increment, 2.000)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "Meropenem")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("klastrup_2020", biological, "unknown_drug")$dose_increment, 0)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Amoxicillin")$dose_increment, 0.500)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Cefepime")$dose_increment, 1.000)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Cefazoline")$dose_increment, 0.500)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Cefotaxim")$dose_increment, 0.500)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Ceftazidime")$dose_increment, 1.000)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Ceftaroline")$dose_increment, 1.000)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Ceftobiprol")$dose_increment, 1.000)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Piperacillin-tazobactam")$dose_increment, 2.000)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "Meropenem")$dose_increment, 0.500)
+  expect_equal(get_model_parameters("Klastrup_2020", biological, "unknown_drug")$dose_increment, 0)
 })
 
 test_that("get_model_parameters returns correct toxicity_threshold values", {
-  expect_equal(drug_threshold("amoxicillin"), NA)
+  expect_equal(drug_threshold("Amoxicillin"), NA)
   expect_equal(drug_threshold("Cefepime"), 20)
-  expect_equal(drug_threshold("cefazoline"), NA)
-  expect_equal(drug_threshold("cefotaxim"), NA)
+  expect_equal(drug_threshold("Cefazoline"), NA)
+  expect_equal(drug_threshold("Cefotaxim"), NA)
   expect_equal(drug_threshold("Ceftazidime"), NA)
-  expect_equal(drug_threshold("ceftaroline"), NA)
-  expect_equal(drug_threshold("ceftobiprol"), NA)
+  expect_equal(drug_threshold("Ceftaroline"), NA)
+  expect_equal(drug_threshold("Ceftobiprol"), NA)
   expect_equal(drug_threshold("Piperacillin-tazobactam"), 157)
   expect_equal(drug_threshold("Meropenem"), 45)
+})
+
+test_that("get_model_default returns the right model", {
+  expect_equal(get_default_model("Cefepime"), "An_2023")
+  expect_equal(get_default_model("Ceftazidime"), "Buning_2021")
+  expect_equal(get_default_model("Ceftolozane"), "Zhang_2021")
+  expect_equal(get_default_model("Cefiderocol"), "Zhar_2022")
+  expect_equal(get_default_model("Piperacillin-tazobactam"), "Klastrup_2020")
+  expect_equal(get_default_model("Meropenem"), "Erhmann_2019")
 })

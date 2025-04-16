@@ -24,43 +24,46 @@ mod_ptaPred_ui <- function(id) {
           width = 2,
           box(
             width = 12,
-            status = "lightblue",
+            status = "olive",
             solidHeader = TRUE,
-            title = "Information Patient",
-            numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
-            numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
-            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
-            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
-            selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "mg/dL"),
-            # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-            numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
-            numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
-            selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
-            # choice ethnicity
-            # add all patient info to be computed in pop pk model (no bayesian?)
-          )
+            title = "Information sur le Traitement",
+            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
+            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
+            #selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
+            # uiOutput(ns("model_choice")),
+            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
+          ),
+          rep_br(2),
+          sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
+          rep_br(2),
+          actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
         ),
         column(
           width = 8,
           column(
             width = 12,
-            box(
+            tabBox(
               width = 12,
+              height = "800px",
+              background = "white",
               solidHeader = TRUE,
               status = "olive",
+              footer = uiOutput(ns("footer_pta")),
               collapsible = FALSE,
-              title = "PTA output",
-              plotlyOutput(ns("pta_output")),
-              footer = uiOutput(ns("footer_pta"))
-            ),
-            box(
-              width = 12,
-              solidHeader = TRUE,
-              status = "olive",
-              collapsible = FALSE,
-              title = "PTA Probability output",
-              plotlyOutput(ns("pta_output_probability")),
-              footer = uiOutput(ns("footer_pta_probability"))
+              selected = "PTA output",
+              tabPanel(
+                title = "PTA output",
+                plotlyOutput(ns("pta_output"), height = "700px"),
+              ),
+              tabPanel(
+                title = "PTA output probability",
+                plotlyOutput(ns("pta_output_probability"), height = "700px"),
+                footer = uiOutput(ns("footer_pta_probability"))
+              ),
+              tabPanel(
+                title = "Cumulative Fraction of Response",
+                plotlyOutput(ns("cfr_output"), height = "700px"),
+                footer = uiOutput(ns("footer_cfr")))
             )
           )
         ),
@@ -68,20 +71,19 @@ mod_ptaPred_ui <- function(id) {
           width = 2,
           box(
             width = 12,
-            status = "olive",
+            status = "lightblue",
             solidHeader = TRUE,
-            title = "Information sur le Traitement",
-            selectInput(ns("bacteria_select"), "Selectionner Bacterie", choices = "probabilist", selected = "probabilist", width = "auto"),
-            selectInput(ns("beta_lactamin"), label = labels("drug", "label", lang), choices = labels("drug", "choices", lang), selected = character(0), width = "auto"),
-            selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto"),
-            uiOutput(ns("model_choice")),
-            numericInput(ns("drug_dose"), label = labels("dose_input", "label", lang), value = 0, step = 0.125, min = 0, max = 32, width = "auto")
-          ),
-          rep_br(2),
-          selectInput(ns("css_mic_target"), label = labels("target", "label", lang), choices = labels("target", "choices", lang), selected = "one_mic"),
-          sliderInput(ns("confidence_level"), label = labels("conf_interval", "label", lang), min = 0, max = 1, value = c(0.025, 0.975), step = 0.01),
-          rep_br(2),
-          actionButton(ns("compute_pta"), "Compute PTA", style = "background-color: #3d9970; color: white; border-color: black;"),
+            title = "Information Patient",
+            numericInput(ns("age"), label = labels("age", "label", lang), value = 18, min = 0, max = 120, step = 1),
+            numericInput(ns("height"), label = labels("height", "label", lang), value = 180, min = 0, max = 250, step = 1),
+            numericInput(ns("weight"), label = labels("weight", "label", lang), value = 70, min = 0, max = 500, step = 1),
+            numericInput(ns("creatinine"), label = labels("creatinine", "label", lang), value = 60, min = 0, max = 1500, step = 1),
+            selectInput(ns("creatinine_unit"), label = "Creatinine Unit", choices = c("mg/dL" = "mg/dL", "µmol/L" = "uM/L"), selected = "uM/L"),
+            # numericInput(ns("cystatin_c"), label = labels("cystatin_c", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            #numericInput(ns("urine_output"), label = labels("urinary_output", "label", lang), value = 1500, min = 0, max = 5000, step = 1),
+            #numericInput(ns("urine_creatinine"), label = labels("urinary_creat", "label", lang), value = 0, min = 0, max = 1500, step = 1),
+            selectInput(ns("sex"), label = labels("sex", "label", lang), choices = labels("sex", "choices", lang), selected = "Male")
+          )
         )
       )
     )
@@ -100,6 +102,20 @@ mod_ptaPred_server <- function(id) {
     mic_specie <- reactiveVal()
     ecoff <- reactiveVal()
     ecoff_ci <- reactiveVal()
+    mic_distribution_df <- reactiveVal()
+    advance_user_mode <- reactiveVal(FALSE)
+
+    # [Advance User Mode] _______________________________________________
+    # allow model selection
+    # output$mode_choice() <- renderUI({
+    #   conditionalPanel(
+    #     condition = "input.advanced_user_mode == true",
+    #     ns = ns,
+    #     selectInput(ns("model_selected"), label = "Select Model:", choices = character(0), width = "auto")
+    #     #selectInput(ns("model_selected"), label = "Select Model:", choices = names(model_information[[input$beta_lactamin]]), selected = default_model, width = "auto")
+    #   )
+    # })
+   
 
     # [Validator] _______________________________________________
     validator <- InputValidator$new()
@@ -110,12 +126,13 @@ mod_ptaPred_server <- function(id) {
     validator$add_rule("weight", function(value) { if (value > 500) "Weight must be less than 500 kg"})
     validator$add_rule("age", function(value) { if (value <= 0) "Age must be greater than 0"})
     validator$add_rule("age", function(value) { if (value > 120) "Age must be less than 120"})
-    validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported"})
-    validator$add_rule("model_selected", function(value) { if (value == "Gijsen_2021") "Not currently supported"})
-    validator$add_rule("model_selected", function(value) { if (value == "Minichmayr_2018") "Not currently supported"})
-    validator$add_rule("model_selected", function(value) { if (value == "Ehrmann_2019") "Not currently supported"})
-    validator$add_rule("model_selected", function(value) { if (value == "Huang_2025") "Not currently supported"})
-    validator$add_rule("model_selected", function(value) { if (value == "Lan_2022") "Not currently supported"})
+    # validator$add_rule("model_selected", function(value) { if (value == "Barreto_2023") "Not currently supported"})
+    # validator$add_rule("model_selected", function(value) { if (value == "Gijsen_2021") "Not currently supported"})
+    # validator$add_rule("model_selected", function(value) { if (value == "Minichmayr_2018") "Not currently supported"})
+    # validator$add_rule("model_selected", function(value) { if (value == "Ehrmann_2019") "Not currently supported"})
+    # validator$add_rule("model_selected", function(value) { if (value == "Huang_2025") "Not currently supported"})
+    # validator$add_rule("model_selected", function(value) { if (value == "Lan_2022") "Not currently supported"})
+    validator$add_rule("beta_lactamin", function(value) { if (value == "Meropenem") "Not currently supported"})
 
     validator$enable()
 
@@ -124,23 +141,6 @@ mod_ptaPred_server <- function(id) {
       updateSelectInput(session, "model_selected", choices = names(model_information[[input$beta_lactamin]]))
     })
 
-
-    # create the warning message to display on launch
-    # [Warning - Disclamer] ______________________________________
-    warning_message <- div(
-      class = "disclamer-panel pull-right",
-      p("Disclamer", style = "font-weight: bold; font-size: 16px; text-align: center;"),
-      p("1. Aide a la decision"),
-      p("2. ne prend pas en compte l ecologie locale"),
-      p("3. regarder le modele sous jacent (defaut ICU) mais specificite des modeles decrites dans longlet model")
-    )
-
-    if (Sys.getenv("PRODUCTION_MODE") == "TRUE") {
-      # modal open on app launch to warn people
-      observe({
-        showModal(modalDialog(size = "xl", warning_message, easyClose = FALSE, modalButton("Accept"), footer = NULL))
-      })
-    }
 
     # load eucast and update bacteria list
     # [Eucast] ______________________________________________________
@@ -172,6 +172,9 @@ mod_ptaPred_server <- function(id) {
       }
     })
 
+    observeEvent(input$beta_lactamin, {
+
+    })
 
     # [PTA Calculation] ______________________________________________________
     # PTA computing and plotting code
@@ -188,6 +191,12 @@ mod_ptaPred_server <- function(id) {
         return()
       }
 
+
+      golem::cat_dev("[Module : ptPred] [mic_distribution_df - Line 159] The output of the  object is : \n", "\n")
+      golem::print_dev(mic_information()[["mic_distribution"]][1, ])
+      golem::cat_dev("[Module : ptPred] [mic_distribution_df - Line 159] The output of the  object is : \n", "\n")
+      golem::print_dev(mic_distribution_df)
+
       # general info
       biological <- calc_biological(
         weight = input$weight,
@@ -201,9 +210,18 @@ mod_ptaPred_server <- function(id) {
         creat_unit = input$creatinine_unit
       )
 
+      # selected model
+      # if (advance_user_mode()) {
+      #   model_selected <- input$model_selected
+      # } else {
+        model_selected <- get_default_model(input$beta_lactamin)
+      # }
+      golem::cat_dev("[Module : ptPred] [User Mode] The selected model is : ", advance_user_mode(), "\n", "\n")
+      golem::cat_dev("[Module : ptPred] [Model selected] The selected model is : ", model_selected, "\n", "\n")
+
       # calculate model parameters (cl and eta_cl) based on selected drug
       model_param <- get_model_parameters(
-        model = input$model_selected,
+        model = model_selected,
         biological = biological,
         drug = input$beta_lactamin
       )
@@ -222,9 +240,39 @@ mod_ptaPred_server <- function(id) {
         toxicity_threshold = ifelse(is.na(drug_threshold(input$beta_lactamin)), 0, drug_threshold(input$beta_lactamin))
       )
 
+      #compute mic distribution datafram
+      if (input$bacteria_select != "probabilist") {
+        # create mic_distribution dataframe
+        mic_distribution_df <- data.frame(
+          mic = mic_specie(),
+          distribution = as.numeric(dplyr::slice(mic_information()[["mic_distribution"]], 1))
+        )
+
+        # calculate cfr based on the selected model
+        cfr_df <- calculate_cfr_mulitple_doses(
+          dose_increment = model_param$dose_increment * 1000, # convert from g to mg
+          dose_max = max_dose(input$beta_lactamin) * 1000, # convert from g to mg
+          tvcl = model_param$cl,
+          eta_cl = model_param$eta_cl,
+          mic_distribution = mic_distribution_df,
+          toxicity_threshold = drug_threshold(input$beta_lactamin)
+        )
+
+        # generate the cfr plot
+        plot_cfr <- plot.cfr(cfr_df)
+        output$cfr_output <- renderPlotly({ plotly::ggplotly(plot_cfr) }) # plot cfr with css/mic
+
+        # debugging in dev mode
+        golem::cat_dev("[Module : ptPred] [Line 231] The output of the cfr_df object is : \n", "\n")
+        golem::print_dev(cfr_df)
+        golem::cat_dev("[Module : ptPred] [Line 269] The output of the plot object is : \n", "\n")
+        golem::print_dev(plot_cfr)
+      }
+
+
       # Debugging in dev mode
       golem::cat_dev("[Module : ptPred] Toxicity level for", input$beta_lactamin, "is", drug_threshold(input$beta_lactamin), " mg/L", "\n", "\n")
-      golem::cat_dev("[Module : ptPred] [Line 215] The output of the concentration_df object is : \n", "\n")
+      golem::cat_dev("[Module : ptPred] [Line 220] The output of the concentration_df object is : \n", "\n")
       golem::print_dev(concentration_df)
 
       # [PTA Plot] ___________________________________________________________

@@ -1,6 +1,28 @@
+#' calc_css_distribution
+#'
+#' @description function to calculate the css distribution for a given dose and tvcl
+#'
+#' @noRd
+
+calc_css_distribution <- function(
+  dose,
+  tvcl,
+  eta_cl,
+  n_sim  = 50000
+) {
+  # calculate cl and css distribution PK formula -> css = R0/CL
+  set.seed(3917985)
+  if (n_sim == 0) cl_distribution <- tvcl
+  if (n_sim > 0) cl_distribution <- tvcl * stats::rlnorm(n_sim, meanlog = 0, sdlog = eta_cl)
+  css_distribution <- (dose / 24) / cl_distribution
+
+  return(css_distribution)
+}
+
+
 #' sim_concentration
 #'
-#' @description A fct function
+#' @description A function to simulate the concentration of a drug for a given dose by continuous infusion and tvcl
 #'
 #' @return The return value, if any, from executing the function.
 #'
@@ -13,20 +35,14 @@ sim_concentration <- function(
   quantile = c(0.025, 0.975),
   mic = NA,
   dose_increment = 0,
-  toxicity_threshold
+  toxicity_threshold,
+  n_sim = 50000
 ) {
 
   # set default mic is none is selected
   if (length(mic) == 1 && is.na(mic)) mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64) # default range value
 
-  # typical css over 24 hours infusion rate
-  tv_css <- dose / (tvcl * 24)
-  css_mic <- tv_css / mic
-
-  # calculate cl and css distribution PK formula -> css = R0/CL
-  set.seed(16897)
-  cl_distribution <- stats::rnorm(100000, mean = tvcl, sd = eta_cl) # TODO CL distrubution is logNormal To update
-  css_distribution <- dose / (cl_distribution * 24)
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim)
   quant <- stats::quantile(css_distribution, probs = quantile)
 
   # add simulation of 2 dosing above and below if these are not 0
@@ -44,12 +60,11 @@ sim_concentration <- function(
 
   # create the output file containing css distribution summary
   quantile_df <- data.frame(
-    css_mic = css_mic,
+    css_mic = tv_css_range[3] / mic, # median_css / mic,
     mic = mic,
     percentile_2.5 = quant[1] / mic,
     percentile_97.5 = quant[2] / mic
   )
-
 
   # bind both data.frame
   concentration_df <- quantile_df |>
@@ -61,4 +76,100 @@ sim_concentration <- function(
 }
 
 
-# TODO add CFR calculation
+
+
+#' calculate_cfr
+#'
+#' @description A function to calculate the cfr for a given dose and mic value
+#'
+#' @param tvcl tvcl is the typical clearance of the drug
+#' @param eta_cl eta_cl is the variability of the clearance of the drug
+#' @param dose dose increment is the increment of the dose to be used in the simulation
+#' @param mic_dsitrbiution mic distribution is a dataframe with mic values and their distribution derived from eucast
+#' @param toxicity_threshold toxicity threshold is the toxicity threshold of the drug. Default to NULL if not known
+#' @param n_sim number of simulation to be used for the calculation. Default to 50000
+#'
+#' @return return a dataframe containing the cfr for each dose and mic value aswell as the proportion of patients above the toxicity threshold if known
+#'
+#' @author Romain Garreau
+#' @noRd
+
+calculate_cfr <- function(
+  tvcl,
+  eta_cl,
+  dose,
+  mic_distribution,
+  toxicity_threshold = NULL,
+  n_sim = 50000
+) {
+
+  # check if mic_distribution is a dataframe
+  if (!is.data.frame(mic_distribution)) {
+    stop("mic_distribution must be a dataframe")
+  }
+
+  # global variables
+  cfr <- 0 # Initialize cfr variable
+  mic_distribution <- dplyr::mutate(mic_distribution, relative_distribution = distribution / sum(distribution))
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim = n_sim)
+
+  # calculate the cfr for a single dose and all mic values
+  for (i in 1:nrow(mic_distribution)) {
+    css_distribution_mic <- mean(css_distribution > mic_distribution$mic[i]) * mic_distribution$relative_distribution[i]
+    cfr <- sum(cfr, css_distribution_mic)
+  }
+
+  # calculate the probabilities of being over the toxicity threshold
+  if (!is.null(toxicity_threshold)) {
+    toxicity_proportion <- mean(css_distribution > toxicity_threshold)
+  }
+
+  return(list(
+    cfr = cfr,
+    toxicity_proportion = toxicity_proportion
+  ))
+}
+
+
+#' calculate_cfr_multiple_dose
+#'
+#' @description A function to calculate the cfr for a given dose and mic value
+#'
+#' @param tvcl tvcl is the typical clearance of the drug
+#' @param eta_cl eta_cl is the variability of the clearance of the drug
+#' @param dose_increment dose increment is the increment of the dose to be used in the simulation
+#' @param mic_distribution mic distribution is a dataframe with mic values and their distribution derived from eucast
+#' @param toxicity_threshold toxicity threshold is the toxicity threshold of the drug. Default to NULL if not known
+#'
+#' @return return a dataframe containing the cfr for each dose and mic value aswell as the proportion of patients above the toxicity threshold if known
+#'
+#' @author Romain Garreau
+#' @noRd
+#'
+
+calculate_cfr_mulitple_doses <- function(dose_increment, dose_max, tvcl, eta_cl, mic_distribution, toxicity_threshold = NULL, n_sim = 50000) {
+
+  # create all dosing sequence
+  dosing_sequence <- seq(0, dose_max, dose_increment)
+
+  for (i in seq_along(dosing_sequence)) {
+    # calculate the cfr for each dose
+    cfr <- calculate_cfr(tvcl, eta_cl, dosing_sequence[i], mic_distribution, toxicity_threshold, n_sim)
+    # create a dataframe with the cfr and the dose and append all doses in a single dataframe
+    if (i == 1) {
+      cfr_df <- data.frame(
+        dose = dosing_sequence[i],
+        cfr = cfr$cfr,
+        toxicity_proportion = cfr$toxicity_proportion
+      )
+    } else {
+      cfr_df <- rbind(cfr_df, data.frame(
+        dose = dosing_sequence[i],
+        cfr = cfr$cfr,
+        toxicity_proportion = cfr$toxicity_proportion
+      ))
+    }
+  }
+
+  return(cfr_df)
+}
