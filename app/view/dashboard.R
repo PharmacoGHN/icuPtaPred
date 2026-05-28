@@ -78,6 +78,7 @@ ui <- function(id) {
 
   dashboardPage(
     title = "ICU PTA Predictor",
+    dark = NULL,
     header = dashboardHeader(
       title = dashboard_brand(),
       titleWidth = 320
@@ -86,7 +87,6 @@ ui <- function(id) {
       skin = "dark",
       status = "primary",
       sidebar_brand(app_version()),
-      sidebar_panel(),
       tags$div("Workspace", class = "icu-sidebar-nav-heading"),
       sidebarMenu(
         id = ns("navigation"),
@@ -98,6 +98,9 @@ ui <- function(id) {
         ),
         menuItem("Documentation", tabName = "documentation", icon = icon("circle-info"))
       ),
+      tags$div("Clinical workflow", class = "icu-sidebar-nav-heading"),
+      sidebar_panel(),
+      tags$div(class = "icu-sidebar-spacer"),
       sidebar_footer()
     ),
     body = dashboardBody(

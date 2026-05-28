@@ -1,6 +1,6 @@
 box::use(
   shiny[in_devmode],
-  utils[read.csv, write.csv]
+  utils[read.csv]
 )
 
 box::use(
@@ -22,19 +22,19 @@ empty_registry <- function() {
   )
 }
 
-coerce_registry <- function(registry) {
-  required_columns <- c(
-    "drug",
-    "model",
-    "is_default",
-    "dose_increment",
-    "renal_metric",
-    "renal_formula",
-    "clearance_expr",
-    "eta_cl_expr"
-  )
+registry_columns <- c(
+  "drug",
+  "model",
+  "is_default",
+  "dose_increment",
+  "renal_metric",
+  "renal_formula",
+  "clearance_expr",
+  "eta_cl_expr"
+)
 
-  missing_columns <- setdiff(required_columns, colnames(registry))
+coerce_registry <- function(registry) {
+  missing_columns <- setdiff(registry_columns, colnames(registry))
   if (length(missing_columns) > 0) {
     stop(
       paste(
@@ -44,7 +44,7 @@ coerce_registry <- function(registry) {
     )
   }
 
-  registry <- registry[, required_columns, drop = FALSE]
+  registry <- registry[, registry_columns, drop = FALSE]
   registry$drug <- trimws(registry$drug)
   registry$model <- trimws(registry$model)
   registry$is_default <- tolower(as.character(registry$is_default)) %in% c("true", "1", "yes")
@@ -92,6 +92,10 @@ validate_registry_row <- function(registry_row) {
 }
 
 base_registry_path <- function() {
+  normalizePath(file.path(getwd(), "app", "models", "model-registry.json"), mustWork = FALSE)
+}
+
+legacy_registry_path <- function() {
   normalizePath(file.path(getwd(), "app", "models", "model-registry.csv"), mustWork = FALSE)
 }
 
@@ -99,12 +103,245 @@ dev_registry_dir <- function() {
   normalizePath(file.path(getwd(), "app", "models", "dev"), mustWork = FALSE)
 }
 
-read_registry_csv_file <- function(path) {
+read_legacy_registry_csv_file <- function(path) {
   if (!file.exists(path)) {
     return(empty_registry())
   }
 
   coerce_registry(read.csv(path, stringsAsFactors = FALSE, na.strings = c("", "NA")))
+}
+
+json_escape <- function(value) {
+  value <- gsub("\\", "\\\\", value, fixed = TRUE)
+  value <- gsub("\"", "\\\"", value, fixed = TRUE)
+  value <- gsub("\r", "\\r", value, fixed = TRUE)
+  value <- gsub("\n", "\\n", value, fixed = TRUE)
+  value <- gsub("\t", "\\t", value, fixed = TRUE)
+
+  value
+}
+
+format_registry_json_value <- function(value, column) {
+  if (is.na(value) || !nzchar(as.character(value))) {
+    return("null")
+  }
+
+  if (column == "is_default") {
+    return(if (isTRUE(value)) "true" else "false")
+  }
+
+  if (column == "dose_increment") {
+    return(format(as.numeric(value), scientific = FALSE, trim = TRUE))
+  }
+
+  paste0('"', json_escape(as.character(value)), '"')
+}
+
+parse_registry_json_array <- function(text) {
+  position <- 1
+  text_length <- nchar(text)
+
+  char_at <- function(index) {
+    substr(text, index, index)
+  }
+
+  skip_whitespace <- function() {
+    while (position <= text_length && grepl("[[:space:]]", char_at(position))) {
+      position <<- position + 1
+    }
+  }
+
+  parse_json_string <- function() {
+    buffer <- character(0)
+
+    if (char_at(position) != "\"") {
+      stop("Malformed model registry JSON file.")
+    }
+
+    position <<- position + 1
+
+    while (position <= text_length) {
+      current <- char_at(position)
+
+      if (current == "\"") {
+        position <<- position + 1
+        return(paste(buffer, collapse = ""))
+      }
+
+      if (current == "\\") {
+        position <<- position + 1
+
+        if (position > text_length) {
+          stop("Malformed model registry JSON file.")
+        }
+
+        escaped <- char_at(position)
+
+        if (escaped == "\"") {
+          buffer <- c(buffer, "\"")
+        } else if (escaped == "\\") {
+          buffer <- c(buffer, "\\")
+        } else if (escaped == "/") {
+          buffer <- c(buffer, "/")
+        } else if (escaped == "b") {
+          buffer <- c(buffer, "\b")
+        } else if (escaped == "f") {
+          buffer <- c(buffer, "\f")
+        } else if (escaped == "n") {
+          buffer <- c(buffer, "\n")
+        } else if (escaped == "r") {
+          buffer <- c(buffer, "\r")
+        } else if (escaped == "t") {
+          buffer <- c(buffer, "\t")
+        } else if (escaped == "u") {
+          unicode_digits <- substr(text, position + 1, position + 4)
+          buffer <- c(buffer, intToUtf8(strtoi(unicode_digits, base = 16L)))
+          position <<- position + 4
+        } else {
+          buffer <- c(buffer, escaped)
+        }
+      } else {
+        buffer <- c(buffer, current)
+      }
+
+      position <<- position + 1
+    }
+
+    stop("Malformed model registry JSON file.")
+  }
+
+  parse_json_value <- function() {
+    skip_whitespace()
+
+    if (position > text_length) {
+      stop("Malformed model registry JSON file.")
+    }
+
+    current <- char_at(position)
+    remaining_text <- substr(text, position, text_length)
+
+    if (current == "\"") {
+      return(parse_json_string())
+    }
+
+    if (startsWith(remaining_text, "true")) {
+      position <<- position + 4
+      return("true")
+    }
+
+    if (startsWith(remaining_text, "false")) {
+      position <<- position + 5
+      return("false")
+    }
+
+    if (startsWith(remaining_text, "null")) {
+      position <<- position + 4
+      return("")
+    }
+
+    number_match <- regexpr("^-?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?", remaining_text, perl = TRUE)
+
+    if (number_match[[1]] == 1) {
+      matched_number <- regmatches(remaining_text, number_match)
+      position <<- position + nchar(matched_number)
+      return(matched_number)
+    }
+
+    stop("Malformed model registry JSON file.")
+  }
+
+  parse_json_object <- function() {
+    skip_whitespace()
+
+    if (position > text_length || char_at(position) != "{") {
+      stop("Malformed model registry JSON file.")
+    }
+
+    position <<- position + 1
+
+    registry_row <- as.list(rep("", length(registry_columns)))
+    names(registry_row) <- registry_columns
+
+    repeat {
+      skip_whitespace()
+
+      if (position <= text_length && char_at(position) == "}") {
+        position <<- position + 1
+        break
+      }
+
+      key <- parse_json_string()
+      skip_whitespace()
+
+      if (position > text_length || char_at(position) != ":") {
+        stop("Malformed model registry JSON file.")
+      }
+
+      position <<- position + 1
+      value <- parse_json_value()
+
+      if (key %in% registry_columns) {
+        registry_row[[key]] <- value
+      }
+
+      skip_whitespace()
+
+      if (position <= text_length && char_at(position) == ",") {
+        position <<- position + 1
+      } else if (position <= text_length && char_at(position) == "}") {
+        position <<- position + 1
+        break
+      } else {
+        stop("Malformed model registry JSON file.")
+      }
+    }
+
+    as.data.frame(registry_row, stringsAsFactors = FALSE)
+  }
+
+  skip_whitespace()
+
+  if (position > text_length || char_at(position) != "[") {
+    stop("Malformed model registry JSON file.")
+  }
+
+  position <- position + 1
+  rows <- list()
+
+  repeat {
+    skip_whitespace()
+
+    if (position <= text_length && char_at(position) == "]") {
+      position <- position + 1
+      break
+    }
+
+    rows[[length(rows) + 1]] <- parse_json_object()
+    skip_whitespace()
+
+    if (position <= text_length && char_at(position) == ",") {
+      position <- position + 1
+    } else if (position <= text_length && char_at(position) == "]") {
+      position <- position + 1
+      break
+    } else {
+      stop("Malformed model registry JSON file.")
+    }
+  }
+
+  if (!length(rows)) {
+    return(empty_registry())
+  }
+
+  coerce_registry(do.call(rbind, rows))
+}
+
+read_registry_json_file <- function(path) {
+  if (!file.exists(path)) {
+    return(empty_registry())
+  }
+
+  parse_registry_json_array(paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n"))
 }
 
 read_registry_dcf_file <- function(path) {
@@ -118,6 +355,62 @@ read_registry_dcf_file <- function(path) {
 write_registry_csv_file <- function(path, registry) {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
   write.csv(registry, path, row.names = FALSE, quote = TRUE)
+}
+
+write_registry_json_file <- function(path, registry) {
+  registry <- coerce_registry(registry)
+  dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+
+  json_rows <- lapply(seq_len(nrow(registry)), function(index) {
+    row_lines <- vapply(
+      registry_columns,
+      function(column) {
+        sprintf(
+          '    "%s": %s',
+          column,
+          format_registry_json_value(registry[[column]][[index]], column)
+        )
+      },
+      character(1)
+    )
+
+    if (length(row_lines) > 1) {
+      row_lines[-length(row_lines)] <- paste0(row_lines[-length(row_lines)], ",")
+    }
+
+    c("  {", row_lines, "  }")
+  })
+
+  file_lines <- c("[")
+
+  if (length(json_rows)) {
+    for (index in seq_along(json_rows)) {
+      current_row <- json_rows[[index]]
+      if (index < length(json_rows)) {
+        current_row[length(current_row)] <- paste0(current_row[length(current_row)], ",")
+      }
+
+      file_lines <- c(file_lines, current_row)
+    }
+  }
+
+  file_lines <- c(file_lines, "]")
+  writeLines(file_lines, path, useBytes = TRUE)
+}
+
+migrate_legacy_registry_file <- function() {
+  legacy_path <- legacy_registry_path()
+  json_path <- base_registry_path()
+
+  if (!file.exists(legacy_path)) {
+    return(NULL)
+  }
+
+  registry <- read_legacy_registry_csv_file(legacy_path)
+  write_registry_json_file(json_path, registry)
+  file.remove(legacy_path)
+
+  registry
 }
 
 dedupe_registry <- function(registry) {
@@ -138,7 +431,12 @@ is_admin_mode <- function() {
 
 #' @export
 load_model_registry <- function(include_dev = is_admin_mode()) {
-  registry <- read_registry_csv_file(base_registry_path())
+  registry <- if (file.exists(base_registry_path())) {
+    read_registry_json_file(base_registry_path())
+  } else {
+    migrated_registry <- migrate_legacy_registry_file()
+    if (is.null(migrated_registry)) empty_registry() else migrated_registry
+  }
 
   if (include_dev && dir.exists(dev_registry_dir())) {
     dev_files <- list.files(dev_registry_dir(), pattern = "\\.dcf$", full.names = TRUE)
@@ -171,7 +469,7 @@ upsert_model_definition <- function(
     stop("Model registry updates are only available in dev mode.")
   }
 
-  registry <- read_registry_csv_file(base_registry_path())
+  registry <- load_model_registry(include_dev = FALSE)
   registry_row <- data.frame(
     drug = drug,
     model = model,
@@ -204,7 +502,7 @@ upsert_model_definition <- function(
     registry$is_default[first_index] <- TRUE
   }
 
-  write_registry_csv_file(base_registry_path(), registry)
+  write_registry_json_file(base_registry_path(), registry)
 
   if (!existed_before) {
     ensure_model_documentation_file(
@@ -230,7 +528,7 @@ remove_model_definition <- function(drug, model) {
     stop("Model registry updates are only available in dev mode.")
   }
 
-  registry <- read_registry_csv_file(base_registry_path())
+  registry <- load_model_registry(include_dev = FALSE)
   target_key <- paste(drug, model, sep = "::")
   existing_key <- paste(registry$drug, registry$model, sep = "::")
 
@@ -245,7 +543,7 @@ remove_model_definition <- function(drug, model) {
     registry$is_default[first_index] <- TRUE
   }
 
-  write_registry_csv_file(base_registry_path(), registry)
+  write_registry_json_file(base_registry_path(), registry)
   delete_model_documentation(drug, model)
 
   registry

@@ -1,7 +1,7 @@
 box::use(
   bs4Dash[box, tabBox],
   dplyr[slice],
-  plotly[ggplotly, plotlyOutput, renderPlotly],
+  plotly[config, ggplotly, layout, plotlyOutput, renderPlotly],
   shiny,
   shinyvalidate[InputValidator]
 )
@@ -45,6 +45,97 @@ concentration_badge <- function(value) {
     shiny$tags$span(
       class = "icu-target-badge",
       paste0("Plotted concentration: ", round(value, 1), " mg/L")
+    )
+  )
+}
+
+format_plot_number <- function(value, digits = 6) {
+  if (!is.finite(value) || is.na(value)) {
+    return("NA")
+  }
+
+  format(signif(value, digits), scientific = FALSE, trim = TRUE)
+}
+
+log2_tick_values <- function(values) {
+  positive_values <- values[is.finite(values) & !is.na(values) & values > 0]
+
+  if (!length(positive_values)) {
+    return(numeric(0))
+  }
+
+  exponents <- seq(floor(log2(min(positive_values))), ceiling(log2(max(positive_values))))
+  2^exponents
+}
+
+pta_plotly <- function(plot, data) {
+  y_values <- unlist(
+    data[c(
+      "css_mic_below2",
+      "css_mic_below1",
+      "css_mic",
+      "css_mic_above1",
+      "css_mic_above2",
+      "percentile_2.5",
+      "percentile_97.5",
+      "toxicity_threshold",
+      "additional_threshold"
+    )],
+    use.names = FALSE
+  )
+
+  plotly_object <- ggplotly(plot, tooltip = "text")
+  plotly_object <- layout(
+    plotly_object,
+    hovermode = "closest",
+    xaxis = list(
+      title = list(text = "Minimum inhibitory concentration (MIC, mg/L)"),
+      tickvals = data$mic,
+      ticktext = vapply(data$mic, format_plot_number, character(1))
+    ),
+    yaxis = list(
+      title = list(text = "Steady-state concentration to MIC ratio"),
+      tickvals = log2_tick_values(y_values),
+      ticktext = vapply(log2_tick_values(y_values), format_plot_number, character(1))
+    )
+  )
+
+  config(
+    plotly_object,
+    displaylogo = FALSE,
+    modeBarButtonsToRemove = c(
+      "lasso2d",
+      "select2d",
+      "zoomIn2d",
+      "zoomOut2d",
+      "autoScale2d",
+      "toggleSpikelines"
+    )
+  )
+}
+
+cfr_plotly <- function(plot) {
+  plotly_object <- ggplotly(plot, tooltip = "text")
+  plotly_object <- layout(
+    plotly_object,
+    hovermode = "closest",
+    xaxis = list(title = list(text = "Daily dose (g/day)")),
+    yaxis = list(
+      title = list(text = "Cumulative fraction of response"),
+      tickformat = ".0%"
+    )
+  )
+
+  config(
+    plotly_object,
+    displaylogo = FALSE,
+    modeBarButtonsToRemove = c(
+      "lasso2d",
+      "select2d",
+      "zoomIn2d",
+      "zoomOut2d",
+      "autoScale2d",
+      "toggleSpikelines"
     )
   )
 }
@@ -240,27 +331,30 @@ ui <- function(id) {
           status = "success",
           solidHeader = TRUE,
           class = "icu-card",
-          tabBox(
-            width = 12,
-            height = "760px",
-            background = "white",
-            solidHeader = FALSE,
-            collapsible = FALSE,
-            selected = "Dose-response",
-            shiny$tabPanel(
-              title = "Dose-response",
-              plotlyOutput(ns("pta_output"), height = "620px"),
-              shiny$uiOutput(ns("footer_pta"))
-            ),
-            shiny$tabPanel(
-              title = "Probability interval",
-              plotlyOutput(ns("pta_output_probability"), height = "620px"),
-              shiny$uiOutput(ns("footer_pta_probability"))
-            ),
-            shiny$tabPanel(
-              title = "CFR",
-              plotlyOutput(ns("cfr_output"), height = "620px"),
-              shiny$uiOutput(ns("footer_cfr"))
+          shiny$div(
+            class = "icu-output-tabs",
+            tabBox(
+              width = 12,
+              height = "760px",
+              background = "white",
+              solidHeader = FALSE,
+              collapsible = FALSE,
+              selected = "Dose-response",
+              shiny$tabPanel(
+                title = "Dose-response",
+                plotlyOutput(ns("pta_output"), height = "620px"),
+                shiny$uiOutput(ns("footer_pta"))
+              ),
+              shiny$tabPanel(
+                title = "Probability interval",
+                plotlyOutput(ns("pta_output_probability"), height = "620px"),
+                shiny$uiOutput(ns("footer_pta_probability"))
+              ),
+              shiny$tabPanel(
+                title = "CFR",
+                plotlyOutput(ns("cfr_output"), height = "620px"),
+                shiny$uiOutput(ns("footer_cfr"))
+              )
             )
           )
         )
@@ -592,7 +686,7 @@ server <- function(id) {
 
         cfr_plot <- pta_service$plot.cfr(cfr_df)
         output$cfr_output <- renderPlotly({
-          ggplotly(cfr_plot)
+          cfr_plotly(cfr_plot)
         })
 
         output$footer_cfr <- shiny$renderUI({
@@ -616,15 +710,17 @@ server <- function(id) {
           NA
         } else {
           ecoff()
-        }
+        },
+        selected_dose = input$drug_dose,
+        dose_increment = model_param$dose_increment
       )
 
       output$pta_output <- renderPlotly({
-        ggplotly(pta_plot$pta_multiple_doses)
+        pta_plotly(pta_plot$pta_multiple_doses, concentration_df)
       })
 
       output$pta_output_probability <- renderPlotly({
-        ggplotly(pta_plot$pta_ci_plot)
+        pta_plotly(pta_plot$pta_ci_plot, concentration_df)
       })
 
       output$footer_pta <- shiny$renderUI({

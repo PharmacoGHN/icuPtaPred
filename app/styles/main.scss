@@ -43,6 +43,12 @@ body {
   box-shadow: 0 12px 35px rgba(15, 122, 106, 0.22);
 }
 
+[data-widget="pushmenu"],
+[data-widget="dark-mode"],
+.dark-mode-switch {
+  display: none !important;
+}
+
 .icu-header-title {
   color: #ffffff;
   font-size: 1rem;
@@ -58,7 +64,14 @@ body {
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 4rem);
   padding-top: 1rem;
+}
+
+.icu-sidebar-spacer {
+  flex: 1 1 auto;
 }
 
 .icu-sidebar-brand {
@@ -313,16 +326,48 @@ body {
   overflow: visible;
 }
 
+.box.icu-card > .box-header,
+.box.icu-card.box-solid > .box-header,
 .icu-card .card-header {
   background: linear-gradient(135deg, rgba(15, 122, 106, 0.06), rgba(29, 79, 145, 0.08));
   border-bottom: 1px solid var(--icu-border);
-  color: var(--icu-ink);
+  color: var(--icu-ink) !important;
   font-weight: 600;
+}
+
+.box.icu-card > .box-header .box-title,
+.box.icu-card > .box-header .fa,
+.box.icu-card.box-solid > .box-header .box-title,
+.box.icu-card.box-solid > .box-header .fa,
+.icu-card .card-header,
+.icu-card .card-header .card-title {
+  color: var(--icu-ink) !important;
 }
 
 .icu-card .card-body,
 .icu-card .box-body {
   padding: 1.15rem;
+}
+
+.icu-card .form-control,
+.icu-card input,
+.icu-card select,
+.icu-card textarea {
+  background: var(--icu-surface-strong);
+  border: 1px solid rgba(19, 34, 56, 0.14);
+  color: var(--icu-ink);
+}
+
+.icu-card .form-control::placeholder,
+.icu-card input::placeholder,
+.icu-card textarea::placeholder {
+  color: rgba(19, 34, 56, 0.45);
+}
+
+.icu-card label,
+.icu-card .help-block,
+.icu-card .text-muted {
+  color: var(--icu-ink);
 }
 
 .icu-card--controls .card-body,
@@ -386,6 +431,36 @@ body {
 .icu-library-tabs .nav-tabs .nav-link:hover {
   background: var(--icu-accent);
   color: #ffffff;
+}
+
+.icu-library-tabs .tab-content {
+  padding-top: 0.35rem;
+}
+
+.icu-output-tabs .card.card-tabs .card-header,
+.icu-output-tabs .nav-tabs {
+  background: transparent;
+  border-bottom: none;
+}
+
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-link,
+.icu-output-tabs .nav-tabs .nav-link {
+  background: rgba(19, 34, 56, 0.06);
+  color: rgba(19, 34, 56, 0.72) !important;
+}
+
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-link:hover,
+.icu-output-tabs .nav-tabs .nav-link:hover {
+  color: var(--icu-brand-strong) !important;
+}
+
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-item.show .nav-link,
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-link.active,
+.icu-output-tabs .nav-tabs .nav-item.show .nav-link,
+.icu-output-tabs .nav-tabs .nav-link.active {
+  background: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(15, 122, 106, 0.14);
+  color: var(--icu-brand-strong) !important;
 }
 
 .icu-abstract-sections {

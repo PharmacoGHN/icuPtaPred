@@ -1,5 +1,5 @@
 box::use(
-  utils[read.csv, write.csv]
+  utils[read.csv]
 )
 
 box::use(
