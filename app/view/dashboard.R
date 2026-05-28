@@ -1,6 +1,6 @@
 box::use(
-  bs4Dash[dashboardPage, dashboardHeader, dashboardSidebar, dashboardBody, sidebarMenu, menuItem, tabItems, tabItem],
-  shiny[NS, tags, icon, img, fluidRow, column, selectInput, textOutput, uiOutput, moduleServer],
+  bs4Dash[dashboardBody, dashboardHeader, dashboardPage, dashboardSidebar, menuItem, sidebarMenu, tabItem, tabItems],
+  shiny[icon, img, moduleServer, NS, tags],
 )
 
 box::use(
@@ -11,11 +11,51 @@ box::use(
 
 issue_url <- "https://github.com/PharmacoGHN/icuPtaPred/issues"
 
+app_version <- function() {
+  description_path <- normalizePath(file.path(getwd(), "DESCRIPTION"), mustWork = FALSE)
+
+  if (file.exists(description_path)) {
+    return(read.dcf(description_path, fields = "Version")[1, 1])
+  }
+
+  "1.0.0.0"
+}
+
+sidebar_brand <- function(version) {
+  tags$div(
+    class = "icu-sidebar-brand",
+    img(src = "hex-icuPtaPred.png", alt = "ICU PTA Predictor icon", class = "icu-sidebar-brand__logo"),
+    tags$div(
+      class = "icu-sidebar-brand__copy",
+      tags$span("ICU PTA Predictor", class = "icu-sidebar-brand__title"),
+      tags$span("Clinical PK support", class = "icu-sidebar-brand__subtitle"),
+      tags$span(paste0("v", version), class = "icu-sidebar-brand__version")
+    )
+  )
+}
+
+sidebar_panel <- function() {
+  tags$div(
+    class = "icu-sidebar-panel",
+    tags$span("Clinical workflow", class = "icu-sidebar-panel__eyebrow"),
+    tags$div(
+      class = "icu-sidebar-chipset",
+      tags$span("1 Inputs", class = "icu-sidebar-chip"),
+      tags$span("2 Simulate", class = "icu-sidebar-chip"),
+      tags$span("3 Review", class = "icu-sidebar-chip")
+    ),
+    tags$p(
+      "Move from patient covariates to PTA and then confirm the model context.",
+      class = "icu-sidebar-panel__caption"
+    )
+  )
+}
+
 sidebar_footer <- function() {
   tags$div(
     class = "icu-sidebar-footer",
     tags$p(
-      "Need a correction or a missing model?",
+      "Feedback or missing model",
       class = "icu-sidebar-footer__label"
     ),
     tags$a(
@@ -29,15 +69,7 @@ sidebar_footer <- function() {
 }
 
 dashboard_brand <- function() {
-  tags$div(
-    class = "icu-brand",
-    img(src = "hex-icuPtaPred.png", alt = "ICU PTA Predictor", class = "icu-brand__logo"),
-    tags$div(
-      class = "icu-brand__copy",
-      tags$span("ICU PTA Predictor", class = "icu-brand__title"),
-      tags$span("Rhino clinical dashboard", class = "icu-brand__subtitle")
-    )
-  )
+  tags$span("ICU PTA Predictor", class = "icu-header-title")
 }
 
 #' @export
@@ -53,14 +85,9 @@ ui <- function(id) {
     sidebar = dashboardSidebar(
       skin = "dark",
       status = "primary",
-      tags$div(
-        class = "icu-sidebar-intro",
-        tags$span("Precision beta-lactam support", class = "icu-sidebar-intro__eyebrow"),
-        tags$p(
-          "Explore PTA, compare PK models, and keep clinical context visible.",
-          class = "icu-sidebar-intro__body"
-        )
-      ),
+      sidebar_brand(app_version()),
+      sidebar_panel(),
+      tags$div("Workspace", class = "icu-sidebar-nav-heading"),
       sidebarMenu(
         id = ns("navigation"),
         menuItem("PTA Explorer", tabName = "pta", icon = icon("chart-line")),
@@ -69,7 +96,7 @@ ui <- function(id) {
           tabName = "model_information",
           icon = icon("book-medical")
         ),
-        menuItem("Guide & Settings", tabName = "settings", icon = icon("sliders"))
+        menuItem("Documentation", tabName = "documentation", icon = icon("circle-info"))
       ),
       sidebar_footer()
     ),
@@ -82,7 +109,7 @@ ui <- function(id) {
             tabName = "model_information",
             model_information_tab$ui(ns("model_information"))
           ),
-          tabItem(tabName = "settings", settings_tab$ui(ns("settings")))
+          tabItem(tabName = "documentation", settings_tab$ui(ns("documentation")))
         )
       )
     )
@@ -94,6 +121,6 @@ server <- function(id) {
   moduleServer(id, function(input, output, session) {
     model_information_tab$server("model_information")
     pta_tab$server("pta")
-    settings_tab$server("settings")
+    settings_tab$server("documentation")
   })
 }

@@ -8,8 +8,8 @@ ui_data <- list(
   fr = list(
     choices = list(
       sex = c(
-        "Homme" = "Male",
-        "Femme" = "Female"
+        "Male" = "Male",
+        "Female" = "Female"
       ),
       administration_route = c(
         "Intraveineux" = "IV",
@@ -51,7 +51,7 @@ ui_data <- list(
       "BSA (Dubois 1916)" = "BSA"
     ),
     label = list(
-      sex = "Sexe",
+      sex = "Sex",
       age = "Age",
       drug = "Antibiotique",
       weight = "Poids total (kg)",

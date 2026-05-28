@@ -33,7 +33,7 @@ weight_formula <- function(
   weight_unit = c("kg", "lbs"),
   formula = c("IBW", "AJBW", "LBW")
 ) {
-  weight <- ifelse(weight_unit == "lbs", weight * 2.20462, weight)
+  weight <- ifelse(weight_unit == "lbs", weight / 2.20462, weight)
   bmi <- weight / (height / 100)^2
   height_inch <- (height - 152.4) / 2.54
   ibw <- ifelse(sex == "Female", 45.5, 50) + 2.3 * ifelse(height_inch > 0, height_inch, 0)
@@ -79,8 +79,8 @@ renal_function <- function(
   alpha_2021 <- ifelse(sex == "Male", -0.302, -0.241)
   ckd_female_corr <- ifelse(sex == "Male", 1, 1.018)
   ckd_ethnic_correction <- ifelse(ethnicity == "African", 1.159, 1)
-  mdrd_female_corr <- ifelse(sex == "Male", 1, 1.212)
-  mdrd_ethnic_correction <- ifelse(ethnicity == "African", 0.742, 1)
+  mdrd_female_corr <- ifelse(sex == "Male", 1, 0.742)
+  mdrd_ethnic_correction <- ifelse(ethnicity == "African", 1.212, 1)
 
   if (formula == "CG") {
     out <- beta_cg * (140 - age) * (weight / creat_micromol)
@@ -219,7 +219,7 @@ get_model_parameters <- function(model, biological, drug = NULL) {
     "Chandorkar_2015" = get_sd_from_cv(0.33),
     "Zhang_2021" = get_sd_from_cv(0.429),
     "Gijsen_2021" = 1,
-    "Minichmayr_2024" = 1,
+    "Minichmayr_2018" = 1,
     "Ehrmann_2019" = 1,
     "Huang_2025" = 1,
     "Lan_2022" = 1,
@@ -295,7 +295,7 @@ get_default_model <- function(drug) {
     "Ceftolozane" = "Zhang_2021",
     "Cefiderocol" = "Zhar_2022",
     "Piperacillin-tazobactam" = "Klastrup_2020",
-    "Meropenem" = "Erhmann_2019",
+    "Meropenem" = "Ehrmann_2019",
     character(0)
   )
 }
@@ -385,6 +385,36 @@ calc_css_distribution <- function(dose, tvcl, eta_cl, n_sim = 50000) {
   (dose / 24) / cl_distribution
 }
 
+positive_finite_values <- function(...) {
+  values <- unlist(list(...), use.names = FALSE)
+  values[is.finite(values) & !is.na(values) & values > 0]
+}
+
+safe_log_limits <- function(..., lower_floor = 0.01, fallback_upper = 1) {
+  values <- positive_finite_values(...)
+
+  if (!length(values)) {
+    return(c(lower_floor, fallback_upper))
+  }
+
+  lower <- max(lower_floor, min(values))
+  upper <- max(values)
+
+  if (!is.finite(upper) || upper <= lower) {
+    upper <- max(lower * 2, fallback_upper)
+  }
+
+  c(lower, upper)
+}
+
+threshold_curve <- function(threshold, mic) {
+  if (length(threshold) == 1 && (is.na(threshold) || threshold <= 0)) {
+    return(rep(NA_real_, length(mic)))
+  }
+
+  threshold / mic
+}
+
 #' @export
 sim_concentration <- function(
   dose,
@@ -394,6 +424,7 @@ sim_concentration <- function(
   mic = NA,
   dose_increment = 0,
   toxicity_threshold,
+  additional_threshold = NA_real_,
   n_sim = 50000
 ) {
   if (length(mic) == 1 && is.na(mic)) {
@@ -408,7 +439,6 @@ sim_concentration <- function(
   css_mic_range <- data.frame(
     css_mic_below2 = tv_css_range[1] / mic,
     css_mic_below1 = tv_css_range[2] / mic,
-    css_mic = tv_css_range[3] / mic,
     css_mic_above1 = tv_css_range[4] / mic,
     css_mic_above2 = tv_css_range[5] / mic
   )
@@ -420,9 +450,12 @@ sim_concentration <- function(
     percentile_97.5 = quant[2] / mic
   )
 
-  concentration_df <- quantile_df |>
-    dplyr$left_join(css_mic_range) |>
-    dplyr$bind_cols(toxicity_threshold = toxicity_threshold / mic)
+  concentration_df <- dplyr$bind_cols(
+    quantile_df,
+    css_mic_range,
+    toxicity_threshold = threshold_curve(toxicity_threshold, mic),
+    additional_threshold = threshold_curve(additional_threshold, mic)
+  )
 
   round(concentration_df, digits = 4)
 }
@@ -453,7 +486,7 @@ calculate_cfr <- function(
   }
 
   toxicity_proportion <- NULL
-  if (!is.null(toxicity_threshold)) {
+  if (!is.null(toxicity_threshold) && is.finite(toxicity_threshold) && toxicity_threshold > 0) {
     toxicity_proportion <- mean(css_distribution > toxicity_threshold)
   }
 
@@ -500,25 +533,34 @@ calculate_cfr_mulitple_doses <- function(
 
 #' @export
 plot.pta <- function(data, ecoff = NA) {
+  x_limits <- safe_log_limits(data$mic)
+  y_limits <- safe_log_limits(
+    data$css_mic_below2,
+    data$css_mic_below1,
+    data$css_mic,
+    data$css_mic_above1,
+    data$css_mic_above2,
+    data$percentile_2.5,
+    data$percentile_97.5,
+    data$toxicity_threshold,
+    data$additional_threshold
+  )
+
   pta_plot <- ggplot2$ggplot(data = data) +
     ggplot2$geom_hline(mapping = ggplot2$aes(yintercept = 1), col = "#2b94ab", lty = 2, lwd = 0.5) +
     ggplot2$geom_hline(mapping = ggplot2$aes(yintercept = 4), col = "#0e877b", lty = 2, lwd = 0.5) +
     ggplot2$geom_line(mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1) +
-    ggplot2$geom_line(mapping = ggplot2$aes(x = .data$mic, y = .data$toxicity_threshold), col = "#960b0b") +
     ggplot2$labs(linetype = NULL) +
     ggplot2$scale_x_continuous(
       trans = "log2",
       breaks = data$mic,
       labels = data$mic,
-      limits = c(max(0.01, min(data$mic)), max(data$mic))
+      limits = x_limits
     ) +
     ggplot2$scale_y_continuous(
       trans = "log2",
       n.breaks = 10,
-      limits = c(
-        max(0.01, min(data$css_mic_below2), min(data$toxicity_threshold)),
-        max(data$css_mic_above2, data$percentile_97.5)
-      )
+      limits = y_limits
     ) +
     ggplot2$xlab("MIC (mg/L)") +
     ggplot2$ylab("Css/MIC") +
@@ -528,6 +570,24 @@ plot.pta <- function(data, ecoff = NA) {
       legend.justification.inside = c(0.9, 0.9),
       legend.box.background = ggplot2$element_rect()
     )
+
+  if (any(is.finite(data$toxicity_threshold) & !is.na(data$toxicity_threshold))) {
+    pta_plot <- pta_plot + ggplot2$geom_line(
+      mapping = ggplot2$aes(x = .data$mic, y = .data$toxicity_threshold),
+      col = "#960b0b",
+      lty = 1,
+      lwd = 0.9
+    )
+  }
+
+  if (any(is.finite(data$additional_threshold) & !is.na(data$additional_threshold))) {
+    pta_plot <- pta_plot + ggplot2$geom_line(
+      mapping = ggplot2$aes(x = .data$mic, y = .data$additional_threshold),
+      col = "#f2a65a",
+      lty = 3,
+      lwd = 0.9
+    )
+  }
 
   if (!is.na(ecoff)) {
     pta_plot <- pta_plot + ggplot2$geom_vline(
@@ -604,9 +664,17 @@ plot.cfr <- function(data, dose_increment = 0) {
     )
   }
 
-  ggplot2$ggplot(data, ggplot2$aes(x = .data$dose / 1000)) +
-    ggplot2$geom_line(ggplot2$aes(y = .data$cfr), col = "#2db391", lty = 1, lwd = 1) +
-    ggplot2$geom_line(ggplot2$aes(y = .data$toxicity_proportion), col = "#960b0b") +
+  cfr_plot <- ggplot2$ggplot(data, ggplot2$aes(x = .data$dose / 1000)) +
+    ggplot2$geom_line(ggplot2$aes(y = .data$cfr), col = "#2db391", lty = 1, lwd = 1)
+
+  if (any(is.finite(data$toxicity_proportion) & !is.na(data$toxicity_proportion))) {
+    cfr_plot <- cfr_plot + ggplot2$geom_line(
+      ggplot2$aes(y = .data$toxicity_proportion),
+      col = "#960b0b"
+    )
+  }
+
+  cfr_plot +
     ggplot2$scale_x_continuous(trans = scales$pseudo_log_trans()) +
     ggplot2$xlab("Dose (g)") +
     ggplot2$ylab("CFR (%)") +
