@@ -1,10 +1,13 @@
-#' @importFrom tibble tibble
+box::use(
+  tibble
+)
 
 # Create a tibble to store information about the pharmacokinetics model
+#' @export
 
 model_information <- list(
   "Piperacillin-tazobactam" = list(
-    Klastrup_2020 = tibble::tibble(
+    Klastrup_2020 = tibble$tibble(
       Title = "Pharmacokinetic Model of Piperacillin-Tazobactam",
       Authors = "Klastrup, I. D., et al.",
       Year = 2020,
@@ -31,7 +34,7 @@ model_information <- list(
       Population_Studied = "Critically ill patients"
     ),
     # Added references for Piperacillin-tazobactam studies:
-    Sukarnjanaset_2019 = tibble::tibble(
+    Sukarnjanaset_2019 = tibble$tibble(
       Title = "Population pharmacokinetics and pharmacodynamics of piperacillin in critically ill patients during the early phase of sepsis",
       Authors = "Sukarnjanaset, et al.",
       Year = 2019,
@@ -57,7 +60,7 @@ model_information <- list(
       <br> MAP parameters is currently disabled from CL calculation",
       Population_Studied = "Critically ill patients; Pharmacodynamics; Piperacillin; Population pharmacokinetics; Sepsis; β-Lactams."
     ),
-    Udy_2015 = tibble::tibble(
+    Udy_2015 = tibble$tibble(
       Title = "Are standard doses of piperacillin sufficient for critically ill patients with augmented creatinine clearance?",
       Authors = "Udy, et al.",
       Year = 2015,
@@ -87,7 +90,7 @@ model_information <- list(
     )
   ),
   "Cefepime" = list(
-    cacqueray_2022 = tibble::tibble(
+    cacqueray_2022 = tibble$tibble(
       Title = "cefepime population pharmacokinetics and dosing regimen optimization in critically ill children with different renal functions",
       Authors = "Cacqueray, A., et al.",
       Year = 2022,
@@ -102,7 +105,7 @@ model_information <- list(
       Population_Studied = "Children (aged from 1 month to 18 years; body weight >3 kg) receiving cefepime"
     ),
     # Added references for Cefepime studies:
-    An_2023 = tibble::tibble(
+    An_2023 = tibble$tibble(
       Title = "Population Pharmacokinetics of cefepime in Pediatric Intensive Care Patients",
       Authors = "An, et al.",
       Year = 2023,
@@ -129,7 +132,7 @@ model_information <- list(
       Model_Description = " CL = Clearance; CLCR = Creatinine clearance; LBW = Lean body weight.",
       Population_Studied = "Pediatric intensive care patients"
     ),
-    Barreto_2023 = tibble::tibble(
+    Barreto_2023 = tibble$tibble(
       Title = "Population pharmacokinetic model of cefepime for critically ill adults: a comparative assessment of eGFR equations",
       Authors = "Barreto, et al.",
       Year = 2023,
@@ -159,7 +162,7 @@ model_information <- list(
   ),
   "Meropenem" = list(
     # Added references for meropenem studies:
-    Gijsen_2021 = tibble::tibble(
+    Gijsen_2021 = tibble$tibble(
       Title = "Title placeholder for Gijsen et al., IDR 2021",
       Authors = "Gijsen, et al.",
       Year = 2021,
@@ -171,7 +174,7 @@ model_information <- list(
       Model_Description = "Model description placeholder.",
       Population_Studied = "Population placeholder"
     ),
-    Minichmayr_2018 = tibble::tibble(
+    Minichmayr_2018 = tibble$tibble(
       Title = "Title placeholder for Minichmayr et al., JAC 2018",
       Authors = "Minichmayr, et al.",
       Year = 2018,
@@ -183,7 +186,7 @@ model_information <- list(
       Model_Description = "Model description placeholder.",
       Population_Studied = "Population placeholder"
     ),
-    Ehrmann_2019 = tibble::tibble(
+    Ehrmann_2019 = tibble$tibble(
       Title = "Title placeholder for Ehrmann et al., IJAA 2019",
       Authors = "Ehrmann, et al.",
       Year = 2019,
@@ -195,7 +198,7 @@ model_information <- list(
       Model_Description = "Model description placeholder.",
       Population_Studied = "Population placeholder"
     ),
-    Huang_2025 = tibble::tibble(
+    Huang_2025 = tibble$tibble(
       Title = "Title placeholder for Huang et al., 2025",
       Authors = "Huang, et al.",
       Year = 2025,
@@ -207,7 +210,7 @@ model_information <- list(
       Model_Description = "Model description placeholder.",
       Population_Studied = "Population placeholder"
     ),
-    Fukumoto_2023 = tibble::tibble(
+    Fukumoto_2023 = tibble$tibble(
       Title = "Population Pharmacokinetic Model and Dosing Simulation of Meropenem Using Measured Creatinine Clearance for Patients with Sepsis",
       Authors = "Fukumoto, et al.",
       Year = 2023,
@@ -233,7 +236,7 @@ model_information <- list(
       Model_Description = " CL = Clearance; CCr = Creatinine clearance; SCr = Serum creatinine; BSA = Body surface area.",
       Population_Studied = "Intensive Care sepsis patients"
     ),
-    Lan_2022 = tibble::tibble(
+    Lan_2022 = tibble$tibble(
       Title = "Title placeholder for Lan et al., JPS 2022",
       Authors = "Lan, et al.",
       Year = 2022,
@@ -248,7 +251,7 @@ model_information <- list(
   ),
   "Ceftazidime" = list(
     # Added references for ceftazidime studies:
-    Buning_2021 = tibble::tibble(
+    Buning_2021 = tibble$tibble(
       Title = "Population Pharmacokinetics and Probability of Target Attainment of Different Dosing Regimens of Ceftazidime in Critically Ill Patients with a Proven or Suspected Pseudomonas aeruginosa Infection",
       Authors = "Buning, et al.",
       Year = 2021,
@@ -274,7 +277,7 @@ model_information <- list(
        <br> <strong> Trauma and Hematology malignancy not supported at the moment </strong>",
       Population_Studied = "Critically ill patients, CVVH, trauma, hematologic malignancy"
     ),
-    Launay_2024 = tibble::tibble(
+    Launay_2024 = tibble$tibble(
       Title = "Loading Dose of Ceftazidime Needs to Be Increased in Critically Ill Patients: A Retrospective Study to Evaluate Recommended Loading Dose with Pharmacokinetic Modelling",
       Authors = "Launay, et al.",
       Year = 2024,
@@ -296,7 +299,7 @@ model_information <- list(
       Model_Description = "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration, 2009 formula is used.",
       Population_Studied = "Critically ill patients, continuous infusion"
     ),
-    Cojutti_2024 = tibble::tibble(
+    Cojutti_2024 = tibble$tibble(
       Title = "
         An innovative population pharmacokinetic/pharmacodynamic strategy for attaining aggressive joint PK/PD target of continuous infusion
         ceftazidime/avibactam against KPC- and OXA-48- producing Enterobacterales and preventing resistance development in critically ill patients",
@@ -328,7 +331,7 @@ model_information <- list(
   ),
   "Ceftolozane" = list(
     # Added references for ceftolozane studies:
-    Chandorkar_2015 = tibble::tibble(
+    Chandorkar_2015 = tibble$tibble(
       Title = "Population pharmacokinetics of ceftolozane/tazobactam in healthy volunteers, subjects with varying degrees of renal function and patients with bacterial infections ",
       Authors = "Chandorkar, et al.",
       Year = 2015,
@@ -353,7 +356,7 @@ model_information <- list(
       Model_Description = "CL = Clearance; CLCR = Creatinine clearance; infection = presence of infection.",
       Population_Studied = "Healthy volunteers, subjects with varying degrees of renal function, and patients with cIAI or cUTI"
     ),
-    Zhang_2021 = tibble::tibble(
+    Zhang_2021 = tibble$tibble(
       Title = "Ceftolozane/tazobactam probability of target attainment and outcomes in participants with augmented renal clearance from the randomized phase 3 ASPECT-NP trial",
       Authors = "Zhang, et al.",
       Year = 2021,
@@ -385,7 +388,7 @@ model_information <- list(
     )
   ),
   "Cefiderocol" = list(
-    Zhar_2022 = tibble::tibble(
+    Zhar_2022 = tibble$tibble(
       Title = "Total and Unbound Pharmacokinetics of Cefiderocol in Critically Ill Patients",
       Authors = "Zhar, et al.",
       Year = 2022,

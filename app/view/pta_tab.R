@@ -1,0 +1,429 @@
+box::use(
+  bs4Dash,
+  dplyr,
+  plotly,
+  shiny[tabPanel],
+  shinyvalidate
+)
+
+box::use(
+  app/logic/pta_service,
+  app/logic/utils[labels]
+)
+
+dose_badges <- function(all_dose) {
+  dose_colors <- c("#1f8269", "#20846b", "#2db391", "#32c5a0", "#2fe3b6")
+
+  shiny::tags$div(
+    class = "icu-dose-badges",
+    lapply(seq_along(all_dose), function(index) {
+      if (all_dose[index] <= 0) {
+        return(NULL)
+      }
+
+      shiny::tags$span(
+        class = "icu-dose-badge",
+        style = paste0("background-color:", dose_colors[index], ";"),
+        paste0(all_dose[index], " g")
+      )
+    })
+  )
+}
+
+footer_note <- function(text) {
+  shiny::tags$div(class = "icu-footer-note", text)
+}
+
+#' @export
+ui <- function(id) {
+  ns <- shiny::NS(id)
+  language <- "fr"
+
+  shiny::tagList(
+    shiny::div(
+      class = "icu-tab-hero",
+      shiny::tags$span("PTA explorer", class = "icu-tab-hero__eyebrow"),
+      shiny::tags$h2("Model the exposure before you adjust the dose", class = "icu-tab-hero__title"),
+      shiny::tags$p(
+        "Combine patient covariates, model-specific clearance, and EUCAST distributions in one workflow.",
+        class = "icu-tab-hero__copy"
+      )
+    ),
+    shiny::fluidRow(
+      shiny::column(
+        width = 3,
+        bs4Dash::box(
+          width = 12,
+          title = shiny::tagList(shiny::icon("vial"), "Treatment setup"),
+          status = "primary",
+          solidHeader = TRUE,
+          class = "icu-card",
+          shiny::selectInput(
+            ns("bacteria_select"),
+            "Bacterium",
+            choices = c("Probabilistic" = "probabilist")
+          ),
+          shiny::selectInput(
+            ns("beta_lactamin"),
+            label = labels("drug", "label", language),
+            choices = labels("drug", "choices", language),
+            selected = character(0)
+          ),
+          shiny::numericInput(
+            ns("drug_dose"),
+            label = labels("dose_input", "label", language),
+            value = 0,
+            step = 0.125,
+            min = 0,
+            max = 32
+          ),
+          shiny::sliderInput(
+            ns("confidence_level"),
+            label = labels("conf_interval", "label", language),
+            min = 0,
+            max = 1,
+            value = c(0.025, 0.975),
+            step = 0.01
+          ),
+          shiny::actionButton(
+            ns("compute_pta"),
+            "Compute PTA",
+            class = "icu-primary-button"
+          )
+        )
+      ),
+      shiny::column(
+        width = 6,
+        bs4Dash::box(
+          width = 12,
+          title = shiny::tagList(shiny::icon("chart-area"), "Simulation outputs"),
+          status = "success",
+          solidHeader = TRUE,
+          class = "icu-card",
+          bs4Dash::tabBox(
+            width = 12,
+            height = "760px",
+            background = "white",
+            solidHeader = FALSE,
+            collapsible = FALSE,
+            selected = "Dose-response profile",
+            tabPanel(
+              title = "Dose-response profile",
+              plotly::plotlyOutput(ns("pta_output"), height = "620px"),
+              shiny::uiOutput(ns("footer_pta"))
+            ),
+            tabPanel(
+              title = "Probability interval",
+              plotly::plotlyOutput(ns("pta_output_probability"), height = "620px"),
+              shiny::uiOutput(ns("footer_pta_probability"))
+            ),
+            tabPanel(
+              title = "CFR overview",
+              plotly::plotlyOutput(ns("cfr_output"), height = "620px"),
+              shiny::uiOutput(ns("footer_cfr"))
+            )
+          )
+        )
+      ),
+      shiny::column(
+        width = 3,
+        bs4Dash::box(
+          width = 12,
+          title = shiny::tagList(shiny::icon("user-injured"), "Patient context"),
+          status = "warning",
+          solidHeader = TRUE,
+          class = "icu-card",
+          shiny::numericInput(
+            ns("age"),
+            label = labels("age", "label", language),
+            value = 18,
+            min = 0,
+            max = 120,
+            step = 1
+          ),
+          shiny::numericInput(
+            ns("height"),
+            label = labels("height", "label", language),
+            value = 180,
+            min = 0,
+            max = 250,
+            step = 1
+          ),
+          shiny::numericInput(
+            ns("weight"),
+            label = labels("weight", "label", language),
+            value = 70,
+            min = 0,
+            max = 500,
+            step = 1
+          ),
+          shiny::numericInput(
+            ns("creatinine"),
+            label = labels("creatinine", "label", language),
+            value = 60,
+            min = 0,
+            max = 1500,
+            step = 1
+          ),
+          shiny::selectInput(
+            ns("creatinine_unit"),
+            label = "Creatinine unit",
+            choices = c("mg/dL" = "mg/dL", "umol/L" = "uM/L"),
+            selected = "uM/L"
+          ),
+          shiny::selectInput(
+            ns("sex"),
+            label = labels("sex", "label", language),
+            choices = labels("sex", "choices", language),
+            selected = "Male"
+          ),
+          shiny::numericInput(
+            ns("urine_creatinine"),
+            label = "Urinary creatinine (mmol/L)",
+            value = 0,
+            min = 0,
+            max = 100
+          ),
+          shiny::numericInput(
+            ns("urine_output"),
+            label = "Urine output (mL / 24 h)",
+            value = 0,
+            min = 0,
+            max = 20000,
+            step = 50
+          )
+        )
+      )
+    )
+  )
+}
+
+#' @export
+server <- function(id) {
+  shiny::moduleServer(id, function(input, output, session) {
+    mic_information <- shiny::reactiveVal(NULL)
+    mic_specie <- shiny::reactiveVal(NULL)
+    ecoff <- shiny::reactiveVal(NA_real_)
+    ecoff_ci <- shiny::reactiveVal(NULL)
+
+    validator <- shinyvalidate::InputValidator$new()
+    validator$add_rule("drug_dose", function(value) {
+      if (value == 0) {
+        "Dose must be greater than 0"
+      }
+    })
+    validator$add_rule("height", function(value) {
+      if (value < 10) {
+        "Height must be in cm"
+      }
+    })
+    validator$add_rule("height", function(value) {
+      if (value > 250) {
+        "Height must be less than 250 cm"
+      }
+    })
+    validator$add_rule("weight", function(value) {
+      if (value < 1) {
+        "Weight must be in kg"
+      }
+    })
+    validator$add_rule("weight", function(value) {
+      if (value > 500) {
+        "Weight must be less than 500 kg"
+      }
+    })
+    validator$add_rule("age", function(value) {
+      if (value <= 0) {
+        "Age must be greater than 0"
+      }
+    })
+    validator$add_rule("age", function(value) {
+      if (value > 120) {
+        "Age must be less than 120"
+      }
+    })
+    validator$add_rule("beta_lactamin", function(value) {
+      if (is.null(value) || !nzchar(value)) {
+        "Choose a drug before computing PTA"
+      }
+    })
+    validator$enable()
+
+    eucast <- pta_service$update_eucast()
+    shiny::updateSelectInput(
+      session,
+      "bacteria_select",
+      choices = c("Probabilistic" = "probabilist", eucast[[2]]$bacteria)
+    )
+
+    output$footer_cfr <- shiny::renderUI({
+      footer_note(
+        "Select a bacterium from EUCAST to compute the cumulative fraction of response."
+      )
+    })
+
+    shiny::observeEvent(list(input$bacteria_select, input$beta_lactamin), {
+      if (
+        identical(input$bacteria_select, "probabilist") ||
+        is.null(input$beta_lactamin) ||
+        !nzchar(input$beta_lactamin)
+      ) {
+        mic_information(NULL)
+        mic_specie(NULL)
+        ecoff(NA_real_)
+        ecoff_ci(NULL)
+        return()
+      }
+
+      distribution <- pta_service$mic_distribution(
+        input$beta_lactamin,
+        input$bacteria_select,
+        eucast
+      )
+
+      mic_information(distribution)
+
+      if (is.null(distribution)) {
+        mic_specie(NULL)
+        ecoff(NA_real_)
+        ecoff_ci(NULL)
+        return()
+      }
+
+      mic_specie(as.numeric(names(distribution[["mic_distribution"]])))
+      ecoff(as.numeric(distribution$ecoff))
+      ecoff_ci(distribution$ecoff_ci)
+    }, ignoreInit = FALSE)
+
+    shiny::observeEvent(input$compute_pta, {
+      if (!validator$is_valid()) {
+        shiny::showNotification(
+          "Please fix the highlighted inputs before continuing.",
+          duration = 8,
+          type = "error",
+          closeButton = TRUE
+        )
+        return()
+      }
+
+      if (
+        !identical(input$bacteria_select, "probabilist") &&
+        is.null(mic_information())
+      ) {
+        shiny::showNotification(
+          "No MIC distribution is available for the selected bacterium.",
+          duration = 8,
+          type = "error",
+          closeButton = TRUE
+        )
+        return()
+      }
+
+      biological <- pta_service$calc_biological(
+        weight = input$weight,
+        height = input$height,
+        sex = input$sex,
+        age = input$age,
+        creatinine = input$creatinine,
+        urine_creat = input$urine_creatinine,
+        urine_output = input$urine_output,
+        weight_unit = "kg",
+        creat_unit = input$creatinine_unit
+      )
+
+      model_selected <- pta_service$get_default_model(input$beta_lactamin)
+      model_param <- pta_service$get_model_parameters(
+        model = model_selected,
+        biological = biological,
+        drug = input$beta_lactamin
+      )
+
+      concentration_df <- pta_service$sim_concentration(
+        dose = input$drug_dose * 1000,
+        tvcl = model_param$cl,
+        eta_cl = model_param$eta_cl,
+        quantile = input$confidence_level,
+        mic = if (identical(input$bacteria_select, "probabilist")) {
+          NA
+        } else {
+          mic_specie()
+        },
+        dose_increment = model_param$dose_increment * 1000,
+        toxicity_threshold = ifelse(
+          is.na(pta_service$drug_threshold(input$beta_lactamin)),
+          0,
+          pta_service$drug_threshold(input$beta_lactamin)
+        )
+      )
+
+      if (!identical(input$bacteria_select, "probabilist")) {
+        mic_distribution_df <- data.frame(
+          mic = mic_specie(),
+          distribution = as.numeric(dplyr::slice(mic_information()[["mic_distribution"]], 1))
+        )
+
+        cfr_df <- pta_service$calculate_cfr_mulitple_doses(
+          dose_increment = model_param$dose_increment * 1000,
+          dose_max = pta_service$max_dose(input$beta_lactamin) * 1000,
+          tvcl = model_param$cl,
+          eta_cl = model_param$eta_cl,
+          mic_distribution = mic_distribution_df,
+          toxicity_threshold = pta_service$drug_threshold(input$beta_lactamin)
+        )
+
+        cfr_plot <- pta_service$plot.cfr(cfr_df)
+        output$cfr_output <- plotly::renderPlotly({
+          plotly::ggplotly(cfr_plot)
+        })
+
+        output$footer_cfr <- shiny::renderUI({
+          footer_note("The dashed reference lines highlight 10% and 90% CFR.")
+        })
+      } else {
+        output$cfr_output <- plotly::renderPlotly({
+          NULL
+        })
+
+        output$footer_cfr <- shiny::renderUI({
+          footer_note(
+            "Select a bacterium from EUCAST to compute the cumulative fraction of response."
+          )
+        })
+      }
+
+      pta_plot <- pta_service$plot.pta(
+        concentration_df,
+        ecoff = if (identical(input$bacteria_select, "probabilist")) {
+          NA
+        } else {
+          ecoff()
+        }
+      )
+
+      output$pta_output <- plotly::renderPlotly({
+        plotly::ggplotly(pta_plot$pta_multiple_doses)
+      })
+
+      output$pta_output_probability <- plotly::renderPlotly({
+        plotly::ggplotly(pta_plot$pta_ci_plot)
+      })
+
+      output$footer_pta <- shiny::renderUI({
+        all_dose <- c(-2, -1, 0, 1, 2) * model_param$dose_increment + input$drug_dose
+        dose_badges(all_dose)
+      })
+
+      output$footer_pta_probability <- shiny::renderUI({
+        if (identical(input$bacteria_select, "probabilist")) {
+          return(footer_note("Confidence intervals are shown across the default MIC range."))
+        }
+
+        shiny::tags$div(
+          class = "icu-footer-metrics",
+          shiny::tags$span(shiny::tags$b("ECOFF:"), ecoff(), " mg/L"),
+          shiny::tags$span(shiny::tags$b("Confidence interval:"), ecoff_ci())
+        )
+      })
+    })
+  })
+}

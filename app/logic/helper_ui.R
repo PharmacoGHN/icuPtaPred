@@ -1,10 +1,9 @@
-# load package
-library(ggplot2)
-
 # set language
+#' @export
 lang <- "fr"
 
 # data containing the input information used in the UI
+#' @export
 ui_data <- list(
   fr = list(
     choices = list(

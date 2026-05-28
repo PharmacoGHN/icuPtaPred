@@ -1,3 +1,7 @@
+box::use(
+  app/logic/helper_ui[ui_data]
+)
+
 # function
 # add not_in
 # add function that get ascii code for special character
@@ -38,6 +42,7 @@ is_unique <- function(vector) {
 #' @description wrapper to simply language changes in interface label
 #'
 #' @noRd
+#' @export
 
 labels <- function(
   name = NULL,
@@ -52,6 +57,7 @@ labels <- function(
 #' @description convert coefficient of variation to standard deviation in case of log normal distribution
 #'
 #' @noRd
+#' @export
 
 
 get_sd_from_cv <- function(cv) {
@@ -63,6 +69,7 @@ get_sd_from_cv <- function(cv) {
 #' @description convert standard deviation to coefficient of variation in case of log normal distribution
 #'
 #' @noRd
+#' @export
 
 get_cv_from_sd <- function(sd) {
   return(sqrt(exp(sd^2) - 1))

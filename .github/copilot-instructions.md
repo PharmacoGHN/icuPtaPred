@@ -113,4 +113,4 @@ This pattern allows testing both public and private functions while maintaining 
 
 ## Code style
 
-The maximum line length is 100 characters.
+The maximum line length is 180 characters.

@@ -1,74 +1,389 @@
-.title-frame {
-    border: 5px groove #1b69b7;
-    border-radius: 10px;
-    background-color: #cce5ff;
-    padding: 10px;
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Outfit:wght@400;500;600;700&display=swap");
+
+:root {
+  --icu-ink: #132238;
+  --icu-paper: #f6f2ea;
+  --icu-surface: rgba(255, 255, 255, 0.9);
+  --icu-surface-strong: #ffffff;
+  --icu-border: rgba(19, 34, 56, 0.08);
+  --icu-shadow: 0 18px 45px rgba(16, 42, 67, 0.12);
+  --icu-brand: #0f7a6a;
+  --icu-brand-strong: #0c5e52;
+  --icu-highlight: #f2a65a;
+  --icu-accent: #1d4f91;
+}
+
+body,
+.content-wrapper,
+.main-sidebar,
+.main-header,
+.layout-navbar-fixed {
+  font-family: "Outfit", sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(15, 122, 106, 0.2), transparent 35%),
+    radial-gradient(circle at top right, rgba(242, 166, 90, 0.18), transparent 30%),
+    linear-gradient(180deg, #fdf8f2 0%, #eef4f7 100%);
+  color: var(--icu-ink);
+}
+
+.content-wrapper,
+.right-side {
+  background: transparent;
+}
+
+.content {
+  padding: 1.6rem;
+}
+
+.main-header .navbar {
+  background: linear-gradient(135deg, #0c5e52 0%, #17836f 45%, #1f9f88 100%);
+  box-shadow: 0 12px 35px rgba(15, 122, 106, 0.22);
+}
+
+.main-sidebar {
+  background:
+    linear-gradient(180deg, rgba(9, 34, 46, 0.98) 0%, rgba(12, 46, 57, 0.98) 100%),
+    linear-gradient(135deg, rgba(29, 79, 145, 0.1), transparent 60%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar {
+  padding-top: 1rem;
+}
+
+.nav-sidebar > .nav-item > .nav-link {
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.nav-sidebar > .nav-item > .nav-link.active,
+.nav-sidebar > .nav-item > .nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.icu-brand {
+  align-items: center;
+  display: flex;
+  gap: 0.95rem;
+}
+
+.icu-brand__logo {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  height: 46px;
+  object-fit: contain;
+  padding: 0.3rem;
+  width: 46px;
+}
+
+.icu-brand__copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.icu-brand__title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.icu-brand__subtitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.icu-sidebar-intro,
+.icu-sidebar-footer {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  margin: 0 0.8rem 1rem;
+  padding: 1rem;
+}
+
+.icu-sidebar-intro__eyebrow,
+.icu-tab-hero__eyebrow {
+  color: var(--icu-highlight);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.icu-sidebar-intro__body,
+.icu-sidebar-footer__label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  margin: 0.5rem 0 0;
+}
+
+.icu-sidebar-footer {
+  margin-top: 1.5rem;
+}
+
+.icu-sidebar-footer__link {
+  align-items: center;
+  color: #ffffff;
+  display: inline-flex;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.icu-page-shell {
+  padding: 0.35rem 0 1.25rem;
+}
+
+.icu-tab-hero {
+  background:
+    linear-gradient(135deg, rgba(12, 94, 82, 0.95), rgba(29, 79, 145, 0.92)),
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 45%);
+  border-radius: 28px;
+  box-shadow: var(--icu-shadow);
+  color: #ffffff;
+  margin-bottom: 1.35rem;
+  overflow: hidden;
+  padding: 1.4rem 1.5rem;
+  position: relative;
+}
+
+.icu-tab-hero::after {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  content: "";
+  height: 160px;
+  position: absolute;
+  right: -40px;
+  top: -55px;
+  width: 160px;
+}
+
+.icu-tab-hero__title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  margin: 0.35rem 0 0.5rem;
+  max-width: 42rem;
+}
+
+.icu-tab-hero__copy {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 44rem;
+}
+
+.card.icu-card,
+.icu-card {
+  background: var(--icu-surface);
+  border: 1px solid var(--icu-border);
+  border-radius: 24px;
+  box-shadow: var(--icu-shadow);
+  overflow: hidden;
+}
+
+.icu-card .card-header {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.06), rgba(29, 79, 145, 0.08));
+  border-bottom: 1px solid var(--icu-border);
+  color: var(--icu-ink);
+  font-weight: 600;
+}
+
+.icu-card .card-body,
+.icu-card .box-body {
+  padding: 1.15rem;
+}
+
+.icu-card--article .card-body {
+  padding: 1.35rem;
+}
+
+.icu-detail-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 1rem;
+}
+
+.icu-detail-block {
+  background: rgba(246, 242, 234, 0.78);
+  border: 1px solid rgba(19, 34, 56, 0.05);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.icu-detail-block h4 {
+  color: var(--icu-accent);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.65rem;
+  text-transform: uppercase;
+}
+
+.icu-prose,
+.icu-copy-block,
+.icu-list {
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.icu-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.icu-settings-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.icu-settings-link {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.09), rgba(29, 79, 145, 0.08));
+  border: 1px solid rgba(15, 122, 106, 0.12);
+  border-radius: 18px;
+  color: var(--icu-ink);
+  display: inline-flex;
+  gap: 0.7rem;
+  justify-content: center;
+  min-height: 72px;
+  padding: 1rem;
+  text-decoration: none;
+}
+
+.icu-settings-link:hover {
+  color: var(--icu-brand-strong);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.btn.icu-primary-button,
+.icu-primary-button {
+  background: linear-gradient(135deg, #0f7a6a, #1d4f91);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 14px 24px rgba(15, 122, 106, 0.25);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  width: 100%;
+}
+
+.btn.icu-primary-button:hover,
+.icu-primary-button:hover {
+  filter: brightness(1.02);
+}
+
+.icu-dose-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.icu-dose-badge {
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.38rem 0.78rem;
+}
+
+.icu-footer-note,
+.icu-footer-metrics {
+  color: rgba(19, 34, 56, 0.7);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.icu-footer-metrics span {
+  background: rgba(15, 122, 106, 0.07);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+}
+
+.card-tabs > .card-header,
+.nav-tabs {
+  border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  border-radius: 999px;
+  color: rgba(19, 34, 56, 0.65);
+  font-weight: 600;
+  margin-right: 0.35rem;
+}
+
+.nav-tabs .nav-link.active {
+  background: rgba(15, 122, 106, 0.12);
+  color: var(--icu-brand-strong);
+}
+
+.form-control,
+.selectize-input,
+.irs-line,
+.irs-bar,
+.irs-handle {
+  border-radius: 14px;
+}
+
+.form-control,
+.selectize-input {
+  border: 1px solid rgba(19, 34, 56, 0.1);
+  box-shadow: none;
+  min-height: 44px;
+}
+
+.irs-bar,
+.irs-from,
+.irs-to,
+.irs-single {
+  background: var(--icu-brand);
+  border-color: var(--icu-brand);
+}
+
+.irs-handle > i:first-child {
+  background: var(--icu-accent);
+}
+
+@media (max-width: 991px) {
+  .content {
+    padding: 1rem;
   }
 
-.title-frame-section {
-  border-radius: 10px;
-  background-color: #f4c4a2;
-  padding: 10px;
-}
-
-.title-display {
-  font-weight: bold;
-  font-style: italic;
-  text-align: center;
-}
-
-.subtitle-display {
-  font-weight: bold;
-  font-style: italic;
-  font-size: 16px;
-  text-decoration: underline;
-  color: #1b69b7;
-}
-
-.justify-text {
-  text-align: justify;
-}
-
-.disclamer-panel {
-    /* set box properties */
-    width: 100%;
-    border: solid; /* Border color and thickness */
-    border-color: #2c98c2;
-    border-style: groove;
-    border-radius: 5px; /* Rounded corners */
-    background-color: #eecf95; /* Light background color */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-
-    /* set text properties */ 
-    font-size: 16px; /* Font size for text */
-    color: #101010; /* Text color */
-    padding: 15px; /* Space inside the container */
-    width: fit-content; /* Adjust width based on content */
-    word-break: normal;
-
-    /* Box margin information */
-    margin: 10px auto; /* Center with some spacing */
+  .icu-tab-hero {
+    border-radius: 22px;
+    padding: 1.2rem;
   }
-   
-.information-panel {
-  /*set information panel type for patient info on main page*/
+}
 
-    /* set box properties */
-    width: 100%;
-    border: solid; /* Border color and thickness */
-    border-color: #4cc3f1;
-    border-style: groove;
-    border-radius: 8px; /* Rounded corners */
-    background-color: #f3e9d6; /* Light background color */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+@media (max-width: 767px) {
+  .icu-brand__subtitle {
+    display: none;
+  }
 
-    /* set text properties */ 
-    font-size: 16px; /* Font size for text */
-    color: #101010; /* Text color */
-    padding: 15px; /* Space inside the container */
-    width: fit-content; /* Adjust width based on content */
-    word-break: normal;
-
-    /* Box margin information */
-    margin: 10px auto; /* Center with some spacing */
+  .icu-settings-grid {
+    grid-template-columns: 1fr;
+  }
 }
