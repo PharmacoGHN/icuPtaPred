@@ -7,7 +7,7 @@ box::use(
 )
 
 box::use(
-  app/logic/helper_model_information[model_information],
+  app/logic/model_registry[get_model_definition, list_models_for_drug],
   app/logic/pta_service,
   app/logic/utils[labels]
 )
@@ -70,7 +70,7 @@ summary_metric <- function(label, value, unit = NULL, digits = 1, emphasis = FAL
   )
 }
 
-patient_summary_card <- function(biological, model_selected) {
+patient_summary_card <- function(biological, model_selected, model_param) {
   metrics <- list(
     summary_metric("CRCL (CG-TBW)", biological$cg_tbw, "mL/min", emphasis = TRUE),
     summary_metric("CRCL (CG-AJBW)", biological$cg_ajbw, "mL/min"),
@@ -86,6 +86,23 @@ patient_summary_card <- function(biological, model_selected) {
     metrics <- append(metrics, list(summary_metric("UV/P", biological$uvp, "mL/min")))
   }
 
+  if (is.finite(model_param$renal_value)) {
+    metrics <- append(
+      metrics,
+      list(
+        summary_metric(
+          if (isTRUE(model_param$used_manual_renal)) {
+            "Manual renal value used"
+          } else {
+            "Renal value used"
+          },
+          model_param$renal_value,
+          "mL/min"
+        )
+      )
+    )
+  }
+
   shiny$tags$div(
     class = "icu-patient-summary",
     shiny$tags$div(
@@ -93,7 +110,11 @@ patient_summary_card <- function(biological, model_selected) {
       shiny$tags$div(
         shiny$tags$span("Derived patient metrics", class = "icu-patient-summary__title"),
         shiny$tags$p(
-          "Updated from the current anthropometric and renal inputs.",
+          if (isTRUE(model_param$used_manual_renal)) {
+            paste0("Manual override active. Model formula: ", model_param$renal_formula, ".")
+          } else {
+            paste0("Renal function source: ", model_param$renal_formula, ".")
+          },
           class = "icu-patient-summary__copy"
         )
       ),
@@ -114,6 +135,37 @@ patient_summary_placeholder <- function() {
   )
 }
 
+renal_formula_note <- function(drug, model, manual_renal_function = NA_real_) {
+  if (is.null(drug) || !nzchar(drug)) {
+    return(
+      shiny$tags$div(
+        class = "icu-renal-note icu-renal-note--placeholder",
+        shiny$tags$span("Renal function source", class = "icu-renal-note__title"),
+        shiny$tags$p(
+          "Select a drug to display the renal function method used by the current model.",
+          class = "icu-renal-note__copy"
+        )
+      )
+    )
+  }
+
+  model_definition <- get_model_definition(drug = drug, model = model)
+
+  copy <- if (model_definition$renal_metric[[1]] == "none") {
+    "This model does not use a renal function formula."
+  } else if (is.finite(manual_renal_function) && manual_renal_function > 0) {
+    paste0("Manual override will replace ", model_definition$renal_formula[[1]], ".")
+  } else {
+    paste0("This model uses ", model_definition$renal_formula[[1]], ".")
+  }
+
+  shiny$tags$div(
+    class = "icu-renal-note",
+    shiny$tags$span("Renal function source", class = "icu-renal-note__title"),
+    shiny$tags$p(copy, class = "icu-renal-note__copy")
+  )
+}
+
 #' @export
 ui <- function(id) {
   ns <- shiny$NS(id)
@@ -128,7 +180,7 @@ ui <- function(id) {
           title = shiny$tagList(shiny$icon("vial"), "Pathogen and regimen"),
           status = "primary",
           solidHeader = TRUE,
-          class = "icu-card",
+          class = "icu-card icu-card--controls",
           shiny$selectInput(
             ns("bacteria_select"),
             "Bacterium",
@@ -168,13 +220,9 @@ ui <- function(id) {
               choices = character(0)
             )
           ),
-          shiny$sliderInput(
-            ns("confidence_level"),
-            label = labels("conf_interval", "label", language),
-            min = 0,
-            max = 1,
-            value = c(0.025, 0.975),
-            step = 0.01
+          shiny$tags$p(
+            "The probability interval is fixed at 95%.",
+            class = "icu-inline-note"
           ),
           shiny$actionButton(
             ns("compute_pta"),
@@ -224,7 +272,7 @@ ui <- function(id) {
           title = shiny$tagList(shiny$icon("user-injured"), "Patient profile"),
           status = "warning",
           solidHeader = TRUE,
-          class = "icu-card",
+          class = "icu-card icu-card--controls",
           shiny$numericInput(
             ns("age"),
             label = labels("age", "label", language),
@@ -283,7 +331,16 @@ ui <- function(id) {
             min = 0,
             max = 20000,
             step = 50
+          ),
+          shiny$numericInput(
+            ns("manual_renal_function"),
+            label = "Manual renal function override (mL/min)",
+            value = NA_real_,
+            min = 0,
+            step = 1
           )
+          ,
+          shiny$uiOutput(ns("renal_function_method"))
         )
       )
     )
@@ -334,6 +391,11 @@ server <- function(id) {
         "Age must be less than 120"
       }
     })
+    validator$add_rule("manual_renal_function", function(value) {
+      if (!is.na(value) && value < 0) {
+        "Manual renal function must be greater than or equal to 0"
+      }
+    })
     validator$add_rule("beta_lactamin", function(value) {
       if (is.null(value) || !nzchar(value)) {
         "Choose a drug before computing PTA"
@@ -350,11 +412,11 @@ server <- function(id) {
       model_choices <- if (
         is.null(input$beta_lactamin) ||
         !nzchar(input$beta_lactamin) ||
-        is.null(model_information[[input$beta_lactamin]])
+        !length(list_models_for_drug(input$beta_lactamin))
       ) {
         character(0)
       } else {
-        names(model_information[[input$beta_lactamin]])
+        list_models_for_drug(input$beta_lactamin)
       }
 
       default_model <- pta_service$get_default_model(input$beta_lactamin)
@@ -389,6 +451,26 @@ server <- function(id) {
 
     output$patient_summary <- shiny$renderUI({
       patient_summary_placeholder()
+    })
+
+    selected_model <- shiny$reactive({
+      if (isTRUE(input$advanced_user_mode) && !is.null(input$model_selected) && nzchar(input$model_selected)) {
+        return(input$model_selected)
+      }
+
+      if (is.null(input$beta_lactamin) || !nzchar(input$beta_lactamin)) {
+        return(character(0))
+      }
+
+      pta_service$get_default_model(input$beta_lactamin)
+    })
+
+    output$renal_function_method <- shiny$renderUI({
+      renal_formula_note(
+        drug = input$beta_lactamin,
+        model = selected_model(),
+        manual_renal_function = input$manual_renal_function
+      )
     })
 
     shiny$observeEvent(list(input$bacteria_select, input$beta_lactamin), {
@@ -460,20 +542,13 @@ server <- function(id) {
         creat_unit = input$creatinine_unit
       )
 
-      model_selected <- if (
-        isTRUE(input$advanced_user_mode) &&
-        !is.null(input$model_selected) &&
-        nzchar(input$model_selected)
-      ) {
-        input$model_selected
-      } else {
-        pta_service$get_default_model(input$beta_lactamin)
-      }
+      model_selected <- selected_model()
 
       model_param <- pta_service$get_model_parameters(
         model = model_selected,
         biological = biological,
-        drug = input$beta_lactamin
+        drug = input$beta_lactamin,
+        manual_renal_function = input$manual_renal_function
       )
 
       toxicity_threshold <- pta_service$drug_threshold(input$beta_lactamin)
@@ -489,7 +564,7 @@ server <- function(id) {
         dose = input$drug_dose * 1000,
         tvcl = model_param$cl,
         eta_cl = model_param$eta_cl,
-        quantile = input$confidence_level,
+        quantile = c(0.025, 0.975),
         mic = if (identical(input$bacteria_select, "probabilist")) {
           NA
         } else {
@@ -562,18 +637,19 @@ server <- function(id) {
 
       output$footer_pta_probability <- shiny$renderUI({
         if (identical(input$bacteria_select, "probabilist")) {
-          return(footer_note("Confidence intervals are shown across the default MIC range."))
+          return(footer_note("Fixed 95% confidence intervals are shown across the default MIC range."))
         }
 
         shiny$tags$div(
           class = "icu-footer-metrics",
+          shiny$tags$span(shiny$tags$b("Probability interval:"), "95%"),
           shiny$tags$span(shiny$tags$b("ECOFF:"), ecoff(), " mg/L"),
           shiny$tags$span(shiny$tags$b("Confidence interval:"), ecoff_ci())
         )
       })
 
       output$patient_summary <- shiny$renderUI({
-        patient_summary_card(biological, model_selected)
+        patient_summary_card(biological, model_selected, model_param)
       })
     })
   })

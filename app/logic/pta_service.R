@@ -7,6 +7,7 @@ box::use(
 )
 
 box::use(
+  app/logic/model_registry,
   app/logic/utils[get_cv_from_sd, get_sd_from_cv]
 )
 
@@ -182,70 +183,50 @@ calc_biological <- function(
   )
 }
 
+resolve_renal_value <- function(model_definition, biological, manual_renal_function = NA_real_) {
+  if (
+    is.finite(manual_renal_function) &&
+    manual_renal_function > 0 &&
+    model_definition$renal_metric[[1]] != "none"
+  ) {
+    return(manual_renal_function)
+  }
+
+  if (model_definition$renal_metric[[1]] == "none") {
+    return(NA_real_)
+  }
+
+  biological[[model_definition$renal_metric[[1]]]]
+}
+
 #' @export
-get_model_parameters <- function(model, biological, drug = NULL) {
-  cl <- switch(
-    model,
-    "Barreto_2023" = 7.84,
-    "Cacqueray_2022" = 1.21 * (biological$tbw / 9)^0.75 * (biological$schwartz / 153)^0.37,
-    "An_2023" = 0.526 + 2 * biological$cg_lbw / 54,
-    "Buning_2021" = 3.42 * (biological$ckd_2009 / 73)^0.772,
-    "Launay_2024" = 4.45 * (biological$ckd_2009 / 73.9)^0.9,
-    "Cojutti_2024" = 5 * (biological$ekfc / 70)^0.7,
-    "Zhar_2022" = 7.38 * (biological$ckd_2009 / 100)^0.467,
-    "Chandorkar_2015" = 5.11 * 1.215 * (biological$cg_tbw / 109)^0.715,
-    "Zhang_2021" = 4.84 * (biological$cg_tbw / 100)^0.701,
-    "Gijsen_2021" = 1,
-    "Minichmayr_2018" = 1,
-    "Ehrmann_2019" = 1,
-    "Huang_2025" = 1,
-    "Lan_2022" = 1,
-    "Fukumoto_2023" = 1.35 * ((biological$uvp * 1.73 / biological$bsa) / 87.6)^0.67,
-    "Klastrup_2020" = 2.25 + 0.119 * biological$cg_tbw,
-    "Sukarnjanaset_2019" = 5.37 + 0.06 * (biological$cg_tbw - 55),
-    "Udy_2015" = 16.3 * (biological$cg_tbw / 100),
-    1
+get_model_parameters <- function(model, biological, drug = NULL, manual_renal_function = NA_real_) {
+  model_definition <- model_registry$get_model_definition(drug = drug, model = model)
+  renal_value <- resolve_renal_value(model_definition, biological, manual_renal_function)
+
+  cl <- model_registry$evaluate_model_expression(
+    model_definition$clearance_expr[[1]],
+    biological,
+    renal_value
   )
 
-  eta_cl <- switch(
-    model,
-    "Barreto_2023" = 1,
-    "Cacqueray_2022" = 0.39,
-    "An_2023" = get_sd_from_cv(0.299),
-    "Buning_2021" = get_sd_from_cv(0.36),
-    "Launay_2024" = 0.46,
-    "Cojutti_2024" = get_sd_from_cv(0.6792),
-    "Zhar_2022" = 0.467,
-    "Chandorkar_2015" = get_sd_from_cv(0.33),
-    "Zhang_2021" = get_sd_from_cv(0.429),
-    "Gijsen_2021" = 1,
-    "Minichmayr_2018" = 1,
-    "Ehrmann_2019" = 1,
-    "Huang_2025" = 1,
-    "Lan_2022" = 1,
-    "Fukumoto_2023" = get_sd_from_cv(0.221),
-    "Klastrup_2020" = 0.533,
-    "Sukarnjanaset_2019" = get_sd_from_cv(0.285),
-    "Udy_2015" = get_cv_from_sd(0.56),
-    1
+  eta_cl <- model_registry$evaluate_model_expression(
+    model_definition$eta_cl_expr[[1]],
+    biological,
+    renal_value
   )
 
-  dose_increment <- dplyr$case_when(
-    drug == "Amoxicillin" ~ 0.500,
-    drug == "Cefepime" ~ 1.000,
-    drug == "Cefazoline" ~ 0.500,
-    drug == "Cefotaxim" ~ 0.500,
-    drug == "Cefiderocol" ~ 1.000,
-    drug == "Ceftazidime" ~ 1.000,
-    drug == "Ceftaroline" ~ 1.000,
-    drug == "Ceftobiprol" ~ 1.000,
-    drug == "Ceftolozane" ~ 1.000,
-    drug == "Piperacillin-tazobactam" ~ 2.000,
-    drug == "Meropenem" ~ 0.500,
-    TRUE ~ 0
+  list(
+    cl = cl,
+    eta_cl = eta_cl,
+    dose_increment = as.numeric(model_definition$dose_increment[[1]]),
+    renal_metric = model_definition$renal_metric[[1]],
+    renal_formula = model_definition$renal_formula[[1]],
+    renal_value = renal_value,
+    used_manual_renal = is.finite(manual_renal_function) &&
+      manual_renal_function > 0 &&
+      model_definition$renal_metric[[1]] != "none"
   )
-
-  list(cl = cl, eta_cl = eta_cl, dose_increment = dose_increment)
 }
 
 #' @export
@@ -288,16 +269,7 @@ max_dose <- function(drug) {
 
 #' @export
 get_default_model <- function(drug) {
-  switch(
-    drug,
-    "Cefepime" = "An_2023",
-    "Ceftazidime" = "Buning_2021",
-    "Ceftolozane" = "Zhang_2021",
-    "Cefiderocol" = "Zhar_2022",
-    "Piperacillin-tazobactam" = "Klastrup_2020",
-    "Meropenem" = "Ehrmann_2019",
-    character(0)
-  )
+  model_registry$get_model_definition(drug = drug)$model[[1]]
 }
 
 #' @export
@@ -415,6 +387,11 @@ threshold_curve <- function(threshold, mic) {
   threshold / mic
 }
 
+sanitize_log_series <- function(values) {
+  values[!is.finite(values) | values <= 0] <- NA_real_
+  values
+}
+
 #' @export
 sim_concentration <- function(
   dose,
@@ -437,24 +414,24 @@ sim_concentration <- function(
   tv_css_range <- dose_range / (tvcl * 24)
 
   css_mic_range <- data.frame(
-    css_mic_below2 = tv_css_range[1] / mic,
-    css_mic_below1 = tv_css_range[2] / mic,
-    css_mic_above1 = tv_css_range[4] / mic,
-    css_mic_above2 = tv_css_range[5] / mic
+    css_mic_below2 = sanitize_log_series(tv_css_range[1] / mic),
+    css_mic_below1 = sanitize_log_series(tv_css_range[2] / mic),
+    css_mic_above1 = sanitize_log_series(tv_css_range[4] / mic),
+    css_mic_above2 = sanitize_log_series(tv_css_range[5] / mic)
   )
 
   quantile_df <- data.frame(
-    css_mic = tv_css_range[3] / mic,
+    css_mic = sanitize_log_series(tv_css_range[3] / mic),
     mic = mic,
-    percentile_2.5 = quant[1] / mic,
-    percentile_97.5 = quant[2] / mic
+    percentile_2.5 = sanitize_log_series(quant[1] / mic),
+    percentile_97.5 = sanitize_log_series(quant[2] / mic)
   )
 
   concentration_df <- dplyr$bind_cols(
     quantile_df,
     css_mic_range,
-    toxicity_threshold = threshold_curve(toxicity_threshold, mic),
-    additional_threshold = threshold_curve(additional_threshold, mic)
+    toxicity_threshold = sanitize_log_series(threshold_curve(toxicity_threshold, mic)),
+    additional_threshold = sanitize_log_series(threshold_curve(additional_threshold, mic))
   )
 
   round(concentration_df, digits = 4)
@@ -549,7 +526,7 @@ plot.pta <- function(data, ecoff = NA) {
   pta_plot <- ggplot2$ggplot(data = data) +
     ggplot2$geom_hline(mapping = ggplot2$aes(yintercept = 1), col = "#2b94ab", lty = 2, lwd = 0.5) +
     ggplot2$geom_hline(mapping = ggplot2$aes(yintercept = 4), col = "#0e877b", lty = 2, lwd = 0.5) +
-    ggplot2$geom_line(mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1) +
+    ggplot2$geom_line(mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic), col = "#2db391", lty = 1, lwd = 1, na.rm = TRUE) +
     ggplot2$labs(linetype = NULL) +
     ggplot2$scale_x_continuous(
       trans = "log2",
@@ -576,7 +553,8 @@ plot.pta <- function(data, ecoff = NA) {
       mapping = ggplot2$aes(x = .data$mic, y = .data$toxicity_threshold),
       col = "#960b0b",
       lty = 1,
-      lwd = 0.9
+      lwd = 0.9,
+      na.rm = TRUE
     )
   }
 
@@ -585,7 +563,8 @@ plot.pta <- function(data, ecoff = NA) {
       mapping = ggplot2$aes(x = .data$mic, y = .data$additional_threshold),
       col = "#f2a65a",
       lty = 3,
-      lwd = 0.9
+      lwd = 0.9,
+      na.rm = TRUE
     )
   }
 
@@ -603,28 +582,32 @@ plot.pta <- function(data, ecoff = NA) {
       mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic_below1),
       col = "#20846b",
       lty = 1,
-      lwd = 1
+      lwd = 1,
+      na.rm = TRUE
     ) +
     ggplot2$geom_line(
       data = data,
       mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic_below2),
       col = "#1f8269",
       lty = 1,
-      lwd = 1
+      lwd = 1,
+      na.rm = TRUE
     ) +
     ggplot2$geom_line(
       data = data,
       mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic_above1),
       col = "#32c5a0",
       lty = 1,
-      lwd = 1
+      lwd = 1,
+      na.rm = TRUE
     ) +
     ggplot2$geom_line(
       data = data,
       mapping = ggplot2$aes(x = .data$mic, y = .data$css_mic_above2),
       col = "#2fe3b6",
       lty = 1,
-      lwd = 1
+      lwd = 1,
+      na.rm = TRUE
     )
 
   pta_ci_plot <- pta_plot +
@@ -637,7 +620,8 @@ plot.pta <- function(data, ecoff = NA) {
       ),
       fill = "#0889f1",
       alpha = 0.1,
-      col = "#0889f1"
+      col = "#0889f1",
+      na.rm = TRUE
     )
 
   list(

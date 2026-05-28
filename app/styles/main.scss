@@ -308,6 +308,11 @@ body {
   overflow: hidden;
 }
 
+.card.icu-card--controls,
+.icu-card--controls {
+  overflow: visible;
+}
+
 .icu-card .card-header {
   background: linear-gradient(135deg, rgba(15, 122, 106, 0.06), rgba(29, 79, 145, 0.08));
   border-bottom: 1px solid var(--icu-border);
@@ -318,6 +323,22 @@ body {
 .icu-card .card-body,
 .icu-card .box-body {
   padding: 1.15rem;
+}
+
+.icu-card--controls .card-body,
+.icu-card--controls .box-body {
+  overflow: visible;
+}
+
+.icu-card--controls .selectize-control,
+.icu-card--controls .selectize-input,
+.icu-card--controls .selectize-dropdown {
+  overflow: visible;
+}
+
+.icu-card--controls .selectize-dropdown,
+.selectize-dropdown {
+  z-index: 1600;
 }
 
 .icu-card--article .card-body {
@@ -347,11 +368,56 @@ body {
   text-transform: uppercase;
 }
 
+.icu-library-tabs .nav-tabs {
+  border-bottom: 0;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.icu-library-tabs .nav-tabs .nav-link {
+  background: rgba(15, 122, 106, 0.08);
+  border: 1px solid var(--icu-border);
+  border-radius: 999px;
+  color: var(--icu-accent);
+  font-weight: 600;
+}
+
+.icu-library-tabs .nav-tabs .nav-link.active,
+.icu-library-tabs .nav-tabs .nav-link:hover {
+  background: var(--icu-accent);
+  color: #ffffff;
+}
+
+.icu-abstract-sections {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.icu-abstract-section {
+  background: rgba(246, 242, 234, 0.72);
+  border: 1px solid rgba(19, 34, 56, 0.05);
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+}
+
+.icu-abstract-section h5 {
+  color: var(--icu-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.55rem;
+  text-transform: uppercase;
+}
+
 .icu-prose,
 .icu-copy-block,
 .icu-list {
   font-size: 0.96rem;
   line-height: 1.65;
+}
+
+.icu-prose--plaintext {
+  white-space: pre-line;
 }
 
 .icu-list {
@@ -474,6 +540,12 @@ body {
 .btn.icu-primary-button:hover,
 .icu-primary-button:hover {
   filter: brightness(1.02);
+}
+
+.icu-inline-note {
+  color: rgba(19, 34, 56, 0.66);
+  font-size: 0.84rem;
+  margin: 0.35rem 0 0.75rem;
 }
 
 .icu-dose-badges {
@@ -603,6 +675,34 @@ body {
   font-size: 0.96rem;
   font-weight: 700;
   margin-top: 0.15rem;
+}
+
+.icu-renal-note {
+  background: rgba(15, 122, 106, 0.07);
+  border: 1px solid rgba(15, 122, 106, 0.12);
+  border-radius: 14px;
+  margin-top: 0.9rem;
+  padding: 0.8rem 0.85rem;
+}
+
+.icu-renal-note--placeholder {
+  background: rgba(19, 34, 56, 0.04);
+  border-color: rgba(19, 34, 56, 0.08);
+}
+
+.icu-renal-note__title {
+  color: var(--icu-accent);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.icu-renal-note__copy {
+  color: rgba(19, 34, 56, 0.7);
+  font-size: 0.85rem;
+  margin: 0.35rem 0 0;
 }
 
 .card-tabs > .card-header,
