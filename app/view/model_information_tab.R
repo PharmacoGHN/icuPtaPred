@@ -157,7 +157,7 @@ registry_editor <- function(ns) {
 
   box(
     width = 12,
-    title = shiny$tagList(shiny$icon("pen-to-square"), "Registry editor"),
+    title = shiny$div(shiny$icon("pen-to-square"), "Registry editor", style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
     status = "warning",
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
@@ -263,7 +263,7 @@ documentation_editor <- function(ns) {
 
   box(
     width = 12,
-    title = shiny$tagList(shiny$icon("file-lines"), "Documentation editor"),
+    title = shiny$div(shiny$icon("file-lines"), "Documentation editor", style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
     status = "info",
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
@@ -349,7 +349,7 @@ doi_link <- function(model) {
 model_overview_card <- function(ns) {
   box(
     width = 12,
-    title = shiny$textOutput(ns("title")),
+    title = shiny$div(shiny$icon("book"), shiny$textOutput(ns("title")), style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
     status = "success",
     solidHeader = TRUE,
     class = "icu-card icu-card--article",

@@ -358,6 +358,7 @@ ui <- function(id) {
             tabBox(
               width = 12,
               height = "760px",
+              type = "tabs",
               background = "white",
               solidHeader = FALSE,
               collapsible = FALSE,
