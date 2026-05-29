@@ -3,15 +3,16 @@
   "model": "Barreto_2023",
   "Title": "Population pharmacokinetic model of cefepime for critically ill adults: a comparative assessment of eGFR equations",
   "Authors": "Barreto, et al.",
-  "Year": 2023,
+  "Year": "2023",
   "Journal": "Antimicrobial Agents and Chemotherapy",
   "DOI": "10.1128/aac.00810-23",
   "URL": "https://pubmed.ncbi.nlm.nih.gov/37882514/",
   "Abstract_Introduction": "cefepime exhibits highly variable pharmacokinetics in critically ill patients. The purpose of this study was to develop and qualify a population pharmacokinetic model for use in the critically ill and investigate the impact of various estimated glomerular filtration rate (eGFR) equations using creatinine, cystatin C, or both on model parameters.",
   "Abstract_Methods": "This was a prospective study of critically ill adults hospitalized at an academic medical center treated with intravenous cefepime. Individuals with acute kidney injury or on kidney replacement therapy or extracorporeal membrane oxygenation were excluded. A nonlinear mixed-effects population pharmacokinetic model was developed using data collected from 2018 to 2022.",
   "Abstract_Results": "The 120 included individuals contributed 379 serum samples for analysis. A two-compartment pharmacokinetic model with first-order elimination best described the data. The population mean parameters (standard error) in the final model were 7.84 (0.24) L/h for CL1 and 15.6 (1.45) L for V1. Q was fixed at 7.09 L/h and V2 was fixed at 10.6 L, due to low observed interindividual variation in these parameters. The final model included weight as a covariate for volume of distribution and the eGFRcr-cysC (mL/min) as a predictor of drug clearance.",
-  "Abstract_Conclusions": " In summary, a population pharmacokinetic model for cefepime was created for critically ill adults. The study demonstrated the importance of cystatin C to prediction of cefepime clearance. cefepime dosing models which use an eGFR equation inclusive of cystatin C are likely to exhibit improved accuracy and precision compared to dosing models which incorporate an eGFR equation with only creatinine.",
-  "Clearance_Formula": " $$ CL = 7.84 \\times \\frac{eGFR_{cr-cysC}}{7.2} $$",
-  "Model_Description": " CL = Clearance; eGFR = estimated glomerular filtration rate; cr = creatinine; cysC = cystatin C.",
-  "Population_Studied": "Critically ill Adults"
+  "Abstract_Conclusions": "In summary, a population pharmacokinetic model for cefepime was created for critically ill adults. The study demonstrated the importance of cystatin C to prediction of cefepime clearance. cefepime dosing models which use an eGFR equation inclusive of cystatin C are likely to exhibit improved accuracy and precision compared to dosing models which incorporate an eGFR equation with only creatinine.",
+  "Abstract": "",
+  "Clearance_Formula": "$$ CL = 7.84 \\times \\frac{eGFR_{cr-cysC}}{7.2} $$",
+  "Model_Description": "CL = Clearance; eGFR = estimated glomerular filtration rate; cr = creatinine; cysC = cystatin C.",
+  "Population_Studied": "Critically ill Adults\nCystatin is not available for the moment"
 }

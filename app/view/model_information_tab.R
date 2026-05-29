@@ -1,6 +1,11 @@
 box::use(
   bs4Dash[box, tabBox],
-  shiny,
+  shiny[
+    tags, fluidRow, column, selectInput, textInput, numericInput, checkboxInput, textAreaInput, actionButton, updateSelectInput,
+    updateTextInput, updateNumericInput, updateCheckboxInput, updateTextAreaInput, renderText, renderUI, withMathJax,
+    showNotification, NS, moduleServer, tagList, HTML, icon, in_devmode, div, tabPanel, textOutput, uiOutput, reactiveVal,
+    reactive, observeEvent, req, tag
+  ],
   stats[setNames]
 )
 
@@ -117,7 +122,7 @@ documentation_for_editor <- function(documentation) {
 }
 
 render_plain_text_block <- function(text) {
-  shiny$tags$div(class = "icu-prose icu-prose--plaintext", text)
+  tags$div(class = "icu-prose icu-prose--plaintext", text)
 }
 
 render_abstract_ui <- function(documentation) {
@@ -131,53 +136,53 @@ render_abstract_ui <- function(documentation) {
         return(NULL)
       }
 
-      shiny$tags$div(
+      tags$div(
         class = "icu-abstract-section",
-        shiny$tags$h5(section_title),
+        tags$h5(section_title),
         render_plain_text_block(text)
       )
     })
   )
 
   if (length(structured_sections)) {
-    return(shiny$tags$div(class = "icu-abstract-sections", structured_sections))
+    return(tags$div(class = "icu-abstract-sections", structured_sections))
   }
 
   if (!is.null(documentation$Abstract) && nzchar(trimws(documentation$Abstract))) {
-    return(shiny$div(class = "icu-prose", shiny$HTML(documentation$Abstract)))
+    return(div(class = "icu-prose", HTML(documentation$Abstract)))
   }
 
-  shiny$tags$p("No abstract documented yet.", class = "icu-copy-block")
+  tags$p("No abstract documented yet.", class = "icu-copy-block")
 }
 
 registry_editor <- function(ns) {
-  if (!isTRUE(shiny$in_devmode())) {
+  if (!isTRUE(in_devmode())) {
     return(NULL)
   }
 
   box(
     width = 12,
-    title = shiny$div(shiny$icon("pen-to-square"), "Registry editor", style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
+    title = div(icon("pen-to-square"), "Registry editor", style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
     status = "warning",
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
-    shiny$tags$p(
+    tags$p(
       "Local dev only. Saving a new model writes to the registry JSON file and creates a documentation JSON file automatically.",
       class = "icu-copy-block"
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 6,
-        shiny$selectInput(
+        selectInput(
           ns("edit_drug"),
           "Drug",
           choices = labels("drug", "choices", "fr"),
           selectize = FALSE
         )
       ),
-      shiny$column(
+      column(
         width = 6,
-        shiny$selectInput(
+        selectInput(
           ns("edit_model_lookup"),
           "Registry model",
           choices = c("Create new model" = ""),
@@ -185,24 +190,24 @@ registry_editor <- function(ns) {
         )
       )
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 6,
-        shiny$textInput(ns("edit_model"), "Model name")
+        textInput(ns("edit_model"), "Model name")
       ),
-      shiny$column(
+      column(
         width = 6,
-        shiny$checkboxInput(ns("edit_is_default"), "Default model", value = FALSE)
+        checkboxInput(ns("edit_is_default"), "Default model", value = FALSE)
       )
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 6,
-        shiny$numericInput(ns("edit_dose_increment"), "Dose increment (g)", value = 1, min = 0.125, step = 0.125)
+        numericInput(ns("edit_dose_increment"), "Dose increment (g)", value = 1, min = 0.125, step = 0.125)
       ),
-      shiny$column(
+      column(
         width = 6,
-        shiny$selectInput(
+        selectInput(
           ns("edit_renal_metric"),
           "Renal metric",
           choices = renal_metric_choices,
@@ -210,122 +215,122 @@ registry_editor <- function(ns) {
         )
       )
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 6,
-        shiny$numericInput(ns("edit_max_dose"), "Max daily dose (g)", value = 20, min = 0.125, step = 0.125)
+        numericInput(ns("edit_max_dose"), "Max daily dose (g)", value = 20, min = 0.125, step = 0.125)
       ),
-      shiny$column(
+      column(
         width = 6,
-        shiny$numericInput(ns("edit_toxicity_threshold"), "Toxicity threshold (mg/L)", value = NA_real_, min = 0, step = 0.1)
+        numericInput(ns("edit_toxicity_threshold"), "Toxicity threshold (mg/L)", value = NA_real_, min = 0, step = 0.1)
       )
     ),
-    shiny$tags$div(
+    tags$div(
       class = "icu-inline-note",
-      shiny$tags$strong("Renal formula label: "),
-      shiny$textOutput(ns("edit_renal_formula_label"), container = shiny$tags$span)
+      tags$strong("Renal formula label: "),
+      textOutput(ns("edit_renal_formula_label"), container = tags$span)
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 8,
-        shiny$textAreaInput(ns("edit_clearance_expr"), "Clearance expression", rows = 4)
+        textAreaInput(ns("edit_clearance_expr"), "Clearance expression", rows = 4)
       ),
-      shiny$column(
+      column(
         width = 4,
-        shiny$numericInput(ns("edit_eta_cl_value"), "Eta CL value", value = 1, min = 0, step = 0.001),
-        shiny$checkboxInput(ns("edit_eta_is_cv"), "Interpret eta CL value as CV%", value = FALSE),
-        shiny$tags$div(
+        numericInput(ns("edit_eta_cl_value"), "Eta CL value", value = 1, min = 0, step = 0.001),
+        checkboxInput(ns("edit_eta_is_cv"), "Interpret eta CL value as CV%", value = FALSE),
+        tags$div(
           class = "icu-inline-note",
-          shiny$tags$strong("Generated eta CL expression: "),
-          shiny$textOutput(ns("edit_eta_cl_expr_preview"), container = shiny$tags$span)
+          tags$strong("Generated eta CL expression: "),
+          textOutput(ns("edit_eta_cl_expr_preview"), container = tags$span)
         )
       )
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 12,
-        shiny$actionButton(ns("load_selected_model"), "Load selected model", class = "btn-default"),
-        shiny$tags$span(style = "display:inline-block; width: 0.5rem;"),
-        shiny$actionButton(ns("new_model"), "New model", class = "btn-default"),
-        shiny$tags$span(style = "display:inline-block; width: 0.5rem;"),
-        shiny$actionButton(ns("save_model"), "Save model", class = "btn-warning"),
-        shiny$tags$span(style = "display:inline-block; width: 0.5rem;"),
-        shiny$actionButton(ns("delete_model"), "Delete model", class = "btn-danger")
+        actionButton(ns("load_selected_model"), "Load selected model", class = "btn-default"),
+        tags$span(style = "display:inline-block; width: 0.5rem;"),
+        actionButton(ns("new_model"), "New model", class = "btn-default"),
+        tags$span(style = "display:inline-block; width: 0.5rem;"),
+        actionButton(ns("save_model"), "Save model", class = "btn-warning"),
+        tags$span(style = "display:inline-block; width: 0.5rem;"),
+        actionButton(ns("delete_model"), "Delete model", class = "btn-danger")
       )
     )
   )
 }
 
 documentation_editor <- function(ns) {
-  if (!isTRUE(shiny$in_devmode())) {
+  if (!isTRUE(in_devmode())) {
     return(NULL)
   }
 
   box(
     width = 12,
-    title = shiny$div(shiny$icon("file-lines"), "Documentation editor", style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
+    title = tagList(icon("file-lines"), "Documentation editor"),
     status = "info",
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
-    shiny$tags$p(
+    tags$p(
       "Local dev only. This editor writes a model-specific documentation JSON file used by the model library.",
       class = "icu-copy-block"
     ),
-    shiny$uiOutput(ns("documentation_target")),
-    shiny$fluidRow(
-      shiny$column(
+    uiOutput(ns("documentation_target")),
+    fluidRow(
+      column(
         width = 5,
-        shiny$textInput(ns("doc_title"), "Title"),
-        shiny$textInput(ns("doc_authors"), "Authors"),
-        shiny$fluidRow(
-          shiny$column(
+        textInput(ns("doc_title"), "Title"),
+        textInput(ns("doc_authors"), "Authors"),
+        fluidRow(
+          column(
             width = 4,
-            shiny$textInput(ns("doc_year"), "Year")
+            textInput(ns("doc_year"), "Year")
           ),
-          shiny$column(
+          column(
             width = 4,
-            shiny$textInput(ns("doc_journal"), "Journal")
+            textInput(ns("doc_journal"), "Journal")
           ),
-          shiny$column(
+          column(
             width = 4,
-            shiny$textInput(ns("doc_doi"), "DOI")
+            textInput(ns("doc_doi"), "DOI")
           )
         ),
-        shiny$textInput(ns("doc_url"), "URL"),
-        shiny$textAreaInput(ns("doc_population_studied"), "Population studied", rows = 4)
+        textInput(ns("doc_url"), "URL"),
+        textAreaInput(ns("doc_population_studied"), "Population studied", rows = 4)
       ),
-      shiny$column(
+      column(
         width = 7,
-        shiny$textAreaInput(ns("doc_model_description"), "Model description", rows = 5),
-        shiny$textAreaInput(ns("doc_clearance_formula"), "Displayed clearance formula", rows = 4),
-        shiny$fluidRow(
-          shiny$column(
+        textAreaInput(ns("doc_model_description"), "Model description", rows = 5),
+        textAreaInput(ns("doc_clearance_formula"), "Displayed clearance formula", rows = 4),
+        fluidRow(
+          column(
             width = 6,
-            shiny$textAreaInput(ns("doc_abstract_introduction"), "Abstract - introduction", rows = 5)
+            textAreaInput(ns("doc_abstract_introduction"), "Abstract - introduction", rows = 5)
           ),
-          shiny$column(
+          column(
             width = 6,
-            shiny$textAreaInput(ns("doc_abstract_methods"), "Abstract - methods", rows = 5)
+            textAreaInput(ns("doc_abstract_methods"), "Abstract - methods", rows = 5)
           )
         ),
-        shiny$fluidRow(
-          shiny$column(
+        fluidRow(
+          column(
             width = 6,
-            shiny$textAreaInput(ns("doc_abstract_results"), "Abstract - results", rows = 5)
+            textAreaInput(ns("doc_abstract_results"), "Abstract - results", rows = 5)
           ),
-          shiny$column(
+          column(
             width = 6,
-            shiny$textAreaInput(ns("doc_abstract_conclusions"), "Abstract - conclusions", rows = 5)
+            textAreaInput(ns("doc_abstract_conclusions"), "Abstract - conclusions", rows = 5)
           )
         )
       )
     ),
-    shiny$fluidRow(
-      shiny$column(
+    fluidRow(
+      column(
         width = 12,
-        shiny$actionButton(ns("reload_selected_documentation"), "Reload selected documentation", class = "btn-default"),
-        shiny$tags$span(style = "display:inline-block; width: 0.5rem;"),
-        shiny$actionButton(ns("save_documentation"), "Save documentation", class = "btn-info")
+        actionButton(ns("reload_selected_documentation"), "Reload selected documentation", class = "btn-default"),
+        tags$span(style = "display:inline-block; width: 0.5rem;"),
+        actionButton(ns("save_documentation"), "Save documentation", class = "btn-info")
       )
     )
   )
@@ -340,97 +345,97 @@ doi_link <- function(model) {
   }
 
   if (!has_link) {
-    return(shiny$tags$span(model$DOI))
+    return(tags$span(model$DOI))
   }
 
-  shiny$tags$a(model$DOI, href = model$URL, target = "_blank")
+  tags$a(model$DOI, href = model$URL, target = "_blank")
 }
 
 model_overview_card <- function(ns) {
   box(
     width = 12,
-    title = shiny$div(shiny$icon("book"), shiny$textOutput(ns("title")), style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;"),
+    title = textOutput(ns("title")),
     status = "success",
     solidHeader = TRUE,
     class = "icu-card icu-card--article",
-    shiny$div(
+    div(
       class = "icu-detail-block",
-      shiny$tags$h4("Citation"),
-      shiny$uiOutput(ns("authors"))
+      tags$h4("Citation"),
+      uiOutput(ns("authors"))
     ),
-    shiny$div(
+    div(
       class = "icu-detail-block",
-      shiny$tags$h4("Abstract"),
-      shiny$uiOutput(ns("abstract"))
+      tags$h4("Abstract"),
+      uiOutput(ns("abstract"))
     ),
-    shiny$div(
+    div(
       class = "icu-detail-grid",
-      shiny$div(
+      div(
         class = "icu-detail-block",
-        shiny$tags$h4("Clearance formula"),
-        shiny$uiOutput(ns("clearance_formula"))
+        tags$h4("Clearance formula"),
+        uiOutput(ns("clearance_formula"))
       ),
-      shiny$div(
+      div(
         class = "icu-detail-block",
-        shiny$tags$h4("Model description"),
-        shiny$textOutput(ns("model_description"))
+        tags$h4("Model description"),
+        textOutput(ns("model_description"))
       ),
-      shiny$div(
+      div(
         class = "icu-detail-block",
-        shiny$tags$h4("Population studied"),
-        shiny$textOutput(ns("population_studied"))
+        tags$h4("Population studied"),
+        textOutput(ns("population_studied"))
       )
     )
   )
 }
 
 library_tabs <- function(ns) {
-  if (isTRUE(shiny$in_devmode())) {
+  if (isTRUE(in_devmode())) {
     return(
-      shiny$div(
+      div(
         class = "icu-library-tabs",
         tabBox(
           width = 12,
           selected = "Model overview",
-          shiny$tabPanel("Model overview", model_overview_card(ns)),
-          shiny$tabPanel("Registry editor", registry_editor(ns)),
-          shiny$tabPanel("Documentation editor", documentation_editor(ns))
+          tabPanel("Model overview", model_overview_card(ns)),
+          tabPanel("Registry editor", registry_editor(ns)),
+          tabPanel("Documentation editor", documentation_editor(ns))
         )
       )
     )
   }
 
-  shiny$div(
+  div(
     class = "icu-library-tabs",
     tabBox(
       width = 12,
       selected = "Model overview",
-      shiny$tabPanel("Model overview", model_overview_card(ns))
+      tabPanel("Model overview", model_overview_card(ns))
     )
   )
 }
 
 #' @export
 ui <- function(id) {
-  ns <- shiny$NS(id)
+  ns <- NS(id)
 
-  shiny$tagList(
-    shiny$fluidRow(
-      shiny$column(
+  tagList(
+    fluidRow(
+      column(
         width = 3,
         box(
           width = 12,
-          title = shiny$tagList(shiny$icon("filter"), "Filters"),
+          title = tagList(icon("filter"), "Filters"),
           status = "primary",
           solidHeader = TRUE,
           class = "icu-card icu-card--controls",
-          shiny$selectInput(
+          selectInput(
             ns("drug"),
             "Drug",
             choices = labels("drug", "choices", "fr"),
             selectize = FALSE
           ),
-          shiny$selectInput(
+          selectInput(
             ns("model"),
             "Model",
             choices = "No model currently available",
@@ -438,7 +443,7 @@ ui <- function(id) {
           )
         )
       ),
-      shiny$column(
+      column(
         width = 9,
         library_tabs(ns)
       )
@@ -448,10 +453,10 @@ ui <- function(id) {
 
 #' @export
 server <- function(id) {
-  shiny$moduleServer(id, function(input, output, session) {
-    refresh_token <- shiny$reactiveVal(0)
+  moduleServer(id, function(input, output, session) {
+    refresh_token <- reactiveVal(0)
 
-    available_models <- shiny$reactive({
+    available_models <- reactive({
       refresh_token()
 
       if (is.null(input$drug) || !nzchar(input$drug)) {
@@ -461,7 +466,7 @@ server <- function(id) {
       list_models_for_drug(input$drug)
     })
 
-    selected_model_name <- shiny$reactive({
+    selected_model_name <- reactive({
       models <- available_models()
 
       if (!length(models)) {
@@ -475,16 +480,16 @@ server <- function(id) {
       models[[1]]
     })
 
-    selected_registry_definition <- shiny$reactive({
-      shiny$req(input$drug)
+    selected_registry_definition <- reactive({
+      req(input$drug)
 
       current_model <- selected_model_name()
-      shiny$req(!is.null(current_model), nzchar(current_model))
+      req(!is.null(current_model), nzchar(current_model))
 
       get_model_definition(drug = input$drug, model = current_model)
     })
 
-    selected_documentation <- shiny$reactive({
+    selected_documentation <- reactive({
       registry_definition <- selected_registry_definition()
 
       get_model_documentation(
@@ -501,16 +506,16 @@ server <- function(id) {
       )
     })
 
-    shiny$observeEvent(list(input$drug, available_models()), {
+    observeEvent(list(input$drug, available_models()), {
       if (is.null(input$drug) || !nzchar(input$drug)) {
-        shiny$updateSelectInput(session, "model", choices = character(0), selected = character(0))
+        updateSelectInput(session, "model", choices = character(0), selected = character(0))
         return()
       }
 
       models <- available_models()
       selected_model <- selected_model_name()
 
-      shiny$updateSelectInput(
+      updateSelectInput(
         session,
         "model",
         choices = models,
@@ -518,57 +523,57 @@ server <- function(id) {
       )
     }, ignoreInit = FALSE)
 
-    output$title <- shiny$renderText({
+    output$title <- renderText({
       selected_documentation()$Title
     })
 
-    output$authors <- shiny$renderUI({
+    output$authors <- renderUI({
       documentation <- selected_documentation()
       citation <- paste0(documentation$Authors, " ", documentation$Journal, ", ", documentation$Year, ". ")
 
-      shiny$tagList(citation, "DOI: ", doi_link(documentation))
+      tagList(citation, "DOI: ", doi_link(documentation))
     })
 
-    output$abstract <- shiny$renderUI({
+    output$abstract <- renderUI({
       render_abstract_ui(selected_documentation())
     })
 
-    output$clearance_formula <- shiny$renderUI({
-      shiny$withMathJax(shiny$HTML(selected_documentation()$Clearance_Formula))
+    output$clearance_formula <- renderUI({
+      withMathJax(HTML(selected_documentation()$Clearance_Formula))
     })
 
-    output$model_description <- shiny$renderText({
+    output$model_description <- renderText({
       selected_documentation()$Model_Description
     })
 
-    output$population_studied <- shiny$renderText({
+    output$population_studied <- renderText({
       selected_documentation()$Population_Studied
     })
 
-    if (isTRUE(shiny$in_devmode())) {
-      output$edit_renal_formula_label <- shiny$renderText({
+    if (isTRUE(in_devmode())) {
+      output$edit_renal_formula_label <- renderText({
         renal_formula_from_metric(input$edit_renal_metric)
       })
 
-      output$edit_eta_cl_expr_preview <- shiny$renderText({
+      output$edit_eta_cl_expr_preview <- renderText({
         eta_expression_from_inputs(input$edit_eta_cl_value, input$edit_eta_is_cv)
       })
 
-      output$documentation_target <- shiny$renderUI({
+      output$documentation_target <- renderUI({
         current_definition <- selected_registry_definition()
 
         if (!nrow(current_definition)) {
           return(
-            shiny$tags$p(
+            tags$p(
               "Select a drug and model from the filters above to edit documentation.",
               class = "icu-copy-block"
             )
           )
         }
 
-        shiny$tags$div(
+        tags$div(
           class = "icu-inline-note",
-          shiny$tags$strong("Current documentation target: "),
+          tags$strong("Current documentation target: "),
           paste(current_definition$drug[[1]], "-", current_definition$model[[1]])
         )
       })
@@ -577,50 +582,50 @@ server <- function(id) {
         current_model <- selected_model_name()
 
         if (is.null(input$drug) || !nzchar(input$drug) || is.null(current_model) || !nzchar(current_model)) {
-          shiny$updateTextInput(session, "doc_title", value = "")
-          shiny$updateTextInput(session, "doc_authors", value = "")
-          shiny$updateTextInput(session, "doc_year", value = "")
-          shiny$updateTextInput(session, "doc_journal", value = "")
-          shiny$updateTextInput(session, "doc_doi", value = "")
-          shiny$updateTextInput(session, "doc_url", value = "")
-          shiny$updateTextAreaInput(session, "doc_clearance_formula", value = "")
-          shiny$updateTextAreaInput(session, "doc_model_description", value = "")
-          shiny$updateTextAreaInput(session, "doc_population_studied", value = "")
-          shiny$updateTextAreaInput(session, "doc_abstract_introduction", value = "")
-          shiny$updateTextAreaInput(session, "doc_abstract_methods", value = "")
-          shiny$updateTextAreaInput(session, "doc_abstract_results", value = "")
-          shiny$updateTextAreaInput(session, "doc_abstract_conclusions", value = "")
+          updateTextInput(session, "doc_title", value = "")
+          updateTextInput(session, "doc_authors", value = "")
+          updateTextInput(session, "doc_year", value = "")
+          updateTextInput(session, "doc_journal", value = "")
+          updateTextInput(session, "doc_doi", value = "")
+          updateTextInput(session, "doc_url", value = "")
+          updateTextAreaInput(session, "doc_clearance_formula", value = "")
+          updateTextAreaInput(session, "doc_model_description", value = "")
+          updateTextAreaInput(session, "doc_population_studied", value = "")
+          updateTextAreaInput(session, "doc_abstract_introduction", value = "")
+          updateTextAreaInput(session, "doc_abstract_methods", value = "")
+          updateTextAreaInput(session, "doc_abstract_results", value = "")
+          updateTextAreaInput(session, "doc_abstract_conclusions", value = "")
           return()
         }
 
         documentation <- documentation_for_editor(selected_documentation())
-        shiny$updateTextInput(session, "doc_title", value = documentation$Title)
-        shiny$updateTextInput(session, "doc_authors", value = documentation$Authors)
-        shiny$updateTextInput(session, "doc_year", value = documentation$Year)
-        shiny$updateTextInput(session, "doc_journal", value = documentation$Journal)
-        shiny$updateTextInput(session, "doc_doi", value = documentation$DOI)
-        shiny$updateTextInput(session, "doc_url", value = documentation$URL)
-        shiny$updateTextAreaInput(session, "doc_clearance_formula", value = documentation$Clearance_Formula)
-        shiny$updateTextAreaInput(session, "doc_model_description", value = documentation$Model_Description)
-        shiny$updateTextAreaInput(session, "doc_population_studied", value = documentation$Population_Studied)
-        shiny$updateTextAreaInput(session, "doc_abstract_introduction", value = documentation$Abstract_Introduction)
-        shiny$updateTextAreaInput(session, "doc_abstract_methods", value = documentation$Abstract_Methods)
-        shiny$updateTextAreaInput(session, "doc_abstract_results", value = documentation$Abstract_Results)
-        shiny$updateTextAreaInput(session, "doc_abstract_conclusions", value = documentation$Abstract_Conclusions)
+        updateTextInput(session, "doc_title", value = documentation$Title)
+        updateTextInput(session, "doc_authors", value = documentation$Authors)
+        updateTextInput(session, "doc_year", value = documentation$Year)
+        updateTextInput(session, "doc_journal", value = documentation$Journal)
+        updateTextInput(session, "doc_doi", value = documentation$DOI)
+        updateTextInput(session, "doc_url", value = documentation$URL)
+        updateTextAreaInput(session, "doc_clearance_formula", value = documentation$Clearance_Formula)
+        updateTextAreaInput(session, "doc_model_description", value = documentation$Model_Description)
+        updateTextAreaInput(session, "doc_population_studied", value = documentation$Population_Studied)
+        updateTextAreaInput(session, "doc_abstract_introduction", value = documentation$Abstract_Introduction)
+        updateTextAreaInput(session, "doc_abstract_methods", value = documentation$Abstract_Methods)
+        updateTextAreaInput(session, "doc_abstract_results", value = documentation$Abstract_Results)
+        updateTextAreaInput(session, "doc_abstract_conclusions", value = documentation$Abstract_Conclusions)
       }
 
-      shiny$observeEvent(list(input$drug, input$model, refresh_token()), {
+      observeEvent(list(input$drug, input$model, refresh_token()), {
         load_documentation_inputs()
       }, ignoreInit = FALSE)
 
-      shiny$observeEvent(input$edit_drug, {
+      observeEvent(input$edit_drug, {
         edit_models <- if (is.null(input$edit_drug) || !nzchar(input$edit_drug)) {
           character(0)
         } else {
           list_models_for_drug(input$edit_drug)
         }
 
-        shiny$updateSelectInput(
+        updateSelectInput(
           session,
           "edit_model_lookup",
           choices = c("Create new model" = "", setNames(edit_models, edit_models)),
@@ -629,24 +634,24 @@ server <- function(id) {
       }, ignoreInit = FALSE)
 
       reset_registry_editor <- function(drug = input$drug) {
-        shiny$updateSelectInput(
+        updateSelectInput(
           session,
           "edit_drug",
           selected = if (!is.null(drug) && nzchar(drug)) drug else NULL
         )
-        shiny$updateSelectInput(session, "edit_model_lookup", selected = "")
-        shiny$updateTextInput(session, "edit_model", value = "")
-        shiny$updateCheckboxInput(session, "edit_is_default", value = FALSE)
-        shiny$updateNumericInput(session, "edit_dose_increment", value = 1)
-        shiny$updateNumericInput(session, "edit_max_dose", value = 20)
-        shiny$updateNumericInput(session, "edit_toxicity_threshold", value = NA_real_)
-        shiny$updateSelectInput(session, "edit_renal_metric", selected = "none")
-        shiny$updateNumericInput(session, "edit_eta_cl_value", value = 1)
-        shiny$updateCheckboxInput(session, "edit_eta_is_cv", value = FALSE)
-        shiny$updateTextAreaInput(session, "edit_clearance_expr", value = "")
+        updateSelectInput(session, "edit_model_lookup", selected = "")
+        updateTextInput(session, "edit_model", value = "")
+        updateCheckboxInput(session, "edit_is_default", value = FALSE)
+        updateNumericInput(session, "edit_dose_increment", value = 1)
+        updateNumericInput(session, "edit_max_dose", value = 20)
+        updateNumericInput(session, "edit_toxicity_threshold", value = NA_real_)
+        updateSelectInput(session, "edit_renal_metric", selected = "none")
+        updateNumericInput(session, "edit_eta_cl_value", value = 1)
+        updateCheckboxInput(session, "edit_eta_is_cv", value = FALSE)
+        updateTextAreaInput(session, "edit_clearance_expr", value = "")
       }
 
-      shiny$observeEvent(input$load_selected_model, {
+      observeEvent(input$load_selected_model, {
         if (is.null(input$edit_drug) || !nzchar(input$edit_drug)) {
           return()
         }
@@ -659,24 +664,24 @@ server <- function(id) {
         definition <- get_model_definition(drug = input$edit_drug, model = input$edit_model_lookup)
         eta_input <- parse_eta_expression(definition$eta_cl_expr[[1]])
 
-        shiny$updateSelectInput(session, "edit_drug", selected = definition$drug[[1]])
-        shiny$updateSelectInput(session, "edit_model_lookup", selected = definition$model[[1]])
-        shiny$updateTextInput(session, "edit_model", value = definition$model[[1]])
-        shiny$updateCheckboxInput(session, "edit_is_default", value = definition$is_default[[1]])
-        shiny$updateNumericInput(session, "edit_dose_increment", value = definition$dose_increment[[1]])
-        shiny$updateNumericInput(session, "edit_max_dose", value = definition$max_dose[[1]])
-        shiny$updateNumericInput(session, "edit_toxicity_threshold", value = definition$toxicity_threshold[[1]])
-        shiny$updateSelectInput(session, "edit_renal_metric", selected = definition$renal_metric[[1]])
-        shiny$updateTextAreaInput(session, "edit_clearance_expr", value = definition$clearance_expr[[1]])
-        shiny$updateNumericInput(session, "edit_eta_cl_value", value = eta_input$value)
-        shiny$updateCheckboxInput(session, "edit_eta_is_cv", value = eta_input$is_cv)
+        updateSelectInput(session, "edit_drug", selected = definition$drug[[1]])
+        updateSelectInput(session, "edit_model_lookup", selected = definition$model[[1]])
+        updateTextInput(session, "edit_model", value = definition$model[[1]])
+        updateCheckboxInput(session, "edit_is_default", value = definition$is_default[[1]])
+        updateNumericInput(session, "edit_dose_increment", value = definition$dose_increment[[1]])
+        updateNumericInput(session, "edit_max_dose", value = definition$max_dose[[1]])
+        updateNumericInput(session, "edit_toxicity_threshold", value = definition$toxicity_threshold[[1]])
+        updateSelectInput(session, "edit_renal_metric", selected = definition$renal_metric[[1]])
+        updateTextAreaInput(session, "edit_clearance_expr", value = definition$clearance_expr[[1]])
+        updateNumericInput(session, "edit_eta_cl_value", value = eta_input$value)
+        updateCheckboxInput(session, "edit_eta_is_cv", value = eta_input$is_cv)
       })
 
-      shiny$observeEvent(input$new_model, {
+      observeEvent(input$new_model, {
         reset_registry_editor()
       })
 
-      shiny$observeEvent(input$save_model, {
+      observeEvent(input$save_model, {
         eta_expression <- eta_expression_from_inputs(input$edit_eta_cl_value, input$edit_eta_is_cv)
 
         registry <- upsert_model_definition(
@@ -693,26 +698,26 @@ server <- function(id) {
         )
 
         updated_models <- unique(registry$model[registry$drug == input$edit_drug])
-        shiny$updateSelectInput(
+        updateSelectInput(
           session,
           "edit_model_lookup",
           choices = c("Create new model" = "", setNames(updated_models, updated_models)),
           selected = input$edit_model
         )
-        shiny$updateSelectInput(session, "drug", selected = input$edit_drug)
-        shiny$updateSelectInput(session, "model", choices = updated_models, selected = input$edit_model)
+        updateSelectInput(session, "drug", selected = input$edit_drug)
+        updateSelectInput(session, "model", choices = updated_models, selected = input$edit_model)
         refresh_token(refresh_token() + 1)
 
-        shiny$showNotification(
+        showNotification(
            paste0("Saved model ", input$edit_model, " to the registry JSON file and ensured its documentation JSON file exists."),
           type = "message",
           duration = 6
         )
       })
 
-      shiny$observeEvent(input$delete_model, {
+      observeEvent(input$delete_model, {
         if (is.null(input$edit_drug) || !nzchar(input$edit_drug) || is.null(input$edit_model_lookup) || !nzchar(input$edit_model_lookup)) {
-          shiny$showNotification(
+          showNotification(
             "Load an existing model from the registry editor before deleting it.",
             type = "error",
             duration = 6
@@ -725,33 +730,33 @@ server <- function(id) {
         updated_models <- unique(registry$model[registry$drug == input$edit_drug])
         next_model <- if (length(updated_models)) updated_models[[1]] else character(0)
 
-        shiny$updateSelectInput(
+        updateSelectInput(
           session,
           "edit_model_lookup",
           choices = c("Create new model" = "", setNames(updated_models, updated_models)),
           selected = ""
         )
-        shiny$updateSelectInput(session, "drug", selected = input$edit_drug)
-        shiny$updateSelectInput(session, "model", choices = updated_models, selected = next_model)
+        updateSelectInput(session, "drug", selected = input$edit_drug)
+        updateSelectInput(session, "model", choices = updated_models, selected = next_model)
         reset_registry_editor(drug = input$edit_drug)
         refresh_token(refresh_token() + 1)
 
-        shiny$showNotification(
+        showNotification(
            paste0("Removed model ", deleted_model, " from the registry and deleted its documentation JSON file."),
           type = "warning",
           duration = 6
         )
       })
 
-      shiny$observeEvent(input$reload_selected_documentation, {
+      observeEvent(input$reload_selected_documentation, {
         load_documentation_inputs()
       })
 
-      shiny$observeEvent(input$save_documentation, {
+      observeEvent(input$save_documentation, {
         current_definition <- selected_registry_definition()
 
         if (!nrow(current_definition)) {
-          shiny$showNotification(
+          showNotification(
             "Select a drug and model from the filters before saving documentation.",
             type = "error",
             duration = 6
@@ -779,7 +784,7 @@ server <- function(id) {
 
         refresh_token(refresh_token() + 1)
 
-        shiny$showNotification(
+        showNotification(
           paste0("Saved documentation for ", current_definition$model[[1]], "."),
           type = "message",
           duration = 6

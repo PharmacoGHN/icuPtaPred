@@ -1,30 +1,30 @@
 box::use(
-   testthat[expect_length, expect_type, skip_if, test_that]
+   testthat[expect_equal, expect_length, expect_true, expect_type, test_that]
 )
 
 box::use(
-   app/logic/fct_extract_eucast[mic_distribution, update_eucast]
+   app/logic/fct_extract_eucast[mic_distribution, read_eucast_mic, update_eucast]
 )
 
-test_that("extract_eucast return the right list and is up to date", {
+test_that("update_eucast reads the bundled lookup tables", {
+  res_update_eucast <- update_eucast("app/static/eucast.json")
 
-   res_update_eucast <- update_eucast()
-   res_mic_distribution <- mic_distribution("Vancomycin", "Staphylococcus lugdunensis", res_update_eucast)
+  expect_type(res_update_eucast, "list")
+  expect_length(res_update_eucast, 2)
+  expect_equal(colnames(res_update_eucast[[1]]), c("antibiotics", "atb_values"))
+  expect_equal(colnames(res_update_eucast[[2]]), c("bacteria", "bacteria_values"))
+  expect_true(nrow(res_update_eucast[[1]]) > 0)
+  expect_true(nrow(res_update_eucast[[2]]) > 0)
+})
 
+test_that("mic_distribution reads a cached MIC entry from JSON", {
+  eucast_mic <- read_eucast_mic("tests/testthat/fixtures/eucast_mic.json")
+  res_mic_distribution <- mic_distribution("Vancomycin", "Staphylococcus lugdunensis", eucast_mic)
 
-   # tests update eucast is up to date and return the right output
-    expect_type(res_update_eucast, "list")
-    expect_length(res_update_eucast, 2)
-    expect_type(res_mic_distribution, "list")
-    expect_length(res_mic_distribution, 4)
-    expect_length(res_mic_distribution[[1]][1, ], 24) # 1 df with 24 column (mic and ECOFF) (2023/10/05)
-    expect_length(res_mic_distribution[[2]], 4)
-    expect_length(res_mic_distribution[[3]], 1)
-
-    skip_if(length(res_update_eucast[[1]][, 1]) != 187, message = "The list of antibiotics in eucast was updated since the 2025/03/04")
-    expect_length(res_update_eucast[[1]][, 1], 187) # 187 antibiotics and their rank (2025/03/04)
-
-    skip_if(length(res_update_eucast[[2]][, 1]) != 480, message = "The list of bacteria in eucast was updated since the 2025/03/04")
-    expect_length(res_update_eucast[[2]][, 1], 480) # 480 bacteria and their rank (2025/03/04)
-
+  expect_type(res_mic_distribution, "list")
+  expect_length(res_mic_distribution, 3)
+  expect_equal(colnames(res_mic_distribution$mic_distribution), c("mic", "distribution"))
+  expect_equal(nrow(res_mic_distribution$mic_distribution), 4)
+  expect_equal(res_mic_distribution$ecoff, "2")
+  expect_equal(res_mic_distribution$ecoff_ci, "1 - 2")
 })

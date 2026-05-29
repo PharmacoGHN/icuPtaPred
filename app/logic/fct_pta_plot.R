@@ -79,14 +79,14 @@ threshold_hover_text <- function(mic, threshold, label) {
   )
 }
 
-safe_log_limits <- function(..., lower_floor = 0.01, fallback_upper = 1) {
+safe_log_limits <- function(..., fallback_upper = 1) {
   values <- positive_finite_values(...)
 
   if (!length(values)) {
-    return(c(lower_floor, fallback_upper))
+    return(c(0.01, fallback_upper))
   }
 
-  lower <- max(lower_floor, min(values))
+  lower <- min(values)
   upper <- max(values)
 
   if (!is.finite(upper) || upper <= lower) {
@@ -248,7 +248,7 @@ plot.pta <- function(data, ecoff = NA, selected_dose = NA_real_, dose_increment 
       ),
       fill = "#0889f1",
       alpha = 0.1,
-      col = "#0889f1",
+      col = NA,
       na.rm = TRUE
     )
 

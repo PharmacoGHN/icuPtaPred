@@ -3,6 +3,12 @@ box::use(
   stats
 )
 
+DEFAULT_MIC_PLOT_GRID <- c(
+  0.001, 0.002, 0.004, 0.008, 0.016, 0.03, 0.06,
+  0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64,
+  128, 256, 512, 1024
+)
+
 calc_css_distribution <- function(dose, tvcl, eta_cl, n_sim = 50000) {
   set.seed(3917985)
 
@@ -28,6 +34,28 @@ threshold_curve <- function(threshold, mic) {
 sanitize_log_series <- function(values) {
   values[!is.finite(values) | values <= 0] <- NA_real_
   values
+}
+
+#' Expand sparse MIC observations into a continuous plotting grid.
+#'
+#' @param mic Observed MIC values.
+#' @param dilution_series Canonical MIC dilution values to use for the plot grid.
+#'
+#' @return A sorted numeric vector spanning the observed MIC range.
+#' @export
+build_plot_mic_grid <- function(mic, dilution_series = DEFAULT_MIC_PLOT_GRID) {
+  positive_mic <- sort(unique(mic[is.finite(mic) & !is.na(mic) & mic > 0]))
+
+  if (!length(positive_mic)) {
+    return(c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64))
+  }
+
+  dilution_grid <- dilution_series[
+    dilution_series >= min(positive_mic) &
+      dilution_series <= max(positive_mic)
+  ]
+
+  sort(unique(c(positive_mic, dilution_grid)))
 }
 
 #' Simulate steady-state concentration-to-MIC ratios for a dose regimen.

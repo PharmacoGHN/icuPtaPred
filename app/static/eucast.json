@@ -1,0 +1,2462 @@
+[
+  [
+    {
+      "antibiotics": "Amikacin",
+      "atb_values": "1"
+    },
+    {
+      "antibiotics": "Amoxicillin",
+      "atb_values": "2"
+    },
+    {
+      "antibiotics": "Amoxicillin-clavulanic acid (fixed)",
+      "atb_values": "3"
+    },
+    {
+      "antibiotics": "Ampicillin",
+      "atb_values": "6"
+    },
+    {
+      "antibiotics": "Ampicillin-sulbactam (fixed)",
+      "atb_values": "7"
+    },
+    {
+      "antibiotics": "Ampicillin-sulbactam (ratio)",
+      "atb_values": "8"
+    },
+    {
+      "antibiotics": "Apramycin",
+      "atb_values": "10"
+    },
+    {
+      "antibiotics": "Aspoxicillin",
+      "atb_values": "11"
+    },
+    {
+      "antibiotics": "Avilamycin",
+      "atb_values": "12"
+    },
+    {
+      "antibiotics": "Azithromycin",
+      "atb_values": "13"
+    },
+    {
+      "antibiotics": "Aztreonam",
+      "atb_values": "14"
+    },
+    {
+      "antibiotics": "Aztreonam-avibactam",
+      "atb_values": "224"
+    },
+    {
+      "antibiotics": "Bacitracin",
+      "atb_values": "15"
+    },
+    {
+      "antibiotics": "Bedaquiline",
+      "atb_values": "16"
+    },
+    {
+      "antibiotics": "Benzylpenicillin",
+      "atb_values": "17"
+    },
+    {
+      "antibiotics": "Capreomycin",
+      "atb_values": "18"
+    },
+    {
+      "antibiotics": "Cefaclor",
+      "atb_values": "21"
+    },
+    {
+      "antibiotics": "Cefadroxil",
+      "atb_values": "22"
+    },
+    {
+      "antibiotics": "Cefalexin",
+      "atb_values": "23"
+    },
+    {
+      "antibiotics": "Cefaloridine",
+      "atb_values": "24"
+    },
+    {
+      "antibiotics": "Cefalothin",
+      "atb_values": "25"
+    },
+    {
+      "antibiotics": "Cefapirin",
+      "atb_values": "26"
+    },
+    {
+      "antibiotics": "Cefazolin",
+      "atb_values": "27"
+    },
+    {
+      "antibiotics": "Cefdinir",
+      "atb_values": "28"
+    },
+    {
+      "antibiotics": "Cefepime",
+      "atb_values": "29"
+    },
+    {
+      "antibiotics": "Cefepime-clavulanate",
+      "atb_values": "30"
+    },
+    {
+      "antibiotics": "Cefepime-enmetazobactam-8",
+      "atb_values": "221"
+    },
+    {
+      "antibiotics": "Cefepime-tazobactam",
+      "atb_values": "215"
+    },
+    {
+      "antibiotics": "Cefepime-zidebactam",
+      "atb_values": "212"
+    },
+    {
+      "antibiotics": "Cefiderocol",
+      "atb_values": "32"
+    },
+    {
+      "antibiotics": "Cefixime",
+      "atb_values": "33"
+    },
+    {
+      "antibiotics": "Cefoperazone",
+      "atb_values": "35"
+    },
+    {
+      "antibiotics": "Cefoperazone-sulbactam",
+      "atb_values": "36"
+    },
+    {
+      "antibiotics": "Cefoselis",
+      "atb_values": "208"
+    },
+    {
+      "antibiotics": "Cefotaxime",
+      "atb_values": "38"
+    },
+    {
+      "antibiotics": "Cefotaxime-clavulanate",
+      "atb_values": "39"
+    },
+    {
+      "antibiotics": "Cefotetan",
+      "atb_values": "226"
+    },
+    {
+      "antibiotics": "Cefovecin",
+      "atb_values": "40"
+    },
+    {
+      "antibiotics": "Cefoxitin",
+      "atb_values": "41"
+    },
+    {
+      "antibiotics": "Cefpirome",
+      "atb_values": "42"
+    },
+    {
+      "antibiotics": "Cefpodoxime",
+      "atb_values": "43"
+    },
+    {
+      "antibiotics": "Cefpodoxime-clavulanic acid",
+      "atb_values": "44"
+    },
+    {
+      "antibiotics": "Cefquinome",
+      "atb_values": "46"
+    },
+    {
+      "antibiotics": "Cefradine",
+      "atb_values": "47"
+    },
+    {
+      "antibiotics": "Ceftaroline",
+      "atb_values": "48"
+    },
+    {
+      "antibiotics": "Ceftazidime",
+      "atb_values": "49"
+    },
+    {
+      "antibiotics": "Ceftazidime-avibactam",
+      "atb_values": "50"
+    },
+    {
+      "antibiotics": "Ceftazidime-clavulanate",
+      "atb_values": "51"
+    },
+    {
+      "antibiotics": "Ceftibuten",
+      "atb_values": "52"
+    },
+    {
+      "antibiotics": "Ceftiofur",
+      "atb_values": "53"
+    },
+    {
+      "antibiotics": "Ceftobiprole",
+      "atb_values": "54"
+    },
+    {
+      "antibiotics": "Ceftolozane",
+      "atb_values": "55"
+    },
+    {
+      "antibiotics": "Ceftolozane-tazobactam",
+      "atb_values": "56"
+    },
+    {
+      "antibiotics": "Ceftriaxone",
+      "atb_values": "57"
+    },
+    {
+      "antibiotics": "Cefuroxime",
+      "atb_values": "58"
+    },
+    {
+      "antibiotics": "Chloramphenicol",
+      "atb_values": "59"
+    },
+    {
+      "antibiotics": "Chlortetracycline",
+      "atb_values": "222"
+    },
+    {
+      "antibiotics": "Ciprofloxacin",
+      "atb_values": "60"
+    },
+    {
+      "antibiotics": "Clarithromycin",
+      "atb_values": "61"
+    },
+    {
+      "antibiotics": "Clavulanic acid",
+      "atb_values": "62"
+    },
+    {
+      "antibiotics": "Clinafloxacin",
+      "atb_values": "63"
+    },
+    {
+      "antibiotics": "Clindamycin",
+      "atb_values": "64"
+    },
+    {
+      "antibiotics": "Clofazimine",
+      "atb_values": "65"
+    },
+    {
+      "antibiotics": "Cloxacillin",
+      "atb_values": "66"
+    },
+    {
+      "antibiotics": "Colistin",
+      "atb_values": "67"
+    },
+    {
+      "antibiotics": "Cycloserine",
+      "atb_values": "70"
+    },
+    {
+      "antibiotics": "Dalbavancin",
+      "atb_values": "71"
+    },
+    {
+      "antibiotics": "Danofloxacin",
+      "atb_values": "73"
+    },
+    {
+      "antibiotics": "Daptomycin",
+      "atb_values": "74"
+    },
+    {
+      "antibiotics": "Delafloxacin",
+      "atb_values": "75"
+    },
+    {
+      "antibiotics": "Delamanid",
+      "atb_values": "76"
+    },
+    {
+      "antibiotics": "Dicloxacillin",
+      "atb_values": "78"
+    },
+    {
+      "antibiotics": "Difloxacin",
+      "atb_values": "79"
+    },
+    {
+      "antibiotics": "Dihydrostreptomycin",
+      "atb_values": "80"
+    },
+    {
+      "antibiotics": "Doripenem",
+      "atb_values": "81"
+    },
+    {
+      "antibiotics": "Doxycycline",
+      "atb_values": "83"
+    },
+    {
+      "antibiotics": "Enrofloxacin",
+      "atb_values": "84"
+    },
+    {
+      "antibiotics": "Eravacycline",
+      "atb_values": "85"
+    },
+    {
+      "antibiotics": "Ertapenem",
+      "atb_values": "86"
+    },
+    {
+      "antibiotics": "Erythromycin",
+      "atb_values": "87"
+    },
+    {
+      "antibiotics": "Ethambutol",
+      "atb_values": "88"
+    },
+    {
+      "antibiotics": "Ethionamide",
+      "atb_values": "89"
+    },
+    {
+      "antibiotics": "Faropenem",
+      "atb_values": "91"
+    },
+    {
+      "antibiotics": "Fidaxomicin",
+      "atb_values": "92"
+    },
+    {
+      "antibiotics": "Florfenicol",
+      "atb_values": "95"
+    },
+    {
+      "antibiotics": "Flucloxacillin",
+      "atb_values": "96"
+    },
+    {
+      "antibiotics": "Flumequine",
+      "atb_values": "99"
+    },
+    {
+      "antibiotics": "Fosfomycin",
+      "atb_values": "100"
+    },
+    {
+      "antibiotics": "Fusidic acid",
+      "atb_values": "101"
+    },
+    {
+      "antibiotics": "Gamithromycin",
+      "atb_values": "102"
+    },
+    {
+      "antibiotics": "Gatifloxacin",
+      "atb_values": "104"
+    },
+    {
+      "antibiotics": "Gemifloxacin",
+      "atb_values": "105"
+    },
+    {
+      "antibiotics": "Gentamicin",
+      "atb_values": "106"
+    },
+    {
+      "antibiotics": "Gepotidacin",
+      "atb_values": "227"
+    },
+    {
+      "antibiotics": "Imipenem",
+      "atb_values": "109"
+    },
+    {
+      "antibiotics": "Imipenem-funobactam",
+      "atb_values": "228"
+    },
+    {
+      "antibiotics": "Imipenem-relebactam",
+      "atb_values": "110"
+    },
+    {
+      "antibiotics": "Isoniazid",
+      "atb_values": "112"
+    },
+    {
+      "antibiotics": "Kanamycin",
+      "atb_values": "114"
+    },
+    {
+      "antibiotics": "Lasalocid",
+      "atb_values": "231"
+    },
+    {
+      "antibiotics": "Lefamulin",
+      "atb_values": "116"
+    },
+    {
+      "antibiotics": "Levofloxacin",
+      "atb_values": "117"
+    },
+    {
+      "antibiotics": "Lincomycin",
+      "atb_values": "118"
+    },
+    {
+      "antibiotics": "Linezolid",
+      "atb_values": "119"
+    },
+    {
+      "antibiotics": "Mecillinam",
+      "atb_values": "122"
+    },
+    {
+      "antibiotics": "Meropenem",
+      "atb_values": "123"
+    },
+    {
+      "antibiotics": "Meropenem-vaborbactam",
+      "atb_values": "124"
+    },
+    {
+      "antibiotics": "Metronidazole",
+      "atb_values": "126"
+    },
+    {
+      "antibiotics": "Minocycline",
+      "atb_values": "131"
+    },
+    {
+      "antibiotics": "Monensin",
+      "atb_values": "232"
+    },
+    {
+      "antibiotics": "Moxifloxacin",
+      "atb_values": "132"
+    },
+    {
+      "antibiotics": "Mupirocin",
+      "atb_values": "133"
+    },
+    {
+      "antibiotics": "Nalidixic acid",
+      "atb_values": "134"
+    },
+    {
+      "antibiotics": "Narasin",
+      "atb_values": "135"
+    },
+    {
+      "antibiotics": "Neomycin",
+      "atb_values": "136"
+    },
+    {
+      "antibiotics": "Netilmicin",
+      "atb_values": "137"
+    },
+    {
+      "antibiotics": "Nitrofurantoin",
+      "atb_values": "138"
+    },
+    {
+      "antibiotics": "Nitroxoline",
+      "atb_values": "139"
+    },
+    {
+      "antibiotics": "Norfloxacin",
+      "atb_values": "140"
+    },
+    {
+      "antibiotics": "Norvancomycin",
+      "atb_values": "141"
+    },
+    {
+      "antibiotics": "Ofloxacin",
+      "atb_values": "142"
+    },
+    {
+      "antibiotics": "Omadacycline",
+      "atb_values": "143"
+    },
+    {
+      "antibiotics": "Orbifloxacin",
+      "atb_values": "144"
+    },
+    {
+      "antibiotics": "Oritavancin (with P80)",
+      "atb_values": "145"
+    },
+    {
+      "antibiotics": "Oxacillin",
+      "atb_values": "147"
+    },
+    {
+      "antibiotics": "Oxolinic acid",
+      "atb_values": "148"
+    },
+    {
+      "antibiotics": "Oxytetracycline",
+      "atb_values": "149"
+    },
+    {
+      "antibiotics": "Paraaminosalicylic acid (PAS)",
+      "atb_values": "150"
+    },
+    {
+      "antibiotics": "Pefloxacin",
+      "atb_values": "151"
+    },
+    {
+      "antibiotics": "Phenoxymethylpenicillin",
+      "atb_values": "152"
+    },
+    {
+      "antibiotics": "Piperacillin",
+      "atb_values": "153"
+    },
+    {
+      "antibiotics": "Piperacillin-tazobactam",
+      "atb_values": "155"
+    },
+    {
+      "antibiotics": "Pirlimycin",
+      "atb_values": "156"
+    },
+    {
+      "antibiotics": "Pradofloxacin",
+      "atb_values": "159"
+    },
+    {
+      "antibiotics": "Pyrazinamide",
+      "atb_values": "160"
+    },
+    {
+      "antibiotics": "Quinupristin-dalfopristin",
+      "atb_values": "161"
+    },
+    {
+      "antibiotics": "Retapamulin",
+      "atb_values": "162"
+    },
+    {
+      "antibiotics": "Rifabutin",
+      "atb_values": "163"
+    },
+    {
+      "antibiotics": "Rifampicin",
+      "atb_values": "164"
+    },
+    {
+      "antibiotics": "Roxithromycin",
+      "atb_values": "165"
+    },
+    {
+      "antibiotics": "Salinomycin",
+      "atb_values": "166"
+    },
+    {
+      "antibiotics": "Secnidazole",
+      "atb_values": "167"
+    },
+    {
+      "antibiotics": "Sitafloxacin",
+      "atb_values": "216"
+    },
+    {
+      "antibiotics": "Spectinomycin",
+      "atb_values": "170"
+    },
+    {
+      "antibiotics": "Spiramycin",
+      "atb_values": "171"
+    },
+    {
+      "antibiotics": "Streptomycin",
+      "atb_values": "172"
+    },
+    {
+      "antibiotics": "Sulbactam",
+      "atb_values": "173"
+    },
+    {
+      "antibiotics": "Sulfadiazine",
+      "atb_values": "174"
+    },
+    {
+      "antibiotics": "Sulfamethoxazole",
+      "atb_values": "175"
+    },
+    {
+      "antibiotics": "Sulfisoxazole",
+      "atb_values": "210"
+    },
+    {
+      "antibiotics": "Tedizolid",
+      "atb_values": "176"
+    },
+    {
+      "antibiotics": "Teicoplanin",
+      "atb_values": "177"
+    },
+    {
+      "antibiotics": "Telavancin",
+      "atb_values": "178"
+    },
+    {
+      "antibiotics": "Temocillin",
+      "atb_values": "181"
+    },
+    {
+      "antibiotics": "Tetracycline",
+      "atb_values": "183"
+    },
+    {
+      "antibiotics": "Thiamphenicol",
+      "atb_values": "184"
+    },
+    {
+      "antibiotics": "Tiamulin",
+      "atb_values": "185"
+    },
+    {
+      "antibiotics": "Ticarcillin",
+      "atb_values": "186"
+    },
+    {
+      "antibiotics": "Ticarcillin-clavulanic acid",
+      "atb_values": "187"
+    },
+    {
+      "antibiotics": "Tigecycline",
+      "atb_values": "188"
+    },
+    {
+      "antibiotics": "Tildipirosin",
+      "atb_values": "190"
+    },
+    {
+      "antibiotics": "Tilmicosin",
+      "atb_values": "191"
+    },
+    {
+      "antibiotics": "Tobramycin",
+      "atb_values": "192"
+    },
+    {
+      "antibiotics": "Trimethoprim",
+      "atb_values": "193"
+    },
+    {
+      "antibiotics": "Trimethoprim-sulfamethoxazole",
+      "atb_values": "194"
+    },
+    {
+      "antibiotics": "Tulathromycin",
+      "atb_values": "196"
+    },
+    {
+      "antibiotics": "Tylosin",
+      "atb_values": "197"
+    },
+    {
+      "antibiotics": "Tylvalosin",
+      "atb_values": "198"
+    },
+    {
+      "antibiotics": "Valnemulin",
+      "atb_values": "199"
+    },
+    {
+      "antibiotics": "Vancomycin",
+      "atb_values": "200"
+    },
+    {
+      "antibiotics": "Viomycin",
+      "atb_values": "201"
+    },
+    {
+      "antibiotics": "Virginiamycin",
+      "atb_values": "202"
+    }
+  ],
+  [
+    {
+      "bacteria": "Achromobacter xylosoxidans",
+      "bacteria_values": "1"
+    },
+    {
+      "bacteria": "Acinetobacter baumannii",
+      "bacteria_values": "4"
+    },
+    {
+      "bacteria": "Acinetobacter pittii",
+      "bacteria_values": "16"
+    },
+    {
+      "bacteria": "Actinobacillus pleuropneumoniae",
+      "bacteria_values": "24"
+    },
+    {
+      "bacteria": "Actinomyces israelii",
+      "bacteria_values": "26"
+    },
+    {
+      "bacteria": "Actinomyces spp",
+      "bacteria_values": "27"
+    },
+    {
+      "bacteria": "Aerococcus sanguinicola",
+      "bacteria_values": "28"
+    },
+    {
+      "bacteria": "Aerococcus urinae",
+      "bacteria_values": "30"
+    },
+    {
+      "bacteria": "Aeromonas caviae",
+      "bacteria_values": "523"
+    },
+    {
+      "bacteria": "Aeromonas hydrophila",
+      "bacteria_values": "31"
+    },
+    {
+      "bacteria": "Aeromonas salmonicida subspecies salmonicida",
+      "bacteria_values": "626"
+    },
+    {
+      "bacteria": "Aeromonas veronii",
+      "bacteria_values": "524"
+    },
+    {
+      "bacteria": "Alcaligenes faecalis",
+      "bacteria_values": "33"
+    },
+    {
+      "bacteria": "Alcaligenes xylosoxidans",
+      "bacteria_values": "34"
+    },
+    {
+      "bacteria": "Aliarcobacter butzleri",
+      "bacteria_values": "582"
+    },
+    {
+      "bacteria": "Aliarcobacter cryaerophilus",
+      "bacteria_values": "581"
+    },
+    {
+      "bacteria": "Aliarcobacter lanthieri",
+      "bacteria_values": "580"
+    },
+    {
+      "bacteria": "Anaerobic cocci Gram positive",
+      "bacteria_values": "35"
+    },
+    {
+      "bacteria": "Anaerococcus prevotii",
+      "bacteria_values": "36"
+    },
+    {
+      "bacteria": "Anaerococcus prevotii (P. prevotii)",
+      "bacteria_values": "385"
+    },
+    {
+      "bacteria": "Arcanobacterium pyogenes",
+      "bacteria_values": "37"
+    },
+    {
+      "bacteria": "Aspergillus flavus",
+      "bacteria_values": "632"
+    },
+    {
+      "bacteria": "Aspergillus fumigatus",
+      "bacteria_values": "631"
+    },
+    {
+      "bacteria": "Aspergillus nidulans",
+      "bacteria_values": "634"
+    },
+    {
+      "bacteria": "Aspergillus niger",
+      "bacteria_values": "635"
+    },
+    {
+      "bacteria": "Aspergillus terreus",
+      "bacteria_values": "633"
+    },
+    {
+      "bacteria": "Bacillus anthracis",
+      "bacteria_values": "53"
+    },
+    {
+      "bacteria": "Bacillus cereus",
+      "bacteria_values": "54"
+    },
+    {
+      "bacteria": "Bacillus subtilis",
+      "bacteria_values": "56"
+    },
+    {
+      "bacteria": "Bacteroides (Phocaeicola) vulgatus",
+      "bacteria_values": "78"
+    },
+    {
+      "bacteria": "Bacteroides caccae",
+      "bacteria_values": "57"
+    },
+    {
+      "bacteria": "Bacteroides capillosus",
+      "bacteria_values": "58"
+    },
+    {
+      "bacteria": "Bacteroides eggerthii",
+      "bacteria_values": "61"
+    },
+    {
+      "bacteria": "Bacteroides fragilis",
+      "bacteria_values": "62"
+    },
+    {
+      "bacteria": "Bacteroides fragilis ATCC 25285",
+      "bacteria_values": "611"
+    },
+    {
+      "bacteria": "Bacteroides fragilis group",
+      "bacteria_values": "63"
+    },
+    {
+      "bacteria": "Bacteroides gracilis",
+      "bacteria_values": "64"
+    },
+    {
+      "bacteria": "Bacteroides massiliensis",
+      "bacteria_values": "67"
+    },
+    {
+      "bacteria": "Bacteroides nordii",
+      "bacteria_values": "69"
+    },
+    {
+      "bacteria": "Bacteroides ovatus",
+      "bacteria_values": "70"
+    },
+    {
+      "bacteria": "Bacteroides salyersae",
+      "bacteria_values": "71"
+    },
+    {
+      "bacteria": "Bacteroides splanchnicus",
+      "bacteria_values": "72"
+    },
+    {
+      "bacteria": "Bacteroides stercoralis",
+      "bacteria_values": "74"
+    },
+    {
+      "bacteria": "Bacteroides thetaiotaomicron",
+      "bacteria_values": "75"
+    },
+    {
+      "bacteria": "Bacteroides uniformis",
+      "bacteria_values": "76"
+    },
+    {
+      "bacteria": "Bacteroides ureolyticus",
+      "bacteria_values": "77"
+    },
+    {
+      "bacteria": "Bifidobacterium adolescentis",
+      "bacteria_values": "79"
+    },
+    {
+      "bacteria": "Bifidobacterium angulatum",
+      "bacteria_values": "80"
+    },
+    {
+      "bacteria": "Bifidobacterium animalis",
+      "bacteria_values": "81"
+    },
+    {
+      "bacteria": "Bifidobacterium bifidum",
+      "bacteria_values": "82"
+    },
+    {
+      "bacteria": "Bifidobacterium breve",
+      "bacteria_values": "83"
+    },
+    {
+      "bacteria": "Bifidobacterium catenulatum",
+      "bacteria_values": "84"
+    },
+    {
+      "bacteria": "Bifidobacterium dentium",
+      "bacteria_values": "85"
+    },
+    {
+      "bacteria": "Bifidobacterium longum",
+      "bacteria_values": "86"
+    },
+    {
+      "bacteria": "Bifidobacterium pseudocatenulatum",
+      "bacteria_values": "87"
+    },
+    {
+      "bacteria": "Bifidobacterium pseudolongum",
+      "bacteria_values": "88"
+    },
+    {
+      "bacteria": "Bifidobacterium ruminantium",
+      "bacteria_values": "89"
+    },
+    {
+      "bacteria": "Bifidobacterium thermophilum",
+      "bacteria_values": "91"
+    },
+    {
+      "bacteria": "Bilophila wadsworthia",
+      "bacteria_values": "92"
+    },
+    {
+      "bacteria": "Bordetella bronchiseptica",
+      "bacteria_values": "93"
+    },
+    {
+      "bacteria": "Bordetella pertussis",
+      "bacteria_values": "94"
+    },
+    {
+      "bacteria": "Brucella melitensis",
+      "bacteria_values": "595"
+    },
+    {
+      "bacteria": "Burkholderia cepacia complex",
+      "bacteria_values": "95"
+    },
+    {
+      "bacteria": "Burkholderia pseudomallei",
+      "bacteria_values": "96"
+    },
+    {
+      "bacteria": "Campylobacter coli",
+      "bacteria_values": "97"
+    },
+    {
+      "bacteria": "Campylobacter fetus",
+      "bacteria_values": "98"
+    },
+    {
+      "bacteria": "Campylobacter hyointestinalis",
+      "bacteria_values": "99"
+    },
+    {
+      "bacteria": "Campylobacter jejuni",
+      "bacteria_values": "100"
+    },
+    {
+      "bacteria": "Campylobacter jejuni ATCC 33560",
+      "bacteria_values": "101"
+    },
+    {
+      "bacteria": "Campylobacter lari",
+      "bacteria_values": "102"
+    },
+    {
+      "bacteria": "Campylobacter upsaliensis",
+      "bacteria_values": "104"
+    },
+    {
+      "bacteria": "Candida albicans",
+      "bacteria_values": "105"
+    },
+    {
+      "bacteria": "Candida auris",
+      "bacteria_values": "638"
+    },
+    {
+      "bacteria": "Candida dubliniensis",
+      "bacteria_values": "112"
+    },
+    {
+      "bacteria": "Candida gattii",
+      "bacteria_values": "121"
+    },
+    {
+      "bacteria": "Candida glabrata",
+      "bacteria_values": "122"
+    },
+    {
+      "bacteria": "Candida guilliermondii",
+      "bacteria_values": "127"
+    },
+    {
+      "bacteria": "Candida kefyr",
+      "bacteria_values": "627"
+    },
+    {
+      "bacteria": "Candida krusei",
+      "bacteria_values": "141"
+    },
+    {
+      "bacteria": "Candida lusitaniae",
+      "bacteria_values": "150"
+    },
+    {
+      "bacteria": "Candida parapsilosis",
+      "bacteria_values": "163"
+    },
+    {
+      "bacteria": "Candida sake",
+      "bacteria_values": "178"
+    },
+    {
+      "bacteria": "Candida tropicalis",
+      "bacteria_values": "183"
+    },
+    {
+      "bacteria": "Chlamydophila pneumoniae",
+      "bacteria_values": "192"
+    },
+    {
+      "bacteria": "Chryseobacterium meningosepticum",
+      "bacteria_values": "193"
+    },
+    {
+      "bacteria": "Chryseobacterium spp",
+      "bacteria_values": "194"
+    },
+    {
+      "bacteria": "Citrobacter amalonaticus",
+      "bacteria_values": "195"
+    },
+    {
+      "bacteria": "Citrobacter braakii",
+      "bacteria_values": "196"
+    },
+    {
+      "bacteria": "Citrobacter diversus",
+      "bacteria_values": "197"
+    },
+    {
+      "bacteria": "Citrobacter farmeri",
+      "bacteria_values": "198"
+    },
+    {
+      "bacteria": "Citrobacter freundii",
+      "bacteria_values": "199"
+    },
+    {
+      "bacteria": "Citrobacter koseri",
+      "bacteria_values": "200"
+    },
+    {
+      "bacteria": "Citrobacter luteola",
+      "bacteria_values": "201"
+    },
+    {
+      "bacteria": "Clostridioides difficile",
+      "bacteria_values": "564"
+    },
+    {
+      "bacteria": "Clostridium butyricum",
+      "bacteria_values": "203"
+    },
+    {
+      "bacteria": "Clostridium innocuum",
+      "bacteria_values": "205"
+    },
+    {
+      "bacteria": "Clostridium perfringens",
+      "bacteria_values": "206"
+    },
+    {
+      "bacteria": "Clostridium perfringens ATCC 13124",
+      "bacteria_values": "612"
+    },
+    {
+      "bacteria": "Clostridium perfringens DSM 25589",
+      "bacteria_values": "610"
+    },
+    {
+      "bacteria": "Clostridium septicum",
+      "bacteria_values": "208"
+    },
+    {
+      "bacteria": "Clostridium sordelli",
+      "bacteria_values": "209"
+    },
+    {
+      "bacteria": "Clostridium sporogenes",
+      "bacteria_values": "210"
+    },
+    {
+      "bacteria": "Clostridium symbosium",
+      "bacteria_values": "212"
+    },
+    {
+      "bacteria": "Corynebacterium afermentans",
+      "bacteria_values": "213"
+    },
+    {
+      "bacteria": "Corynebacterium amycolatum",
+      "bacteria_values": "214"
+    },
+    {
+      "bacteria": "Corynebacterium aurimucosum",
+      "bacteria_values": "215"
+    },
+    {
+      "bacteria": "Corynebacterium diphtheriae",
+      "bacteria_values": "216"
+    },
+    {
+      "bacteria": "Corynebacterium glucuronolyticum",
+      "bacteria_values": "217"
+    },
+    {
+      "bacteria": "Corynebacterium jeikeium",
+      "bacteria_values": "218"
+    },
+    {
+      "bacteria": "Corynebacterium macginleyi",
+      "bacteria_values": "219"
+    },
+    {
+      "bacteria": "Corynebacterium propinquum",
+      "bacteria_values": "220"
+    },
+    {
+      "bacteria": "Corynebacterium pseudodiphtheriticum",
+      "bacteria_values": "221"
+    },
+    {
+      "bacteria": "Corynebacterium singulare",
+      "bacteria_values": "222"
+    },
+    {
+      "bacteria": "Corynebacterium striatum",
+      "bacteria_values": "224"
+    },
+    {
+      "bacteria": "Corynebacterium ulcerans",
+      "bacteria_values": "554"
+    },
+    {
+      "bacteria": "Corynebacterium urealyticum",
+      "bacteria_values": "225"
+    },
+    {
+      "bacteria": "Cronobacter sakazakii",
+      "bacteria_values": "226"
+    },
+    {
+      "bacteria": "Cryptococcus gattii",
+      "bacteria_values": "630"
+    },
+    {
+      "bacteria": "Cryptococcus neoformans",
+      "bacteria_values": "629"
+    },
+    {
+      "bacteria": "Cutibacterium acnes",
+      "bacteria_values": "402"
+    },
+    {
+      "bacteria": "Eggerthella lenta",
+      "bacteria_values": "234"
+    },
+    {
+      "bacteria": "Eikenella corrodens",
+      "bacteria_values": "235"
+    },
+    {
+      "bacteria": "Enterobacter agglomerans",
+      "bacteria_values": "236"
+    },
+    {
+      "bacteria": "Enterobacter amnigenus",
+      "bacteria_values": "237"
+    },
+    {
+      "bacteria": "Enterobacter asburiae",
+      "bacteria_values": "238"
+    },
+    {
+      "bacteria": "Enterobacter cancerogenus",
+      "bacteria_values": "239"
+    },
+    {
+      "bacteria": "Enterobacter cloacae",
+      "bacteria_values": "240"
+    },
+    {
+      "bacteria": "Enterobacter dissolvens",
+      "bacteria_values": "241"
+    },
+    {
+      "bacteria": "Enterobacter gergoviae",
+      "bacteria_values": "242"
+    },
+    {
+      "bacteria": "Enterobacter hormaechei",
+      "bacteria_values": "243"
+    },
+    {
+      "bacteria": "Enterobacter intermedium",
+      "bacteria_values": "244"
+    },
+    {
+      "bacteria": "Enterobacter kobei",
+      "bacteria_values": "245"
+    },
+    {
+      "bacteria": "Enterobacter ludwigii",
+      "bacteria_values": "246"
+    },
+    {
+      "bacteria": "Enterobacter sakazakii",
+      "bacteria_values": "247"
+    },
+    {
+      "bacteria": "Enterobacter taylorae",
+      "bacteria_values": "249"
+    },
+    {
+      "bacteria": "Enterocloster clostridioforme",
+      "bacteria_values": "625"
+    },
+    {
+      "bacteria": "Enterococcus avium",
+      "bacteria_values": "250"
+    },
+    {
+      "bacteria": "Enterococcus casseliflavus",
+      "bacteria_values": "251"
+    },
+    {
+      "bacteria": "Enterococcus cecorum",
+      "bacteria_values": "252"
+    },
+    {
+      "bacteria": "Enterococcus durans",
+      "bacteria_values": "253"
+    },
+    {
+      "bacteria": "Enterococcus faecalis",
+      "bacteria_values": "254"
+    },
+    {
+      "bacteria": "Enterococcus faecalis ATCC 29212",
+      "bacteria_values": "255"
+    },
+    {
+      "bacteria": "Enterococcus faecalis ATCC 51299",
+      "bacteria_values": "256"
+    },
+    {
+      "bacteria": "Enterococcus faecium",
+      "bacteria_values": "257"
+    },
+    {
+      "bacteria": "Enterococcus gallinarum",
+      "bacteria_values": "258"
+    },
+    {
+      "bacteria": "Enterococcus hirae",
+      "bacteria_values": "259"
+    },
+    {
+      "bacteria": "Enterococcus lactis",
+      "bacteria_values": "617"
+    },
+    {
+      "bacteria": "Enterococcus mundtii",
+      "bacteria_values": "618"
+    },
+    {
+      "bacteria": "Enterococcus raffinosus",
+      "bacteria_values": "619"
+    },
+    {
+      "bacteria": "Escherichia coli",
+      "bacteria_values": "261"
+    },
+    {
+      "bacteria": "Escherichia coli ATCC 25922",
+      "bacteria_values": "262"
+    },
+    {
+      "bacteria": "Escherichia coli ATCC 35218",
+      "bacteria_values": "263"
+    },
+    {
+      "bacteria": "Escherichia coli NCTC 13846",
+      "bacteria_values": "264"
+    },
+    {
+      "bacteria": "Eubacterium lentum",
+      "bacteria_values": "265"
+    },
+    {
+      "bacteria": "Finegoldia magna",
+      "bacteria_values": "383"
+    },
+    {
+      "bacteria": "Francisella tularensis",
+      "bacteria_values": "620"
+    },
+    {
+      "bacteria": "Fusarium  fujikuroi",
+      "bacteria_values": "636"
+    },
+    {
+      "bacteria": "Fusarium solani",
+      "bacteria_values": "637"
+    },
+    {
+      "bacteria": "Fusobacterium mortiferum",
+      "bacteria_values": "269"
+    },
+    {
+      "bacteria": "Fusobacterium necrophorum",
+      "bacteria_values": "270"
+    },
+    {
+      "bacteria": "Fusobacterium nucleatum",
+      "bacteria_values": "271"
+    },
+    {
+      "bacteria": "Fusobacterium varium",
+      "bacteria_values": "273"
+    },
+    {
+      "bacteria": "Haemophilus (Glaessarella) parasuis",
+      "bacteria_values": "280"
+    },
+    {
+      "bacteria": "Haemophilus aphrophilus",
+      "bacteria_values": "274"
+    },
+    {
+      "bacteria": "Haemophilus influenzae",
+      "bacteria_values": "275"
+    },
+    {
+      "bacteria": "Haemophilus influenzae ATCC 49247",
+      "bacteria_values": "276"
+    },
+    {
+      "bacteria": "Haemophilus influenzae ATCC 49766",
+      "bacteria_values": "277"
+    },
+    {
+      "bacteria": "Haemophilus influenzae NCTC 8468",
+      "bacteria_values": "278"
+    },
+    {
+      "bacteria": "Haemophilus parainfluenzae",
+      "bacteria_values": "279"
+    },
+    {
+      "bacteria": "Hafnia alvei",
+      "bacteria_values": "281"
+    },
+    {
+      "bacteria": "Helicobacter pylori",
+      "bacteria_values": "282"
+    },
+    {
+      "bacteria": "Histophilus somni",
+      "bacteria_values": "283"
+    },
+    {
+      "bacteria": "Kingella kingae",
+      "bacteria_values": "284"
+    },
+    {
+      "bacteria": "Klebsiella aerogenes",
+      "bacteria_values": "285"
+    },
+    {
+      "bacteria": "Klebsiella oxytoca",
+      "bacteria_values": "286"
+    },
+    {
+      "bacteria": "Klebsiella ozaenae",
+      "bacteria_values": "287"
+    },
+    {
+      "bacteria": "Klebsiella pneumoniae",
+      "bacteria_values": "288"
+    },
+    {
+      "bacteria": "Klebsiella pneumoniae ATCC 700603",
+      "bacteria_values": "289"
+    },
+    {
+      "bacteria": "Klebsiella terrigena",
+      "bacteria_values": "291"
+    },
+    {
+      "bacteria": "Klebsiella variicola",
+      "bacteria_values": "292"
+    },
+    {
+      "bacteria": "Kocuria kristinae",
+      "bacteria_values": "567"
+    },
+    {
+      "bacteria": "Kodamaea ohmeri EUCAST",
+      "bacteria_values": "294"
+    },
+    {
+      "bacteria": "Lactobacillus acidophilus",
+      "bacteria_values": "295"
+    },
+    {
+      "bacteria": "Lactobacillus amylovorus",
+      "bacteria_values": "296"
+    },
+    {
+      "bacteria": "Lactobacillus animalis",
+      "bacteria_values": "297"
+    },
+    {
+      "bacteria": "Lactobacillus brevis",
+      "bacteria_values": "298"
+    },
+    {
+      "bacteria": "Lactobacillus buchneri",
+      "bacteria_values": "299"
+    },
+    {
+      "bacteria": "Lactobacillus casei",
+      "bacteria_values": "300"
+    },
+    {
+      "bacteria": "Lactobacillus crispatus",
+      "bacteria_values": "301"
+    },
+    {
+      "bacteria": "Lactobacillus curvatus",
+      "bacteria_values": "302"
+    },
+    {
+      "bacteria": "Lactobacillus delbrueckii",
+      "bacteria_values": "303"
+    },
+    {
+      "bacteria": "Lactobacillus fermentum",
+      "bacteria_values": "304"
+    },
+    {
+      "bacteria": "Lactobacillus gallinarum",
+      "bacteria_values": "305"
+    },
+    {
+      "bacteria": "Lactobacillus gasseri",
+      "bacteria_values": "306"
+    },
+    {
+      "bacteria": "Lactobacillus helveticus",
+      "bacteria_values": "307"
+    },
+    {
+      "bacteria": "Lactobacillus johnsonii",
+      "bacteria_values": "308"
+    },
+    {
+      "bacteria": "Lactobacillus lactis",
+      "bacteria_values": "309"
+    },
+    {
+      "bacteria": "Lactobacillus paracasei",
+      "bacteria_values": "310"
+    },
+    {
+      "bacteria": "Lactobacillus paraplantarum",
+      "bacteria_values": "311"
+    },
+    {
+      "bacteria": "Lactobacillus pentosus",
+      "bacteria_values": "312"
+    },
+    {
+      "bacteria": "Lactobacillus plantarum",
+      "bacteria_values": "313"
+    },
+    {
+      "bacteria": "Lactobacillus reuteri",
+      "bacteria_values": "314"
+    },
+    {
+      "bacteria": "Lactobacillus rhamnosus",
+      "bacteria_values": "315"
+    },
+    {
+      "bacteria": "Lactobacillus sakei",
+      "bacteria_values": "316"
+    },
+    {
+      "bacteria": "Lactobacillus salivarius",
+      "bacteria_values": "317"
+    },
+    {
+      "bacteria": "Lactobacillus spp",
+      "bacteria_values": "318"
+    },
+    {
+      "bacteria": "Lactococcus lactis",
+      "bacteria_values": "319"
+    },
+    {
+      "bacteria": "Legionella pneumophila",
+      "bacteria_values": "320"
+    },
+    {
+      "bacteria": "Listeria monocytogenes",
+      "bacteria_values": "321"
+    },
+    {
+      "bacteria": "Mannheimia haemolytica",
+      "bacteria_values": "322"
+    },
+    {
+      "bacteria": "Moraxella catarrhalis",
+      "bacteria_values": "323"
+    },
+    {
+      "bacteria": "Morganella morganii",
+      "bacteria_values": "324"
+    },
+    {
+      "bacteria": "Mycobacterium abscessus",
+      "bacteria_values": "325"
+    },
+    {
+      "bacteria": "Mycobacterium avium",
+      "bacteria_values": "326"
+    },
+    {
+      "bacteria": "Mycobacterium avium ATCC 700898",
+      "bacteria_values": "327"
+    },
+    {
+      "bacteria": "Mycobacterium intracellulare",
+      "bacteria_values": "328"
+    },
+    {
+      "bacteria": "Mycobacterium marinum",
+      "bacteria_values": "329"
+    },
+    {
+      "bacteria": "Mycobacterium peregrinum ATCC 700686",
+      "bacteria_values": "330"
+    },
+    {
+      "bacteria": "Mycobacterium tuberculosis",
+      "bacteria_values": "331"
+    },
+    {
+      "bacteria": "Mycobacterium tuberculosis ATCC 27294",
+      "bacteria_values": "624"
+    },
+    {
+      "bacteria": "Mycoplasma bovis",
+      "bacteria_values": "343"
+    },
+    {
+      "bacteria": "Mycoplasma hyopneumoniae",
+      "bacteria_values": "344"
+    },
+    {
+      "bacteria": "Mycoplasma pneumoniae",
+      "bacteria_values": "345"
+    },
+    {
+      "bacteria": "Neisseria gonorrhoeae",
+      "bacteria_values": "346"
+    },
+    {
+      "bacteria": "Neisseria meningitidis",
+      "bacteria_values": "347"
+    },
+    {
+      "bacteria": "Nocardia aboflava",
+      "bacteria_values": "348"
+    },
+    {
+      "bacteria": "Nocardia abscessus",
+      "bacteria_values": "349"
+    },
+    {
+      "bacteria": "Nocardia aobensis",
+      "bacteria_values": "350"
+    },
+    {
+      "bacteria": "Nocardia asiatica",
+      "bacteria_values": "351"
+    },
+    {
+      "bacteria": "Nocardia asteroides",
+      "bacteria_values": "352"
+    },
+    {
+      "bacteria": "Nocardia brasiliensis",
+      "bacteria_values": "353"
+    },
+    {
+      "bacteria": "Nocardia carnea",
+      "bacteria_values": "354"
+    },
+    {
+      "bacteria": "Nocardia cyriacigeorgica",
+      "bacteria_values": "355"
+    },
+    {
+      "bacteria": "Nocardia farcinica",
+      "bacteria_values": "356"
+    },
+    {
+      "bacteria": "Nocardia flavorosea",
+      "bacteria_values": "357"
+    },
+    {
+      "bacteria": "Nocardia ignorata",
+      "bacteria_values": "358"
+    },
+    {
+      "bacteria": "Nocardia niigatensis",
+      "bacteria_values": "359"
+    },
+    {
+      "bacteria": "Nocardia nova",
+      "bacteria_values": "360"
+    },
+    {
+      "bacteria": "Nocardia otitidiscaviarum",
+      "bacteria_values": "361"
+    },
+    {
+      "bacteria": "Nocardia pseudobrasiliensis",
+      "bacteria_values": "362"
+    },
+    {
+      "bacteria": "Nocardia rhamnosiphila",
+      "bacteria_values": "363"
+    },
+    {
+      "bacteria": "Nocardia shimofusensis",
+      "bacteria_values": "364"
+    },
+    {
+      "bacteria": "Nocardia sienata",
+      "bacteria_values": "365"
+    },
+    {
+      "bacteria": "Nocardia spp",
+      "bacteria_values": "366"
+    },
+    {
+      "bacteria": "Nocardia takedensis",
+      "bacteria_values": "367"
+    },
+    {
+      "bacteria": "Nocardia transvalensis",
+      "bacteria_values": "368"
+    },
+    {
+      "bacteria": "Nocardia veterana",
+      "bacteria_values": "369"
+    },
+    {
+      "bacteria": "Nocarida asiatica",
+      "bacteria_values": "370"
+    },
+    {
+      "bacteria": "Pantoea agglomerans",
+      "bacteria_values": "371"
+    },
+    {
+      "bacteria": "Parabacteroides distasonis",
+      "bacteria_values": "60"
+    },
+    {
+      "bacteria": "Parabacteroides goldsteinii",
+      "bacteria_values": "555"
+    },
+    {
+      "bacteria": "Parabacteroides merdae",
+      "bacteria_values": "559"
+    },
+    {
+      "bacteria": "Parabacteroides merdae (B. merdae)",
+      "bacteria_values": "68"
+    },
+    {
+      "bacteria": "Parvimonas micra",
+      "bacteria_values": "557"
+    },
+    {
+      "bacteria": "Pasteurella aerogenes",
+      "bacteria_values": "52"
+    },
+    {
+      "bacteria": "Pasteurella canis",
+      "bacteria_values": "373"
+    },
+    {
+      "bacteria": "Pasteurella dagmatis",
+      "bacteria_values": "374"
+    },
+    {
+      "bacteria": "Pasteurella multocida",
+      "bacteria_values": "375"
+    },
+    {
+      "bacteria": "Pasteurella stomatis",
+      "bacteria_values": "377"
+    },
+    {
+      "bacteria": "Pediococcus acidilactici",
+      "bacteria_values": "378"
+    },
+    {
+      "bacteria": "Pediococcus pentosaceus",
+      "bacteria_values": "379"
+    },
+    {
+      "bacteria": "Peptoniphilus harei",
+      "bacteria_values": "558"
+    },
+    {
+      "bacteria": "Peptostreptococcus anaerobius",
+      "bacteria_values": "381"
+    },
+    {
+      "bacteria": "Peptostreptococcus asacchoralyticus",
+      "bacteria_values": "382"
+    },
+    {
+      "bacteria": "Pichia anomala EUCAST",
+      "bacteria_values": "387"
+    },
+    {
+      "bacteria": "Plesiomonas shigelloides",
+      "bacteria_values": "388"
+    },
+    {
+      "bacteria": "Porphyromonas asaccharolytica",
+      "bacteria_values": "389"
+    },
+    {
+      "bacteria": "Prevotella bivia",
+      "bacteria_values": "391"
+    },
+    {
+      "bacteria": "Prevotella buccae",
+      "bacteria_values": "392"
+    },
+    {
+      "bacteria": "Prevotella corporis",
+      "bacteria_values": "393"
+    },
+    {
+      "bacteria": "Prevotella denticola",
+      "bacteria_values": "607"
+    },
+    {
+      "bacteria": "Prevotella disiens",
+      "bacteria_values": "394"
+    },
+    {
+      "bacteria": "Prevotella heparinolytica",
+      "bacteria_values": "609"
+    },
+    {
+      "bacteria": "Prevotella intermedia",
+      "bacteria_values": "395"
+    },
+    {
+      "bacteria": "Prevotella loeschei",
+      "bacteria_values": "396"
+    },
+    {
+      "bacteria": "Prevotella melaninogenica",
+      "bacteria_values": "397"
+    },
+    {
+      "bacteria": "Prevotella nanceiensis",
+      "bacteria_values": "608"
+    },
+    {
+      "bacteria": "Prevotella oralis",
+      "bacteria_values": "398"
+    },
+    {
+      "bacteria": "Prevotella spp beta lactamase neg",
+      "bacteria_values": "400"
+    },
+    {
+      "bacteria": "Prevotella spp beta lactamase pos",
+      "bacteria_values": "401"
+    },
+    {
+      "bacteria": "Proteus mirabilis",
+      "bacteria_values": "404"
+    },
+    {
+      "bacteria": "Proteus penneri",
+      "bacteria_values": "405"
+    },
+    {
+      "bacteria": "Proteus vulgaris",
+      "bacteria_values": "407"
+    },
+    {
+      "bacteria": "Providencia rettgeri",
+      "bacteria_values": "408"
+    },
+    {
+      "bacteria": "Providencia stuartii",
+      "bacteria_values": "410"
+    },
+    {
+      "bacteria": "Pseudoglutamicibacter cumminsii",
+      "bacteria_values": "613"
+    },
+    {
+      "bacteria": "Pseudomonas aeruginosa",
+      "bacteria_values": "411"
+    },
+    {
+      "bacteria": "Pseudomonas aeruginosa ATCC 27853",
+      "bacteria_values": "412"
+    },
+    {
+      "bacteria": "Pseudomonas fluorescens group",
+      "bacteria_values": "413"
+    },
+    {
+      "bacteria": "Pseudomonas putida group",
+      "bacteria_values": "414"
+    },
+    {
+      "bacteria": "Pseudomonas spp (non-aeruginosa)",
+      "bacteria_values": "415"
+    },
+    {
+      "bacteria": "Pseudomonas stutzeri group",
+      "bacteria_values": "416"
+    },
+    {
+      "bacteria": "Raoultella ornithinolytica",
+      "bacteria_values": "417"
+    },
+    {
+      "bacteria": "Raoultella planticola",
+      "bacteria_values": "418"
+    },
+    {
+      "bacteria": "Rhodotorula mucilaginosa EUCAST",
+      "bacteria_values": "420"
+    },
+    {
+      "bacteria": "Rothia aeria",
+      "bacteria_values": "568"
+    },
+    {
+      "bacteria": "Rothia amarae",
+      "bacteria_values": "569"
+    },
+    {
+      "bacteria": "Rothia dentocariosa",
+      "bacteria_values": "570"
+    },
+    {
+      "bacteria": "Rothia mucilaginosa",
+      "bacteria_values": "571"
+    },
+    {
+      "bacteria": "Rothia nasimurium",
+      "bacteria_values": "572"
+    },
+    {
+      "bacteria": "Rothia terrae",
+      "bacteria_values": "574"
+    },
+    {
+      "bacteria": "Saccharomyces cerevisiae",
+      "bacteria_values": "628"
+    },
+    {
+      "bacteria": "Salmonella agona",
+      "bacteria_values": "525"
+    },
+    {
+      "bacteria": "Salmonella anatum",
+      "bacteria_values": "526"
+    },
+    {
+      "bacteria": "Salmonella bareilly",
+      "bacteria_values": "527"
+    },
+    {
+      "bacteria": "Salmonella berta",
+      "bacteria_values": "528"
+    },
+    {
+      "bacteria": "Salmonella braenderup",
+      "bacteria_values": "529"
+    },
+    {
+      "bacteria": "Salmonella derby",
+      "bacteria_values": "530"
+    },
+    {
+      "bacteria": "Salmonella Dublin",
+      "bacteria_values": "425"
+    },
+    {
+      "bacteria": "Salmonella enterica",
+      "bacteria_values": "431"
+    },
+    {
+      "bacteria": "Salmonella Enteritidis",
+      "bacteria_values": "426"
+    },
+    {
+      "bacteria": "Salmonella Group B",
+      "bacteria_values": "427"
+    },
+    {
+      "bacteria": "Salmonella Group C",
+      "bacteria_values": "428"
+    },
+    {
+      "bacteria": "Salmonella Group D",
+      "bacteria_values": "429"
+    },
+    {
+      "bacteria": "Salmonella hadar",
+      "bacteria_values": "531"
+    },
+    {
+      "bacteria": "Salmonella hartford",
+      "bacteria_values": "532"
+    },
+    {
+      "bacteria": "Salmonella heidelberg",
+      "bacteria_values": "533"
+    },
+    {
+      "bacteria": "Salmonella infantis",
+      "bacteria_values": "534"
+    },
+    {
+      "bacteria": "Salmonella javiana",
+      "bacteria_values": "535"
+    },
+    {
+      "bacteria": "Salmonella litchfield",
+      "bacteria_values": "536"
+    },
+    {
+      "bacteria": "Salmonella manhattan",
+      "bacteria_values": "537"
+    },
+    {
+      "bacteria": "Salmonella mbandaka",
+      "bacteria_values": "538"
+    },
+    {
+      "bacteria": "Salmonella mississippi",
+      "bacteria_values": "539"
+    },
+    {
+      "bacteria": "Salmonella montevideo",
+      "bacteria_values": "540"
+    },
+    {
+      "bacteria": "Salmonella muenchen",
+      "bacteria_values": "541"
+    },
+    {
+      "bacteria": "Salmonella newport",
+      "bacteria_values": "542"
+    },
+    {
+      "bacteria": "Salmonella oranienburg",
+      "bacteria_values": "543"
+    },
+    {
+      "bacteria": "Salmonella panama",
+      "bacteria_values": "544"
+    },
+    {
+      "bacteria": "Salmonella Paratyphi",
+      "bacteria_values": "430"
+    },
+    {
+      "bacteria": "Salmonella poona",
+      "bacteria_values": "545"
+    },
+    {
+      "bacteria": "Salmonella rubislaw",
+      "bacteria_values": "546"
+    },
+    {
+      "bacteria": "Salmonella saintpaul",
+      "bacteria_values": "547"
+    },
+    {
+      "bacteria": "Salmonella sandiego",
+      "bacteria_values": "548"
+    },
+    {
+      "bacteria": "Salmonella schwarzengrund",
+      "bacteria_values": "549"
+    },
+    {
+      "bacteria": "Salmonella senftenberg",
+      "bacteria_values": "550"
+    },
+    {
+      "bacteria": "Salmonella spp",
+      "bacteria_values": "522"
+    },
+    {
+      "bacteria": "Salmonella stanley",
+      "bacteria_values": "551"
+    },
+    {
+      "bacteria": "Salmonella thompson",
+      "bacteria_values": "552"
+    },
+    {
+      "bacteria": "Salmonella Typhi",
+      "bacteria_values": "432"
+    },
+    {
+      "bacteria": "Salmonella Typhimurium",
+      "bacteria_values": "433"
+    },
+    {
+      "bacteria": "Salmonella virchow",
+      "bacteria_values": "553"
+    },
+    {
+      "bacteria": "Serratia ficaria",
+      "bacteria_values": "434"
+    },
+    {
+      "bacteria": "Serratia fonticola",
+      "bacteria_values": "435"
+    },
+    {
+      "bacteria": "Serratia grimesii",
+      "bacteria_values": "436"
+    },
+    {
+      "bacteria": "Serratia liquefaciens",
+      "bacteria_values": "437"
+    },
+    {
+      "bacteria": "Serratia marcescens",
+      "bacteria_values": "438"
+    },
+    {
+      "bacteria": "Serratia odorifera",
+      "bacteria_values": "439"
+    },
+    {
+      "bacteria": "Serratia plymuthica",
+      "bacteria_values": "440"
+    },
+    {
+      "bacteria": "Serratia rubidaea",
+      "bacteria_values": "441"
+    },
+    {
+      "bacteria": "Serratia ureilytica",
+      "bacteria_values": "443"
+    },
+    {
+      "bacteria": "Shigella boydii",
+      "bacteria_values": "444"
+    },
+    {
+      "bacteria": "Shigella dysenteriae",
+      "bacteria_values": "445"
+    },
+    {
+      "bacteria": "Shigella flexneri",
+      "bacteria_values": "446"
+    },
+    {
+      "bacteria": "Shigella sonnei",
+      "bacteria_values": "447"
+    },
+    {
+      "bacteria": "Shigella spp",
+      "bacteria_values": "448"
+    },
+    {
+      "bacteria": "Staphylococcus argenteus",
+      "bacteria_values": "622"
+    },
+    {
+      "bacteria": "Staphylococcus aureus",
+      "bacteria_values": "449"
+    },
+    {
+      "bacteria": "Staphylococcus aureus ATCC 25923",
+      "bacteria_values": "450"
+    },
+    {
+      "bacteria": "Staphylococcus aureus ATCC 29213",
+      "bacteria_values": "451"
+    },
+    {
+      "bacteria": "Staphylococcus aureus MRSA",
+      "bacteria_values": "452"
+    },
+    {
+      "bacteria": "Staphylococcus aureus MSSA",
+      "bacteria_values": "453"
+    },
+    {
+      "bacteria": "Staphylococcus aureus NCTC 12493",
+      "bacteria_values": "454"
+    },
+    {
+      "bacteria": "Staphylococcus auricularis",
+      "bacteria_values": "455"
+    },
+    {
+      "bacteria": "Staphylococcus capitis",
+      "bacteria_values": "456"
+    },
+    {
+      "bacteria": "Staphylococcus caprae",
+      "bacteria_values": "457"
+    },
+    {
+      "bacteria": "Staphylococcus coagulase negative",
+      "bacteria_values": "458"
+    },
+    {
+      "bacteria": "Staphylococcus coagulase negative MRSE",
+      "bacteria_values": "459"
+    },
+    {
+      "bacteria": "Staphylococcus cohnii",
+      "bacteria_values": "460"
+    },
+    {
+      "bacteria": "Staphylococcus epidermidis",
+      "bacteria_values": "461"
+    },
+    {
+      "bacteria": "Staphylococcus epidermidis MRSE",
+      "bacteria_values": "462"
+    },
+    {
+      "bacteria": "Staphylococcus epidermidis MSSE",
+      "bacteria_values": "463"
+    },
+    {
+      "bacteria": "Staphylococcus felis",
+      "bacteria_values": "464"
+    },
+    {
+      "bacteria": "Staphylococcus haemolyticus",
+      "bacteria_values": "465"
+    },
+    {
+      "bacteria": "Staphylococcus hominis",
+      "bacteria_values": "466"
+    },
+    {
+      "bacteria": "Staphylococcus hyicus",
+      "bacteria_values": "467"
+    },
+    {
+      "bacteria": "Staphylococcus intermedius",
+      "bacteria_values": "468"
+    },
+    {
+      "bacteria": "Staphylococcus kloosii",
+      "bacteria_values": "565"
+    },
+    {
+      "bacteria": "Staphylococcus lugdunensis",
+      "bacteria_values": "469"
+    },
+    {
+      "bacteria": "Staphylococcus pasteuri",
+      "bacteria_values": "566"
+    },
+    {
+      "bacteria": "Staphylococcus pettenkoferi",
+      "bacteria_values": "470"
+    },
+    {
+      "bacteria": "Staphylococcus pseudintermedius",
+      "bacteria_values": "471"
+    },
+    {
+      "bacteria": "Staphylococcus saccharolyticus",
+      "bacteria_values": "472"
+    },
+    {
+      "bacteria": "Staphylococcus saprophyticus",
+      "bacteria_values": "473"
+    },
+    {
+      "bacteria": "Staphylococcus schleiferi",
+      "bacteria_values": "474"
+    },
+    {
+      "bacteria": "Staphylococcus sciuri",
+      "bacteria_values": "475"
+    },
+    {
+      "bacteria": "Staphylococcus simulans",
+      "bacteria_values": "476"
+    },
+    {
+      "bacteria": "Staphylococcus warneri",
+      "bacteria_values": "477"
+    },
+    {
+      "bacteria": "Staphylococcus xylosus",
+      "bacteria_values": "478"
+    },
+    {
+      "bacteria": "Stenotrophomonas maltophilia",
+      "bacteria_values": "479"
+    },
+    {
+      "bacteria": "Streptococcus acidominimus",
+      "bacteria_values": "480"
+    },
+    {
+      "bacteria": "Streptococcus agalactiae",
+      "bacteria_values": "481"
+    },
+    {
+      "bacteria": "Streptococcus anginosus",
+      "bacteria_values": "483"
+    },
+    {
+      "bacteria": "Streptococcus australis",
+      "bacteria_values": "596"
+    },
+    {
+      "bacteria": "Streptococcus bovis",
+      "bacteria_values": "484"
+    },
+    {
+      "bacteria": "Streptococcus bovis equinus group",
+      "bacteria_values": "594"
+    },
+    {
+      "bacteria": "Streptococcus canis",
+      "bacteria_values": "485"
+    },
+    {
+      "bacteria": "Streptococcus constellatus",
+      "bacteria_values": "486"
+    },
+    {
+      "bacteria": "Streptococcus cristatus",
+      "bacteria_values": "597"
+    },
+    {
+      "bacteria": "Streptococcus dysgalactiae",
+      "bacteria_values": "487"
+    },
+    {
+      "bacteria": "Streptococcus equi subspecies equi",
+      "bacteria_values": "614"
+    },
+    {
+      "bacteria": "Streptococcus equi subspecies zooepidemicus",
+      "bacteria_values": "615"
+    },
+    {
+      "bacteria": "Streptococcus equisimilis",
+      "bacteria_values": "490"
+    },
+    {
+      "bacteria": "Streptococcus gallolyticus",
+      "bacteria_values": "602"
+    },
+    {
+      "bacteria": "Streptococcus gordonii",
+      "bacteria_values": "491"
+    },
+    {
+      "bacteria": "Streptococcus group C",
+      "bacteria_values": "492"
+    },
+    {
+      "bacteria": "Streptococcus group G",
+      "bacteria_values": "494"
+    },
+    {
+      "bacteria": "Streptococcus infantarius",
+      "bacteria_values": "603"
+    },
+    {
+      "bacteria": "Streptococcus infantis",
+      "bacteria_values": "598"
+    },
+    {
+      "bacteria": "Streptococcus intermedius",
+      "bacteria_values": "495"
+    },
+    {
+      "bacteria": "Streptococcus lutetiensis",
+      "bacteria_values": "604"
+    },
+    {
+      "bacteria": "Streptococcus massiliensis",
+      "bacteria_values": "599"
+    },
+    {
+      "bacteria": "Streptococcus mitis",
+      "bacteria_values": "497"
+    },
+    {
+      "bacteria": "Streptococcus mitis group",
+      "bacteria_values": "591"
+    },
+    {
+      "bacteria": "Streptococcus mutans",
+      "bacteria_values": "498"
+    },
+    {
+      "bacteria": "Streptococcus mutans group",
+      "bacteria_values": "590"
+    },
+    {
+      "bacteria": "Streptococcus oralis",
+      "bacteria_values": "499"
+    },
+    {
+      "bacteria": "Streptococcus parasanguinis",
+      "bacteria_values": "500"
+    },
+    {
+      "bacteria": "Streptococcus pasteurianus",
+      "bacteria_values": "605"
+    },
+    {
+      "bacteria": "Streptococcus peroris",
+      "bacteria_values": "600"
+    },
+    {
+      "bacteria": "Streptococcus pneumoniae",
+      "bacteria_values": "501"
+    },
+    {
+      "bacteria": "Streptococcus pneumoniae ATCC 49619",
+      "bacteria_values": "502"
+    },
+    {
+      "bacteria": "Streptococcus pseudopneumoniae",
+      "bacteria_values": "601"
+    },
+    {
+      "bacteria": "Streptococcus pyogenes",
+      "bacteria_values": "503"
+    },
+    {
+      "bacteria": "Streptococcus pyogenes CCUG 25571",
+      "bacteria_values": "504"
+    },
+    {
+      "bacteria": "Streptococcus salivarius",
+      "bacteria_values": "505"
+    },
+    {
+      "bacteria": "Streptococcus salivarius group",
+      "bacteria_values": "592"
+    },
+    {
+      "bacteria": "Streptococcus sanguinis",
+      "bacteria_values": "506"
+    },
+    {
+      "bacteria": "Streptococcus sanguinis group",
+      "bacteria_values": "593"
+    },
+    {
+      "bacteria": "Streptococcus suis",
+      "bacteria_values": "508"
+    },
+    {
+      "bacteria": "Streptococcus thermophilus",
+      "bacteria_values": "509"
+    },
+    {
+      "bacteria": "Streptococcus uberis",
+      "bacteria_values": "510"
+    },
+    {
+      "bacteria": "Streptococcus vestibularis",
+      "bacteria_values": "511"
+    },
+    {
+      "bacteria": "Thomasclavelia ramosa (Cl. ramosa)",
+      "bacteria_values": "207"
+    },
+    {
+      "bacteria": "Veillonella parvula",
+      "bacteria_values": "556"
+    },
+    {
+      "bacteria": "Vibrio alginolyticus",
+      "bacteria_values": "578"
+    },
+    {
+      "bacteria": "Vibrio cholerae",
+      "bacteria_values": "575"
+    },
+    {
+      "bacteria": "Vibrio fluvialis",
+      "bacteria_values": "577"
+    },
+    {
+      "bacteria": "Vibrio parahaemolyticus",
+      "bacteria_values": "576"
+    },
+    {
+      "bacteria": "Vibrio vulnificus",
+      "bacteria_values": "579"
+    },
+    {
+      "bacteria": "Weissella confusa",
+      "bacteria_values": "515"
+    },
+    {
+      "bacteria": "Weissella viridescens",
+      "bacteria_values": "516"
+    },
+    {
+      "bacteria": "Yersinia enterocolitica",
+      "bacteria_values": "519"
+    }
+  ]
+]
