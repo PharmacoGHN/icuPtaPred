@@ -1,0 +1,17 @@
+{
+  "drug": "Ceftolozane",
+  "model": "Chandorkar_2015",
+  "Title": "Population pharmacokinetics of ceftolozane/tazobactam in healthy volunteers, subjects with varying degrees of renal function and patients with bacterial infections",
+  "Authors": "Chandorkar, et al.",
+  "Year": "2015",
+  "Journal": "ACCP Journal",
+  "DOI": "10.1002/jcph.395",
+  "URL": "https://pubmed.ncbi.nlm.nih.gov/25196976/",
+  "Abstract_Introduction": "Ceftolozane/tazobactam is a novel antipseudomonal cephalosporin and beta-lactamase inhibitor in clinical development for treatment of complicated urinary tract (cUTI) and intra-abdominal (cIAI) infections and nosocomial pneumonia.",
+  "Abstract_Methods": "The population pharmacokinetics of ceftolozane/tazobactam were characterized in healthy volunteers, subjects with varying degrees of renal function, and patients with cIAI or cUTI. Serum concentration data from 376 adults who received ceftolozane/tazobactam in doses ranging from 500 to 3000 mg were analyzed to identify factors contributing to the pharmacokinetic variability.",
+  "Abstract_Results": "Ceftolozane/tazobactam pharmacokinetics were well described by a linear two-compartment model with first-order elimination and moderate between-subject variability in both clearance and volume of distribution (Vc). For both ceftolozane and tazobactam, clearance was highly correlated with renal function with creatinine clearance influencing exposure, and infection influencing Vc. Body weight was an additional covariate affecting the Vc of ceftolozane. Other covariates tested, such as age, body weight, sex, ethnicity, and presence of infection, had no clinically relevant effects on exposure.",
+  "Abstract_Conclusions": "The final pharmacokinetic models adequately described the plasma concentrations of ceftolozane and tazobactam and form the basis for further modeling and simulation including evaluation of probability of target attainment in a diverse population with varying demographics, degrees of renal function, and infection status.",
+  "Clearance_Formula": "$$ CL = 5.11 \\times \\left( \\frac{CL_{CR}}{109} \\right)^{0.715} \\times 1.22^{infection} $$",
+  "Model_Description": "CL = Clearance; CLCR = Creatinine clearance; infection = presence of infection.",
+  "Population_Studied": "Healthy volunteers, subjects with varying degrees of renal function, and patients with cIAI or cUTI"
+}

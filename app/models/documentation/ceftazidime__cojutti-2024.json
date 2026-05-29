@@ -1,0 +1,17 @@
+{
+  "drug": "Ceftazidime",
+  "model": "Cojutti_2024",
+  "Title": "An innovative population pharmacokinetic/pharmacodynamic strategy for attaining aggressive joint PK/PD target of continuous infusion ceftazidime/avibactam against KPC- and OXA-48-producing Enterobacterales and preventing resistance development in critically ill patients",
+  "Authors": "Cojutti, et al.",
+  "Year": "2024",
+  "Journal": "Journal of Antimicrobial Pharmacology",
+  "DOI": "10.1093/jac/dkae290",
+  "URL": "https://pubmed.ncbi.nlm.nih.gov/39159014/",
+  "Abstract_Introduction": "Ceftazidime/avibactam is a key antibiotic for carbapenemase-producing Enterobacterales (CPE) Gram-negative infections, but current dosing may be suboptimal to grant activity. This study explores the population pharmacokinetics/pharmacodynamics (PK/PD) of continuous infusion (CI) ceftazidime/avibactam for maximizing treatment efficacy in critically ill patients.",
+  "Abstract_Methods": "A retrospective analysis of adult patients receiving CI ceftazidime/avibactam and therapeutic drug monitoring (TDM) of both compounds was performed. Population PK/PD modelling identified the most accurate method for estimating ceftazidime/avibactam clearance based on kidney function and Monte Carlo simulations investigated the relationship between various CI dosing regimens and aggressive joint PK/PD target attainment of ceftazidime/avibactam.",
+  "Abstract_Results": "The European Kidney Function Consortium (EKFC) equation best described kidney function for ceftazidime/avibactam clearance. The findings challenge the current approach of only reducing the ceftazidime/avibactam dose based on kidney function by identifying dose adjustments in patients with augmented kidney function. Our CI ceftazidime/avibactam dosing strategies, adjusted by TDM, showed promise for achieving optimal aggressive joint PK/PD targets and potentially improving clinical/microbiological outcomes against KPC- and OXA-48-producing Enterobacterales. The risk of neurotoxicity associated with these strategies appears acceptable.",
+  "Abstract_Conclusions": "This study suggests that adjusting ceftazidime/avibactam dosing regimen based solely on eCLcr might be suboptimal for critically ill patients. Higher daily doses delivered by CI and adjusted based on TDM have the potential to improve aggressive joint PK/PD target attainment and potentially clinical/microbiological outcomes. Further investigations are warranted to confirm these findings and establish optimal TDM-guided dosing strategies for ceftazidime/avibactam in clinical practice.",
+  "Clearance_Formula": "$$ CL_{caz} = 5 \\times \\frac{EKFC}{70}^{0.7} $$",
+  "Model_Description": "",
+  "Population_Studied": ""
+}

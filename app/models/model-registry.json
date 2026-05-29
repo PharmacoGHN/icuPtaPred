@@ -5,7 +5,7 @@
     "is_default": true,
     "dose_increment": 1,
     "max_dose": 20,
-    "toxicity_threshold": 20,
+    "toxicity_threshold": 30,
     "renal_metric": "cg_lbw",
     "renal_formula": "Cockcroft-Gault (LBW)",
     "clearance_expr": "0.526 + 2 * renal_value / 54",
@@ -22,6 +22,18 @@
     "renal_formula": "No renal formula",
     "clearance_expr": "7.84",
     "eta_cl_expr": "1"
+  },
+  {
+    "drug": "Cefiderocol",
+    "model": "Zhar_2022",
+    "is_default": true,
+    "dose_increment": 1,
+    "max_dose": 20,
+    "toxicity_threshold": null,
+    "renal_metric": "ckd_2009",
+    "renal_formula": "CKD-EPI 2009",
+    "clearance_expr": "7.38 * (renal_value / 100)^0.467",
+    "eta_cl_expr": "0.467"
   },
   {
     "drug": "Ceftazidime",
@@ -58,18 +70,6 @@
     "renal_formula": "CKD-EPI 2009",
     "clearance_expr": "4.45 * (renal_value / 73.9)^0.9",
     "eta_cl_expr": "0.46"
-  },
-  {
-    "drug": "Cefiderocol",
-    "model": "Zhar_2022",
-    "is_default": true,
-    "dose_increment": 1,
-    "max_dose": 20,
-    "toxicity_threshold": null,
-    "renal_metric": "ckd_2009",
-    "renal_formula": "CKD-EPI 2009",
-    "clearance_expr": "7.38 * (renal_value / 100)^0.467",
-    "eta_cl_expr": "0.467"
   },
   {
     "drug": "Ceftolozane",

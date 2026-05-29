@@ -1,0 +1,17 @@
+{
+  "drug": "Piperacillin-tazobactam",
+  "model": "Udy_2015",
+  "Title": "Are standard doses of piperacillin sufficient for critically ill patients with augmented creatinine clearance?",
+  "Authors": "Udy, et al.",
+  "Year": "2015",
+  "Journal": "Critical Care",
+  "DOI": "10.1186/s13054-015-0750-y",
+  "URL": "https://doi.org/10.1186/s13054-015-0750-y",
+  "Abstract_Introduction": "The aim of this study was to explore the impact of augmented creatinine clearance and differing minimum inhibitory concentrations (MIC) on piperacillin pharmacokinetic/pharmacodynamic (PK/PD) target attainment (time above MIC (fT>MIC)) in critically ill patients with sepsis receiving intermittent dosing.",
+  "Abstract_Methods": "To be eligible for enrolment, critically ill patients with sepsis had to be receiving piperacillin-tazobactam 4.5 g intravenously (IV) by intermittent infusion every 6 hours for presumed or confirmed nosocomial infection without significant renal impairment (defined by a plasma creatinine concentration greater than 171 umol/L or the need for renal replacement therapy). Over a single dosing interval, blood samples were drawn to determine unbound plasma piperacillin concentrations. Renal function was assessed by measuring creatinine clearance (CLCR). A population PK model was constructed, and the probability of target attainment (PTA) for 50% and 100% fT>MIC was calculated for varying MIC and CLCR values.",
+  "Abstract_Results": "In total, 48 patients provided data. Increasing CLCR values were associated with lower trough plasma piperacillin concentrations (P < 0.01), such that with an MIC of 16 mg/L, 100% fT>MIC would be achieved in only one-third (n = 16) of patients. Mean piperacillin clearance was approximately 1.5-fold higher than in healthy volunteers and correlated with CLCR (r = 0.58, P < 0.01). A reduced PTA for all MIC values, when targeting either 50% or 100% fT>MIC, was noted with increasing CLCR measures.",
+  "Abstract_Conclusions": "Standard intermittent piperacillin-tazobactam dosing is unlikely to achieve optimal piperacillin exposures in a significant proportion of critically ill patients with sepsis, owing to elevated drug clearance. These data suggest that CLCR can be employed as a useful tool to determine whether piperacillin PK/PD target attainment is likely with a range of MIC values.",
+  "Clearance_Formula": "$$ CL = 16.3 \\times \\left( \\frac{CL_{CR}}{100} \\right) $$ ",
+  "Model_Description": "CL = Clearance; CLCR = Creatinine clearance.",
+  "Population_Studied": "Critically ill patients"
+}

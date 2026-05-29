@@ -162,7 +162,7 @@ registry_editor <- function(ns) {
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
     shiny$tags$p(
-      "Local dev only. Saving a new model writes to the registry JSON file and creates a documentation file automatically.",
+      "Local dev only. Saving a new model writes to the registry JSON file and creates a documentation JSON file automatically.",
       class = "icu-copy-block"
     ),
     shiny$fluidRow(
@@ -268,7 +268,7 @@ documentation_editor <- function(ns) {
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
     shiny$tags$p(
-      "Local dev only. This editor writes a model-specific documentation file used by the model library.",
+      "Local dev only. This editor writes a model-specific documentation JSON file used by the model library.",
       class = "icu-copy-block"
     ),
     shiny$uiOutput(ns("documentation_target")),
@@ -704,7 +704,7 @@ server <- function(id) {
         refresh_token(refresh_token() + 1)
 
         shiny$showNotification(
-          paste0("Saved model ", input$edit_model, " to the registry JSON file and ensured its documentation file exists."),
+           paste0("Saved model ", input$edit_model, " to the registry JSON file and ensured its documentation JSON file exists."),
           type = "message",
           duration = 6
         )
@@ -737,7 +737,7 @@ server <- function(id) {
         refresh_token(refresh_token() + 1)
 
         shiny$showNotification(
-          paste0("Removed model ", deleted_model, " from the registry and deleted its documentation file."),
+           paste0("Removed model ", deleted_model, " from the registry and deleted its documentation JSON file."),
           type = "warning",
           duration = 6
         )

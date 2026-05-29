@@ -1,0 +1,18 @@
+{
+  "drug": "Cefepime",
+  "model": "An_2023",
+  "Title": "Population Pharmacokinetics of cefepime in Pediatric Intensive Care Patients",
+  "Authors": "An, et al.",
+  "Year": "2023",
+  "Journal": "Journal of Antimicrobial Chemotherapy",
+  "DOI": "10.1093/jac/dkad106",
+  "URL": "https://pubmed.ncbi.nlm.nih.gov/37071586/",
+  "Abstract_Introduction": "We aimed to identify rational empirical dosing strategies for cefepime treatment in critically ill patients by utilizing\npopulation pharmacokinetics and target attainment analysis.",
+  "Abstract_Methods": "A prospective and opportunistic pharmacokinetic (PK) study was conducted in 130 critically ill patients\nin two ICU sites. The plasma concentrations of cefepime were determined using a validated LC-MS/MS method. All cefepime PK data were analysed\nsimultaneously using the non-linear mixed-effects modelling approach. Monte Carlo simulations were performed to evaluate the PTA of cefepime at different\nMIC values following different dose regimens in subjects with different renal functions.",
+  "Abstract_Results": "The PK of cefepime in critically ill patients was best characterized by a two-compartment model with zero-order input\nand first-order elimination. Creatinine clearance and body weight were identified to be significant covariates.\nOur simulation results showed that prolonged 3 h infusion does not provide significant improvement on target attainment compared with the traditional\nintermittent 0.5 h infusion. In contrast, for a given daily dose continuous infusion provided much higher breakpoint coverage than either 0.5h or 3h intermittent infusions.\nTo balance the target attainment and potential neurotoxicity, cefepime 3 g/day continuous infusion appears to be a better dosing regimen than 6 g/day continuous infusion.",
+  "Abstract_Conclusions": "Continuous infusion may represent a promising strategy for cefepime treatment in critically ill patients. With the availability of\ninstitution- and/or unit-specific cefepime susceptibility patterns as well as individual patients' renal function, our PTA results may represent useful\nreferences for physicians to make dosing decisions.",
+  "Abstract": "",
+  "Clearance_Formula": "$$ CL (L/h) =  2 \\times \\left( \\frac{CL_{CR, LBW}}{54} \\right)^{0.75} $$",
+  "Model_Description": "CL = Clearance; CLCR = Creatinine clearance; LBW = Lean body weight.",
+  "Population_Studied": "Pediatric intensive care patients"
+}

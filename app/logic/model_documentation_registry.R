@@ -1,10 +1,5 @@
 box::use(
-  jsonlite[toJSON, fromJSON],
-  utils[read.csv]
-)
-
-box::use(
-  app/logic/helper_model_information[model_information]
+  jsonlite[fromJSON, toJSON]
 )
 
 documentation_columns <- c(
@@ -48,7 +43,20 @@ empty_documentation_dataframe <- function() {
   )
 }
 
+documentation_as_dataframe <- function(documentation) {
+  if (is.data.frame(documentation)) {
+    return(documentation)
+  }
+
+  if (is.list(documentation) && length(documentation)) {
+    return(as.data.frame(documentation, stringsAsFactors = FALSE))
+  }
+
+  empty_documentation_dataframe()
+}
+
 coerce_documentation_dataframe <- function(documentation) {
+  documentation <- documentation_as_dataframe(documentation)
   missing_columns <- setdiff(documentation_columns, colnames(documentation))
   if (length(missing_columns) > 0) {
     for (column in missing_columns) {
@@ -79,7 +87,7 @@ documentation_file_path <- function(drug, model) {
   normalizePath(
     file.path(
       documentation_dir_path(),
-      paste0(documentation_key_part(drug), "__", documentation_key_part(model), ".csv")
+      paste0(documentation_key_part(drug), "__", documentation_key_part(model), ".json")
     ),
     mustWork = FALSE
   )
@@ -118,51 +126,40 @@ documentation_stub <- function(
   )
 }
 
-static_documentation <- function(drug, model) {
-  if (
-    is.null(model_information[[drug]]) ||
-    is.null(model_information[[drug]][[model]])
-  ) {
-    return(NULL)
-  }
-
-  entry <- model_information[[drug]][[model]]
-
-  data.frame(
-    drug = drug,
-    model = model,
-    Title = if (!is.null(entry$Title)) as.character(entry$Title[[1]]) else model,
-    Authors = if (!is.null(entry$Authors)) as.character(entry$Authors[[1]]) else "",
-    Year = if (!is.null(entry$Year)) as.character(entry$Year[[1]]) else "",
-    Journal = if (!is.null(entry$Journal)) as.character(entry$Journal[[1]]) else "",
-    DOI = if (!is.null(entry$DOI) && !is.na(entry$DOI[[1]])) as.character(entry$DOI[[1]]) else "",
-    URL = if (!is.null(entry$URL) && !is.na(entry$URL[[1]])) as.character(entry$URL[[1]]) else "",
-    Abstract_Introduction = "",
-    Abstract_Methods = "",
-    Abstract_Results = "",
-    Abstract_Conclusions = "",
-    Abstract = if (!is.null(entry$Abstract)) as.character(entry$Abstract[[1]]) else "",
-    Clearance_Formula = if (!is.null(entry$Clearance_Formula)) as.character(entry$Clearance_Formula[[1]]) else "",
-    Model_Description = if (!is.null(entry$Model_Description)) as.character(entry$Model_Description[[1]]) else "",
-    Population_Studied = if (!is.null(entry$Population_Studied)) as.character(entry$Population_Studied[[1]]) else "",
-    stringsAsFactors = FALSE
-  )
-}
-
 read_documentation_file <- function(path) {
   if (!file.exists(path)) {
     return(empty_documentation_dataframe())
   }
 
-  coerce_documentation_dataframe(read.csv(path, stringsAsFactors = FALSE, na.strings = c("", "NA")))
+  json_text <- paste(readLines(path, warn = FALSE), collapse = "\n")
+
+  if (!nzchar(trimws(json_text))) {
+    return(empty_documentation_dataframe())
+  }
+
+  coerce_documentation_dataframe(fromJSON(json_text, simplifyDataFrame = TRUE))
 }
 
 write_documentation_file <- function(path, documentation) {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-  toJSON(documentation, pretty = TRUE) |>
+  documentation <- coerce_documentation_dataframe(documentation)
+  toJSON(
+    documentation_row_to_list(documentation),
+    auto_unbox = TRUE,
+    null = "null",
+    pretty = TRUE
+  ) |>
     writeLines(con = path)
 }
 
+#' Return model documentation from its JSON file.
+#'
+#' @param drug Drug name.
+#' @param model Model identifier.
+#' @param fallback_clearance_formula Clearance formula used when no JSON file exists yet.
+#' @param fallback_model_description Model description used when no JSON file exists yet.
+#'
+#' @return A named list containing documentation fields for the selected model.
 #' @export
 get_model_documentation <- function(
   drug,
@@ -176,11 +173,6 @@ get_model_documentation <- function(
     return(documentation_row_to_list(read_documentation_file(path)))
   }
 
-  static_doc <- static_documentation(drug, model)
-  if (!is.null(static_doc)) {
-    return(documentation_row_to_list(coerce_documentation_dataframe(static_doc)))
-  }
-
   documentation_row_to_list(
     documentation_stub(
       drug,
@@ -191,6 +183,14 @@ get_model_documentation <- function(
   )
 }
 
+#' Ensure a documentation JSON file exists for a model.
+#'
+#' @param drug Drug name.
+#' @param model Model identifier.
+#' @param fallback_clearance_formula Clearance formula used when seeding a new JSON file.
+#' @param fallback_model_description Model description used when seeding a new JSON file.
+#'
+#' @return The path to the documentation JSON file.
 #' @export
 ensure_model_documentation_file <- function(
   drug,
@@ -204,25 +204,40 @@ ensure_model_documentation_file <- function(
     return(path)
   }
 
-  static_doc <- static_documentation(drug, model)
-  documentation <- if (!is.null(static_doc)) {
-    coerce_documentation_dataframe(static_doc)
-  } else {
-    coerce_documentation_dataframe(
-      documentation_stub(
-        drug,
-        model,
-        clearance_formula = fallback_clearance_formula,
-        model_description = fallback_model_description
-      )
+  documentation <- coerce_documentation_dataframe(
+    documentation_stub(
+      drug,
+      model,
+      clearance_formula = fallback_clearance_formula,
+      model_description = fallback_model_description
     )
-  }
+  )
 
   write_documentation_file(path, documentation)
 
   path
 }
 
+#' Save model documentation to its JSON file.
+#'
+#' @param drug Drug name.
+#' @param model Model identifier.
+#' @param Title Documentation title.
+#' @param Authors Documentation authors.
+#' @param Year Publication year.
+#' @param Journal Journal name.
+#' @param DOI DOI value.
+#' @param URL Source URL.
+#' @param Abstract_Introduction Abstract introduction text.
+#' @param Abstract_Methods Abstract methods text.
+#' @param Abstract_Results Abstract results text.
+#' @param Abstract_Conclusions Abstract conclusions text.
+#' @param Clearance_Formula Clearance formula markup.
+#' @param Model_Description Model description text.
+#' @param Population_Studied Population description text.
+#' @param Abstract Legacy free-form abstract field.
+#'
+#' @return A named list containing the saved documentation values.
 #' @export
 save_model_documentation <- function(
   drug,
@@ -268,6 +283,12 @@ save_model_documentation <- function(
   documentation_row_to_list(documentation)
 }
 
+#' Delete a model documentation JSON file.
+#'
+#' @param drug Drug name.
+#' @param model Model identifier.
+#'
+#' @return `TRUE` when a file was deleted, otherwise `FALSE`.
 #' @export
 delete_model_documentation <- function(drug, model) {
   path <- documentation_file_path(drug, model)
