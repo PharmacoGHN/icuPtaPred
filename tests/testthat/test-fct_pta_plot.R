@@ -15,6 +15,10 @@ test_that("format_plot_value handles vector inputs", {
   )
 })
 
+test_that("safe_log_limits preserves MIC values below 0.01", {
+  expect_equal(impl$safe_log_limits(c(0.008, 0.06))[1], 0.008)
+})
+
 test_that("plot.pta returns the three PTA views", {
   data <- data.frame(
     mic = c(0.5, 1, 2),
@@ -38,6 +42,15 @@ test_that("plot.pta returns the three PTA views", {
   expect_s3_class(plots$pta_plot, "ggplot")
   expect_s3_class(plots$pta_multiple_doses, "ggplot")
   expect_s3_class(plots$pta_ci_plot, "ggplot")
+
+  ci_layer <- plots$pta_ci_plot$layers[[length(plots$pta_ci_plot$layers)]]
+  ci_colour <- ci_layer$aes_params$colour
+
+  if (is.null(ci_colour)) {
+    ci_colour <- ci_layer$aes_params$col
+  }
+
+  expect_equal(ci_colour, NA)
 })
 
 test_that("plot.cfr builds hover text for all rows", {

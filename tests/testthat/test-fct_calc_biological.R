@@ -42,3 +42,37 @@ test_that("calc_biological calculates biological indices correctly", {
   expect_equal(result$ckd_2021, 119.6)
   expect_equal(result$schwartz, 150.3)
 })
+
+test_that("calc_biological converts pounds before derived calculations", {
+  result_kg <- calc_biological(
+    sex = "Male",
+    age = 30,
+    weight = 70,
+    height = 170,
+    creatinine = 70,
+    weight_unit = "kg",
+    creat_unit = "uM/L",
+    urine_creat = 100,
+    urine_output = 1500
+  )
+
+  result_lbs <- calc_biological(
+    sex = "Male",
+    age = 30,
+    weight = 70 * 2.20462,
+    height = 170,
+    creatinine = 70,
+    weight_unit = "lbs",
+    creat_unit = "uM/L",
+    urine_creat = 100,
+    urine_output = 1500
+  )
+
+  expect_equal(result_lbs$tbw, result_kg$tbw, tolerance = 1e-6)
+  expect_equal(result_lbs$lbw, result_kg$lbw, tolerance = 1e-6)
+  expect_equal(result_lbs$ajbw, result_kg$ajbw, tolerance = 1e-6)
+  expect_equal(result_lbs$ibw, result_kg$ibw, tolerance = 1e-6)
+  expect_equal(result_lbs$bmi, result_kg$bmi)
+  expect_equal(result_lbs$bsa, result_kg$bsa)
+  expect_equal(result_lbs$cg_tbw, result_kg$cg_tbw)
+})

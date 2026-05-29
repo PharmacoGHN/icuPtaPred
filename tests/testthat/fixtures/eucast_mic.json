@@ -1,0 +1,26 @@
+{
+  "Vancomycin": {
+    "Staphylococcus lugdunensis": {
+      "mic_distribution": [
+        {
+          "mic": 0.125,
+          "distribution": 1
+        },
+        {
+          "mic": 0.25,
+          "distribution": 5
+        },
+        {
+          "mic": 0.5,
+          "distribution": 8
+        },
+        {
+          "mic": 1,
+          "distribution": 2
+        }
+      ],
+      "ecoff": "2",
+      "ecoff_ci": "1 - 2"
+    }
+  }
+}

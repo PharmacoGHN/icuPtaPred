@@ -7,7 +7,7 @@ box::use(
 
 box::use(
   app/logic/fct_calc_biological[calc_biological],
-  app/logic/fct_extract_eucast[mic_distribution, update_eucast],
+  app/logic/fct_extract_eucast[mic_distribution, read_eucast_mic, update_eucast],
   app/logic/fct_pta_plot,
   app/logic/model_registry[get_default_model, get_model_definition, get_model_parameters, list_models_for_drug],
   app/logic/pta_service,
@@ -80,9 +80,27 @@ log2_tick_positions <- function(values) {
   log2(tick_values)
 }
 
+log2_axis_range <- function(values) {
+  positive_values <- values[is.finite(values) & !is.na(values) & values > 0]
+
+  if (!length(positive_values)) {
+    return(c(0, 1))
+  }
+
+  lower <- log2(min(positive_values))
+  upper <- log2(max(positive_values))
+
+  if (!is.finite(upper) || upper <= lower) {
+    upper <- lower + 1
+  }
+
+  c(lower, upper)
+}
+
 pta_plotly <- function(plot, data) {
-  x_tick_values <- log2_tick_values(data$mic)
-  x_tick_positions <- log2_tick_positions(data$mic)
+  x_tick_values <- sort(unique(data$mic[is.finite(data$mic) & !is.na(data$mic) & data$mic > 0]))
+  x_tick_positions <- log2(x_tick_values)
+  x_range <- log2_axis_range(data$mic)
   y_values <- unlist(
     data[c(
       "css_mic_below2",
@@ -99,13 +117,16 @@ pta_plotly <- function(plot, data) {
   )
   y_tick_values <- log2_tick_values(y_values)
   y_tick_positions <- log2_tick_positions(y_values)
+  y_range <- log2_axis_range(y_values)
 
-  plotly_object <- ggplotly(plot, tooltip = "text")
+  plotly_object <- suppressWarnings(ggplotly(plot, tooltip = "text"))
   plotly_object <- layout(
     plotly_object,
     hovermode = "closest",
     xaxis = list(
       title = list(text = "Minimum inhibitory concentration (MIC, mg/L)"),
+      autorange = FALSE,
+      range = x_range,
       tickmode = "array",
       tickvals = x_tick_positions,
       ticktext = vapply(x_tick_values, format_plot_number, character(1)),
@@ -114,6 +135,8 @@ pta_plotly <- function(plot, data) {
     ),
     yaxis = list(
       title = list(text = "Steady-state concentration to MIC ratio"),
+      autorange = FALSE,
+      range = y_range,
       tickmode = "array",
       tickvals = y_tick_positions,
       ticktext = vapply(y_tick_values, format_plot_number, character(1)),
@@ -137,7 +160,7 @@ pta_plotly <- function(plot, data) {
 }
 
 cfr_plotly <- function(plot) {
-  plotly_object <- ggplotly(plot, tooltip = "text")
+  plotly_object <- suppressWarnings(ggplotly(plot, tooltip = "text"))
   plotly_object <- layout(
     plotly_object,
     hovermode = "closest",
@@ -183,56 +206,47 @@ summary_metric <- function(label, value, unit = NULL, digits = 1, emphasis = FAL
   )
 }
 
-patient_summary_card <- function(biological, model_selected, model_param) {
+patient_summary_card <- function(biological, model_param) {
+  calculated_renal_value <- if (
+    !is.null(model_param$renal_metric) &&
+    !identical(model_param$renal_metric, "none")
+  ) {
+    biological[[model_param$renal_metric]]
+  } else {
+    NA_real_
+  }
+
   metrics <- list(
-    summary_metric("CRCL (CG-TBW)", biological$cg_tbw, "mL/min", emphasis = TRUE),
-    summary_metric("CRCL (CG-AJBW)", biological$cg_ajbw, "mL/min"),
-    summary_metric("CKD-EPI 2021", biological$ckd_2021, "mL/min/1.73m2"),
-    summary_metric("MDRD", biological$mdrd, "mL/min/1.73m2"),
-    summary_metric("BMI", biological$bmi, "kg/m2"),
-    summary_metric("BSA", biological$bsa, "m2", digits = 2),
+    summary_metric("TBW", biological$tbw, "kg", emphasis = TRUE),
     summary_metric("IBW", biological$ibw, "kg"),
+    summary_metric("AJBW", biological$ajbw, "kg"),
     summary_metric("LBW", biological$lbw, "kg")
   )
 
-  if (is.finite(biological$uvp) && biological$uvp > 0) {
-    metrics <- append(metrics, list(summary_metric("UV/P", biological$uvp, "mL/min")))
-  }
-
-  if (is.finite(model_param$renal_value)) {
+  if (is.finite(calculated_renal_value)) {
     metrics <- append(
       metrics,
-      list(
-        summary_metric(
-          if (isTRUE(model_param$used_manual_renal)) {
-            "Manual renal value used"
-          } else {
-            "Renal value used"
-          },
-          model_param$renal_value,
-          "mL/min"
-        )
-      )
+      list(summary_metric(paste0(model_param$renal_formula, " value"), calculated_renal_value, "mL/min", emphasis = TRUE))
     )
+  }
+
+  if (isTRUE(model_param$used_manual_renal) && is.finite(model_param$renal_value)) {
+    metrics <- append(metrics, list(summary_metric("Manual override", model_param$renal_value, "mL/min")))
   }
 
   shiny$tags$div(
     class = "icu-patient-summary",
-    shiny$tags$div(
-      class = "icu-patient-summary__header",
-      shiny$tags$div(
-        shiny$tags$span("Derived patient metrics", class = "icu-patient-summary__title"),
-        shiny$tags$p(
-          if (isTRUE(model_param$used_manual_renal)) {
-            paste0("Manual override active. Model formula: ", model_param$renal_formula, ".")
-          } else {
-            paste0("Renal function source: ", model_param$renal_formula, ".")
-          },
-          class = "icu-patient-summary__copy"
-        )
-      ),
-      shiny$tags$span(model_selected, class = "icu-patient-summary__model")
+    shiny$tags$span("Patient information", class = "icu-patient-summary__title"),
+    shiny$tags$p(
+      paste0("Model renal formula: ", model_param$renal_formula, "."),
+      class = "icu-patient-summary__copy"
     ),
+    if (isTRUE(model_param$used_manual_renal) && is.finite(model_param$renal_value)) {
+      shiny$tags$p(
+        "Manual override is active for the selected model.",
+        class = "icu-patient-summary__copy"
+      )
+    },
     shiny$tags$div(class = "icu-patient-summary__grid", metrics)
   )
 }
@@ -240,9 +254,9 @@ patient_summary_card <- function(biological, model_selected, model_param) {
 patient_summary_placeholder <- function() {
   shiny$tags$div(
     class = "icu-patient-summary icu-patient-summary--placeholder",
-    shiny$tags$span("Derived patient metrics", class = "icu-patient-summary__title"),
+    shiny$tags$span("Patient information", class = "icu-patient-summary__title"),
     shiny$tags$p(
-      "Compute PTA to display CRCL, body-size metrics, and the model-linked patient summary.",
+      "Compute PTA to display the model renal formula, the renal value used, and the derived weight values.",
       class = "icu-patient-summary__copy"
     )
   )
@@ -406,27 +420,49 @@ ui <- function(id) {
             max = 250,
             step = 1
           ),
-          shiny$numericInput(
-            ns("weight"),
-            label = labels("weight", "label", language),
-            value = 70,
-            min = 0,
-            max = 500,
-            step = 1
+          shiny$fluidRow(
+            shiny$column(
+              width = 8,
+              shiny$numericInput(
+                ns("weight"),
+                label = labels("weight", "label", language),
+                value = 70,
+                min = 0,
+                max = 1100,
+                step = 1
+              )
+            ),
+            shiny$column(
+              width = 4,
+              shiny$selectInput(
+                ns("weight_unit"),
+                label = "Unit",
+                choices = c("kg" = "kg", "lbs" = "lbs"),
+                selected = "kg"
+              )
+            )
           ),
-          shiny$numericInput(
-            ns("creatinine"),
-            label = labels("creatinine", "label", language),
-            value = 60,
-            min = 0,
-            max = 1500,
-            step = 1
-          ),
-          shiny$selectInput(
-            ns("creatinine_unit"),
-            label = "Creatinine unit",
-            choices = c("mg/dL" = "mg/dL", "umol/L" = "uM/L"),
-            selected = "uM/L"
+          shiny$fluidRow(
+            shiny$column(
+              width = 8,
+              shiny$numericInput(
+                ns("creatinine"),
+                label = labels("creatinine", "label", language),
+                value = 60,
+                min = 0,
+                max = 1500,
+                step = 1
+              )
+            ),
+            shiny$column(
+              width = 4,
+              shiny$selectInput(
+                ns("creatinine_unit"),
+                label = "Unit",
+                choices = c("mg/dL" = "mg/dL", "umol/L" = "uM/L"),
+                selected = "uM/L"
+              )
+            )
           ),
           shiny$selectInput(
             ns("sex"),
@@ -434,20 +470,28 @@ ui <- function(id) {
             choices = labels("sex", "choices", language),
             selected = "Male"
           ),
-          shiny$numericInput(
-            ns("urine_creatinine"),
-            label = "Urinary creatinine (mmol/L)",
-            value = 0,
-            min = 0,
-            max = 100
-          ),
-          shiny$numericInput(
-            ns("urine_output"),
-            label = "Urine output (mL / 24 h)",
-            value = 0,
-            min = 0,
-            max = 20000,
-            step = 50
+          shiny$fluidRow(
+            shiny$column(
+              width = 6,
+              shiny$numericInput(
+                ns("urine_creatinine"),
+                label = "Urinary creatinine (mmol/L)",
+                value = 0,
+                min = 0,
+                max = 100
+              )
+            ),
+            shiny$column(
+              width = 6,
+              shiny$numericInput(
+                ns("urine_output"),
+                label = "Urine output (mL / 24 h)",
+                value = 0,
+                min = 0,
+                max = 20000,
+                step = 50
+              )
+            )
           ),
           shiny$numericInput(
             ns("manual_renal_function"),
@@ -490,12 +534,14 @@ server <- function(id) {
     })
     validator$add_rule("weight", function(value) {
       if (value < 1) {
-        "Weight must be in kg"
+        "Weight must be greater than 0"
       }
     })
     validator$add_rule("weight", function(value) {
-      if (value > 500) {
-        "Weight must be less than 500 kg"
+      max_weight <- if (identical(input$weight_unit, "lbs")) 1100 else 500
+
+      if (value > max_weight) {
+        paste0("Weight must be less than ", max_weight, if (identical(input$weight_unit, "lbs")) " lbs" else " kg")
       }
     })
     validator$add_rule("age", function(value) {
@@ -554,6 +600,7 @@ server <- function(id) {
     }, ignoreInit = FALSE)
 
     eucast <- update_eucast()
+    eucast_mic <- read_eucast_mic()
     shiny$updateSelectInput(
       session,
       "bacteria_select",
@@ -562,7 +609,11 @@ server <- function(id) {
 
     output$footer_cfr <- shiny$renderUI({
       footer_note(
-        "Select a bacterium from EUCAST to compute the cumulative fraction of response."
+        if (length(eucast_mic)) {
+          "Select a bacterium from EUCAST to compute the cumulative fraction of response."
+        } else {
+          "EUCAST MIC data are read from app/static/eucast.json and app/static/eucast_mic.json. Populate the MIC cache manually to enable CFR."
+        }
       )
     })
 
@@ -606,7 +657,7 @@ server <- function(id) {
       distribution <- mic_distribution(
         input$beta_lactamin,
         input$bacteria_select,
-        eucast
+        eucast_mic
       )
 
       mic_information(distribution)
@@ -618,7 +669,7 @@ server <- function(id) {
         return()
       }
 
-      mic_specie(as.numeric(names(distribution[["mic_distribution"]])))
+      mic_specie(distribution[["mic_distribution"]]$mic)
       ecoff(as.numeric(distribution$ecoff))
       ecoff_ci(distribution$ecoff_ci)
     }, ignoreInit = FALSE)
@@ -655,7 +706,7 @@ server <- function(id) {
         creatinine = input$creatinine,
         urine_creat = input$urine_creatinine,
         urine_output = input$urine_output,
-        weight_unit = "kg",
+        weight_unit = input$weight_unit,
         creat_unit = input$creatinine_unit
       )
 
@@ -685,7 +736,7 @@ server <- function(id) {
         mic = if (identical(input$bacteria_select, "probabilist")) {
           NA
         } else {
-          mic_specie()
+          pta_service$build_plot_mic_grid(mic_specie())
         },
         dose_increment = model_param$dose_increment * 1000,
         toxicity_threshold = toxicity_threshold,
@@ -693,14 +744,9 @@ server <- function(id) {
       )
 
       if (!identical(input$bacteria_select, "probabilist")) {
-        raw_mic_distribution <- mic_information()[["mic_distribution"]]
+        mic_distribution_df <- mic_information()[["mic_distribution"]]
 
-        if (!is.null(raw_mic_distribution) && nrow(raw_mic_distribution) > 0 && length(mic_specie()) > 0) {
-          mic_distribution_df <- data.frame(
-            mic = mic_specie(),
-            distribution = as.numeric(unlist(raw_mic_distribution[1, , drop = FALSE], use.names = FALSE))
-          )
-
+        if (!is.null(mic_distribution_df) && nrow(mic_distribution_df) > 0) {
           mic_distribution_df <- mic_distribution_df[
             is.finite(mic_distribution_df$mic) &
               is.finite(mic_distribution_df$distribution) &
@@ -792,7 +838,7 @@ server <- function(id) {
       })
 
       output$patient_summary <- shiny$renderUI({
-        patient_summary_card(biological, model_selected, model_param)
+        patient_summary_card(biological, model_param)
       })
     })
   })
