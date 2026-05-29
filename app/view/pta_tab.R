@@ -1,13 +1,15 @@
 box::use(
   bs4Dash[box, tabBox],
-  dplyr[slice],
   plotly[config, ggplotly, layout, plotlyOutput, renderPlotly],
   shiny,
   shinyvalidate[InputValidator]
 )
 
 box::use(
-  app/logic/model_registry[get_model_definition, list_models_for_drug],
+  app/logic/fct_calc_biological[calc_biological],
+  app/logic/fct_extract_eucast[mic_distribution, update_eucast],
+  app/logic/fct_pta_plot,
+  app/logic/model_registry[get_default_model, get_model_definition, get_model_parameters, list_models_for_drug],
   app/logic/pta_service,
   app/logic/utils[labels]
 )
@@ -68,7 +70,19 @@ log2_tick_values <- function(values) {
   2^exponents
 }
 
+log2_tick_positions <- function(values) {
+  tick_values <- log2_tick_values(values)
+
+  if (!length(tick_values)) {
+    return(numeric(0))
+  }
+
+  log2(tick_values)
+}
+
 pta_plotly <- function(plot, data) {
+  x_tick_values <- log2_tick_values(data$mic)
+  x_tick_positions <- log2_tick_positions(data$mic)
   y_values <- unlist(
     data[c(
       "css_mic_below2",
@@ -83,6 +97,8 @@ pta_plotly <- function(plot, data) {
     )],
     use.names = FALSE
   )
+  y_tick_values <- log2_tick_values(y_values)
+  y_tick_positions <- log2_tick_positions(y_values)
 
   plotly_object <- ggplotly(plot, tooltip = "text")
   plotly_object <- layout(
@@ -90,13 +106,19 @@ pta_plotly <- function(plot, data) {
     hovermode = "closest",
     xaxis = list(
       title = list(text = "Minimum inhibitory concentration (MIC, mg/L)"),
-      tickvals = data$mic,
-      ticktext = vapply(data$mic, format_plot_number, character(1))
+      tickmode = "array",
+      tickvals = x_tick_positions,
+      ticktext = vapply(x_tick_values, format_plot_number, character(1)),
+      exponentformat = "none",
+      showexponent = "none"
     ),
     yaxis = list(
       title = list(text = "Steady-state concentration to MIC ratio"),
-      tickvals = log2_tick_values(y_values),
-      ticktext = vapply(log2_tick_values(y_values), format_plot_number, character(1))
+      tickmode = "array",
+      tickvals = y_tick_positions,
+      ticktext = vapply(y_tick_values, format_plot_number, character(1)),
+      exponentformat = "none",
+      showexponent = "none"
     )
   )
 
@@ -513,7 +535,7 @@ server <- function(id) {
         list_models_for_drug(input$beta_lactamin)
       }
 
-      default_model <- pta_service$get_default_model(input$beta_lactamin)
+      default_model <- get_default_model(input$beta_lactamin)
       selected_model <- if (length(model_choices) && default_model %in% model_choices) {
         default_model
       } else if (length(model_choices)) {
@@ -530,7 +552,7 @@ server <- function(id) {
       )
     }, ignoreInit = FALSE)
 
-    eucast <- pta_service$update_eucast()
+    eucast <- update_eucast()
     shiny$updateSelectInput(
       session,
       "bacteria_select",
@@ -556,7 +578,7 @@ server <- function(id) {
         return(character(0))
       }
 
-      pta_service$get_default_model(input$beta_lactamin)
+      get_default_model(input$beta_lactamin)
     })
 
     output$renal_function_method <- shiny$renderUI({
@@ -580,7 +602,7 @@ server <- function(id) {
         return()
       }
 
-      distribution <- pta_service$mic_distribution(
+      distribution <- mic_distribution(
         input$beta_lactamin,
         input$bacteria_select,
         eucast
@@ -624,7 +646,7 @@ server <- function(id) {
         return()
       }
 
-      biological <- pta_service$calc_biological(
+      biological <- calc_biological(
         weight = input$weight,
         height = input$height,
         sex = input$sex,
@@ -638,14 +660,14 @@ server <- function(id) {
 
       model_selected <- selected_model()
 
-      model_param <- pta_service$get_model_parameters(
+      model_param <- get_model_parameters(
         model = model_selected,
         biological = biological,
         drug = input$beta_lactamin,
         manual_renal_function = input$manual_renal_function
       )
 
-      toxicity_threshold <- pta_service$drug_threshold(input$beta_lactamin)
+      toxicity_threshold <- model_param$toxicity_threshold
       additional_concentration <- if (
         is.finite(input$additional_concentration) && input$additional_concentration > 0
       ) {
@@ -670,28 +692,52 @@ server <- function(id) {
       )
 
       if (!identical(input$bacteria_select, "probabilist")) {
-        mic_distribution_df <- data.frame(
-          mic = mic_specie(),
-          distribution = as.numeric(slice(mic_information()[["mic_distribution"]], 1))
-        )
+        raw_mic_distribution <- mic_information()[["mic_distribution"]]
 
-        cfr_df <- pta_service$calculate_cfr_mulitple_doses(
-          dose_increment = model_param$dose_increment * 1000,
-          dose_max = pta_service$max_dose(input$beta_lactamin) * 1000,
-          tvcl = model_param$cl,
-          eta_cl = model_param$eta_cl,
-          mic_distribution = mic_distribution_df,
-          toxicity_threshold = toxicity_threshold
-        )
+        if (!is.null(raw_mic_distribution) && nrow(raw_mic_distribution) > 0 && length(mic_specie()) > 0) {
+          mic_distribution_df <- data.frame(
+            mic = mic_specie(),
+            distribution = as.numeric(unlist(raw_mic_distribution[1, , drop = FALSE], use.names = FALSE))
+          )
 
-        cfr_plot <- pta_service$plot.cfr(cfr_df)
-        output$cfr_output <- renderPlotly({
-          cfr_plotly(cfr_plot)
-        })
+          mic_distribution_df <- mic_distribution_df[
+            is.finite(mic_distribution_df$mic) &
+              is.finite(mic_distribution_df$distribution) &
+              mic_distribution_df$distribution > 0,
+            ,
+            drop = FALSE
+          ]
+        } else {
+          mic_distribution_df <- data.frame(mic = numeric(0), distribution = numeric(0))
+        }
 
-        output$footer_cfr <- shiny$renderUI({
-          footer_note("The dashed reference lines highlight 10% and 90% CFR.")
-        })
+        if (nrow(mic_distribution_df) > 0) {
+          cfr_df <- pta_service$calculate_cfr_mulitple_doses(
+            dose_increment = model_param$dose_increment * 1000,
+            dose_max = model_param$max_dose * 1000,
+            tvcl = model_param$cl,
+            eta_cl = model_param$eta_cl,
+            mic_distribution = mic_distribution_df,
+            toxicity_threshold = toxicity_threshold
+          )
+
+          cfr_plot <- fct_pta_plot$plot.cfr(cfr_df)
+          output$cfr_output <- renderPlotly({
+            cfr_plotly(cfr_plot)
+          })
+
+          output$footer_cfr <- shiny$renderUI({
+            footer_note("The dashed reference lines highlight 10% and 90% CFR.")
+          })
+        } else {
+          output$cfr_output <- renderPlotly({
+            NULL
+          })
+
+          output$footer_cfr <- shiny$renderUI({
+            footer_note("The selected bacterium does not expose a usable MIC distribution for CFR computation.")
+          })
+        }
       } else {
         output$cfr_output <- renderPlotly({
           NULL
@@ -704,7 +750,7 @@ server <- function(id) {
         })
       }
 
-      pta_plot <- pta_service$plot.pta(
+      pta_plot <- fct_pta_plot$plot.pta(
         concentration_df,
         ecoff = if (identical(input$bacteria_select, "probabilist")) {
           NA

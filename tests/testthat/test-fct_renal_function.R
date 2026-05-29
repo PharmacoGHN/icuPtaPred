@@ -1,5 +1,13 @@
+box::use(
+  testthat[expect_equal, test_that]
+)
+
+box::use(
+  app/logic/fct_renal_function[renal_function]
+)
+
 # Define the test cases
-testthat::test_that("Correct calculations for CG formula", {
+test_that("Correct calculations for CG formula", {
   # test with date calculation
   age_calc <- round(as.numeric(difftime(as.Date("2023/08/19"), as.Date("1983/08/19"), units = "days") / 365.25), digits = 0)
 
@@ -18,7 +26,7 @@ testthat::test_that("Correct calculations for CG formula", {
   testthat::expect_equal(renal_function(sex = "Female", age = 55, weight = 65, creat = 1.13, formula = "CG", creat_unit = "mg/dL", ethnicity = "Non-African"), 57.5)
 })
 
-testthat::test_that("Correct calculations for MDRD formula", {
+test_that("Correct calculations for MDRD formula", {
   # Test with creat_unit = "uM/L", ethnicity = "African"
   testthat::expect_equal(renal_function(sex = "Male", age = 60, weight = 80, creat = 81.2, formula = "MDRD", creat_unit = "uM/L", ethnicity = "African"), 62.4)
   testthat::expect_equal(renal_function(sex = "Female", age = 70, weight = 60, creat = 106.7, formula = "MDRD", creat_unit = "uM/L", ethnicity = "African"), 53.5)
@@ -33,7 +41,7 @@ testthat::test_that("Correct calculations for MDRD formula", {
   testthat::expect_equal(renal_function(sex = "Female", age = 70, weight = 60, creat = 1.13, formula = "MDRD", creat_unit = "mg/dL", ethnicity = "Non-African"), 77.8)
 })
 
-testthat::test_that("Correct calculations for CKD_2009 formula", {
+test_that("Correct calculations for CKD_2009 formula", {
   # Test with creat_unit = "uM/L", ethnicity = "African"
   testthat::expect_equal(renal_function(sex = "Male", age = 50, weight = 75, creat = 81.2, formula = "CKD_2009", creat_unit = "uM/L", ethnicity = "African"), 112.2)
   testthat::expect_equal(renal_function(sex = "Female", age = 45, weight = 70, creat = 106.7, formula = "CKD_2009", creat_unit = "uM/L", ethnicity = "African"), 62.8)
@@ -48,7 +56,7 @@ testthat::test_that("Correct calculations for CKD_2009 formula", {
   testthat::expect_equal(renal_function(sex = "Female", age = 45, weight = 70, creat = 1.13, formula = "CKD_2009", creat_unit = "mg/dL", ethnicity = "Non-African"), 58.6)
 })
 
-testthat::test_that("Correct calculations for CKD_2021 formula", {
+test_that("Correct calculations for CKD_2021 formula", {
   # Test with creat_unit = "uM/L", ethnicity = "African"
   testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 81.2, formula = "CKD_2021", creat_unit = "uM/L", ethnicity = "African"), 87.8)
   testthat::expect_equal(renal_function(sex = "Female", age = 55, weight = 68, creat = 106.7, formula = "CKD_2021", creat_unit = "uM/L", ethnicity = "African"), 51.1)
@@ -63,7 +71,7 @@ testthat::test_that("Correct calculations for CKD_2021 formula", {
   testthat::expect_equal(renal_function(sex = "Female", age = 55, weight = 68, creat = 1.13, formula = "CKD_2021", creat_unit = "mg/dL", ethnicity = "Non-African"), 55.3)
 })
 
-testthat::test_that("Correct calculations for UV/P formula", {
+test_that("Correct calculations for UV/P formula", {
   # Test with creat_unit = "uM/L"
   testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 40, formula = "UVP", creat_unit = "uM/L", urine_creat = 36, urine_output = 100), 62.5)
   testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 40, formula = "UVP", creat_unit = "uM/L", urine_creat = 4.5, urine_output = 1000), 78.1)
@@ -73,7 +81,7 @@ testthat::test_that("Correct calculations for UV/P formula", {
   testthat::expect_equal(renal_function(sex = "Male", age = 55, weight = 68, creat = 1.13, formula = "UVP", creat_unit = "mg/dL", urine_creat = 2, urine_output = 1000), 122.9)
 })
 
-testthat::test_that("Correct calculations for Schwartz formula", {
+test_that("Correct calculations for Schwartz formula", {
   # Test with creat_unit = "uM/L"
   testthat::expect_equal(renal_function(sex = "Male", age = 2, height = 90, creat = 40, formula = "schwartz", creat_unit = "uM/L"), 109.4)
   testthat::expect_equal(renal_function(sex = "Male", age = 13, height = 90, creat = 40, formula = "schwartz", creat_unit = "uM/L"), 139.2)
@@ -83,12 +91,12 @@ testthat::test_that("Correct calculations for Schwartz formula", {
   testthat::expect_equal(renal_function(sex = "Male", age = 13, height = 68, creat = 1.13, formula = "schwartz", creat_unit = "mg/dL"), 42.1)
 })
 
-testthat::test_that("Correct calculations 'none' formula", {
+test_that("Correct calculations 'none' formula", {
   # Test with creat_unit = "uM/L"
   testthat::expect_equal(renal_function(sex = "Male", age = 65, weight = 90, creat = 40, formula = "none", creat_unit = "uM/L"), 1)
 })
 
-testthat::test_that("Correct calculations for EKFC formula", {
+test_that("Correct calculations for EKFC formula", {
   # test condition with Age > 40
 
   # Test condition with scr_q > 1

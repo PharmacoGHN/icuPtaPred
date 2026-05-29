@@ -1,21 +1,23 @@
-#' calc_biological
-#'
-#' @description A fct function
-#'
-#' @param sex .
-#' @param age .
-#' @param weight .
-#' @param height .
-#' @param creatinine .
-#' @param weight_unit .
-#' @param creat_unit .
-#' @param urine_creat .
-#' @param urine_output .
-#'
-#' @return The return value, if any, from executing the function.
-#'
-#' @noRd
+box::use(
+  app/logic/fct_bsa[bsa],
+  app/logic/fct_renal_function[renal_function],
+  app/logic/fct_weight_formula[weight_formula]
+)
 
+#' Derive patient biological covariates used by the PTA models.
+#'
+#' @param sex Patient sex.
+#' @param age Patient age in years.
+#' @param weight Patient weight in kilograms.
+#' @param height Patient height in centimeters.
+#' @param creatinine Serum creatinine value.
+#' @param weight_unit Unit for `weight`, either `"kg"` or `"lbs"`.
+#' @param creat_unit Unit for `creatinine`, either `"uM/L"` or `"mg/dL"`.
+#' @param urine_creat Urine creatinine value used by the UV/P calculation.
+#' @param urine_output Daily urine output in milliliters used by the UV/P calculation.
+#'
+#' @return A named list of body-size metrics and renal-function estimates.
+#' @export
 calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, creat_unit, urine_creat, urine_output) {
   tbw <- weight
   lbw <- weight_formula(weight, height, sex, weight_unit, formula = "LBW")
@@ -34,7 +36,7 @@ calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, c
   uvp <- renal_function(sex, age, tbw, height, creatinine, formula = "UVP", creat_unit = creat_unit, urine_creat = urine_creat, urine_output = urine_output)
   ekfc <- renal_function(sex, age, tbw, height, creatinine, formula = "EKFC", creat_unit = creat_unit)
 
-  output <- list(
+  list(
     tbw = tbw,
     lbw = lbw,
     ajbw = ajbw,
@@ -52,6 +54,4 @@ calc_biological <- function(sex, age, weight, height, creatinine, weight_unit, c
     uvp = uvp,
     ekfc = ekfc
   )
-
-  return(output)
 }

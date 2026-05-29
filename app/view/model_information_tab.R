@@ -210,6 +210,16 @@ registry_editor <- function(ns) {
         )
       )
     ),
+    shiny$fluidRow(
+      shiny$column(
+        width = 6,
+        shiny$numericInput(ns("edit_max_dose"), "Max daily dose (g)", value = 20, min = 0.125, step = 0.125)
+      ),
+      shiny$column(
+        width = 6,
+        shiny$numericInput(ns("edit_toxicity_threshold"), "Toxicity threshold (mg/L)", value = NA_real_, min = 0, step = 0.1)
+      )
+    ),
     shiny$tags$div(
       class = "icu-inline-note",
       shiny$tags$strong("Renal formula label: "),
@@ -628,6 +638,8 @@ server <- function(id) {
         shiny$updateTextInput(session, "edit_model", value = "")
         shiny$updateCheckboxInput(session, "edit_is_default", value = FALSE)
         shiny$updateNumericInput(session, "edit_dose_increment", value = 1)
+        shiny$updateNumericInput(session, "edit_max_dose", value = 20)
+        shiny$updateNumericInput(session, "edit_toxicity_threshold", value = NA_real_)
         shiny$updateSelectInput(session, "edit_renal_metric", selected = "none")
         shiny$updateNumericInput(session, "edit_eta_cl_value", value = 1)
         shiny$updateCheckboxInput(session, "edit_eta_is_cv", value = FALSE)
@@ -652,6 +664,8 @@ server <- function(id) {
         shiny$updateTextInput(session, "edit_model", value = definition$model[[1]])
         shiny$updateCheckboxInput(session, "edit_is_default", value = definition$is_default[[1]])
         shiny$updateNumericInput(session, "edit_dose_increment", value = definition$dose_increment[[1]])
+        shiny$updateNumericInput(session, "edit_max_dose", value = definition$max_dose[[1]])
+        shiny$updateNumericInput(session, "edit_toxicity_threshold", value = definition$toxicity_threshold[[1]])
         shiny$updateSelectInput(session, "edit_renal_metric", selected = definition$renal_metric[[1]])
         shiny$updateTextAreaInput(session, "edit_clearance_expr", value = definition$clearance_expr[[1]])
         shiny$updateNumericInput(session, "edit_eta_cl_value", value = eta_input$value)
@@ -670,6 +684,8 @@ server <- function(id) {
           model = input$edit_model,
           is_default = input$edit_is_default,
           dose_increment = input$edit_dose_increment,
+          max_dose = input$edit_max_dose,
+          toxicity_threshold = input$edit_toxicity_threshold,
           renal_metric = input$edit_renal_metric,
           renal_formula = renal_formula_from_metric(input$edit_renal_metric),
           clearance_expr = input$edit_clearance_expr,

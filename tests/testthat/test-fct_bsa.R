@@ -1,7 +1,15 @@
-testthat::test_that("bsa output are correct", {
+box::use(
+   testthat[expect_equal, expect_error, test_that]
+)
 
-   testthat::expect_error(bsa(170, 60, capped = 10))
-   testthat::expect_equal(bsa(height = 170, weight = 60), 1.69)
-   testthat::expect_equal(bsa(height = 170, weight = 100, capped = TRUE), 2)
-   testthat::expect_equal(bsa(height = 170, weight = 100), 2.11)
+box::use(
+   app/logic/fct_bsa[bsa]
+)
+
+test_that("bsa output are correct", {
+
+    expect_error(bsa(170, 60, capped = 10))
+    expect_equal(bsa(height = 170, weight = 60), 1.69)
+    expect_equal(bsa(height = 170, weight = 100, capped = TRUE), 2)
+    expect_equal(bsa(height = 170, weight = 100), 2.11)
 })

@@ -1,4 +1,5 @@
 box::use(
+  jsonlite[toJSON, fromJSON],
   utils[read.csv]
 )
 
@@ -158,7 +159,8 @@ read_documentation_file <- function(path) {
 
 write_documentation_file <- function(path, documentation) {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-  write.csv(documentation, path, row.names = FALSE, quote = TRUE)
+  toJSON(documentation, pretty = TRUE) |>
+    writeLines(con = path)
 }
 
 #' @export

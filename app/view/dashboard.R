@@ -24,7 +24,7 @@ app_version <- function() {
 sidebar_brand <- function(version) {
   tags$div(
     class = "icu-sidebar-brand",
-    img(src = "hex-icuPtaPred.png", alt = "ICU PTA Predictor icon", class = "icu-sidebar-brand__logo"),
+    img(src = "static/hex-icuPtaPred.png", alt = "ICU PTA Predictor icon", class = "icu-sidebar-brand__logo"),
     tags$div(
       class = "icu-sidebar-brand__copy",
       tags$span("ICU PTA Predictor", class = "icu-sidebar-brand__title"),

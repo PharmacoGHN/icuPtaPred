@@ -8,12 +8,50 @@ box::use(
   app/logic/utils[get_cv_from_sd, get_sd_from_cv]
 )
 
+default_max_dose <- function(drug) {
+  switch(
+    drug,
+    "Amoxicillin" = 20,
+    "Cefepime" = 20,
+    "Cefazoline" = 20,
+    "Cefotaxim" = 20,
+    "Cefiderocol" = 20,
+    "Ceftazidime" = 20,
+    "Ceftaroline" = 20,
+    "Ceftobiprol" = 20,
+    "Ceftolozane" = 20,
+    "Piperacillin-tazobactam" = 40,
+    "Meropenem" = 20,
+    0
+  )
+}
+
+default_toxicity_threshold <- function(drug) {
+  switch(
+    drug,
+    "Amoxicillin" = NA_real_,
+    "Cefepime" = 20,
+    "Cefazoline" = NA_real_,
+    "Cefotaxim" = NA_real_,
+    "Cefiderocol" = NA_real_,
+    "Ceftazidime" = NA_real_,
+    "Ceftaroline" = NA_real_,
+    "Ceftobiprol" = NA_real_,
+    "Ceftolozane" = NA_real_,
+    "Piperacillin-tazobactam" = 157,
+    "Meropenem" = 45,
+    NA_real_
+  )
+}
+
 empty_registry <- function() {
   data.frame(
     drug = character(0),
     model = character(0),
     is_default = logical(0),
     dose_increment = numeric(0),
+    max_dose = numeric(0),
+    toxicity_threshold = numeric(0),
     renal_metric = character(0),
     renal_formula = character(0),
     clearance_expr = character(0),
@@ -27,13 +65,28 @@ registry_columns <- c(
   "model",
   "is_default",
   "dose_increment",
+  "max_dose",
+  "toxicity_threshold",
   "renal_metric",
   "renal_formula",
   "clearance_expr",
   "eta_cl_expr"
 )
 
+add_registry_defaults <- function(registry) {
+  if (!"max_dose" %in% colnames(registry)) {
+    registry$max_dose <- vapply(registry$drug, default_max_dose, numeric(1))
+  }
+
+  if (!"toxicity_threshold" %in% colnames(registry)) {
+    registry$toxicity_threshold <- vapply(registry$drug, default_toxicity_threshold, numeric(1))
+  }
+
+  registry
+}
+
 coerce_registry <- function(registry) {
+  registry <- add_registry_defaults(registry)
   missing_columns <- setdiff(registry_columns, colnames(registry))
   if (length(missing_columns) > 0) {
     stop(
@@ -49,6 +102,8 @@ coerce_registry <- function(registry) {
   registry$model <- trimws(registry$model)
   registry$is_default <- tolower(as.character(registry$is_default)) %in% c("true", "1", "yes")
   registry$dose_increment <- as.numeric(registry$dose_increment)
+  registry$max_dose <- as.numeric(registry$max_dose)
+  registry$toxicity_threshold <- as.numeric(registry$toxicity_threshold)
   registry$renal_metric <- trimws(registry$renal_metric)
   registry$renal_formula <- trimws(registry$renal_formula)
   registry$clearance_expr <- trimws(registry$clearance_expr)
@@ -75,6 +130,17 @@ validate_registry_row <- function(registry_row) {
 
   if (!is.finite(registry_row$dose_increment[[1]]) || registry_row$dose_increment[[1]] <= 0) {
     stop("Dose increment must be a positive numeric value.")
+  }
+
+  if (!is.finite(registry_row$max_dose[[1]]) || registry_row$max_dose[[1]] <= 0) {
+    stop("Max dose must be a positive numeric value.")
+  }
+
+  if (
+    !is.na(registry_row$toxicity_threshold[[1]]) &&
+    (!is.finite(registry_row$toxicity_threshold[[1]]) || registry_row$toxicity_threshold[[1]] <= 0)
+  ) {
+    stop("Toxicity threshold must be empty or a positive numeric value.")
   }
 
   if (!nzchar(registry_row$clearance_expr[[1]])) {
@@ -130,7 +196,7 @@ format_registry_json_value <- function(value, column) {
     return(if (isTRUE(value)) "true" else "false")
   }
 
-  if (column == "dose_increment") {
+  if (column %in% c("dose_increment", "max_dose", "toxicity_threshold")) {
     return(format(as.numeric(value), scientific = FALSE, trim = TRUE))
   }
 
@@ -460,6 +526,8 @@ upsert_model_definition <- function(
   model,
   is_default,
   dose_increment,
+  max_dose,
+  toxicity_threshold,
   renal_metric,
   renal_formula,
   clearance_expr,
@@ -475,6 +543,8 @@ upsert_model_definition <- function(
     model = model,
     is_default = is_default,
     dose_increment = dose_increment,
+    max_dose = max_dose,
+    toxicity_threshold = toxicity_threshold,
     renal_metric = renal_metric,
     renal_formula = renal_formula,
     clearance_expr = clearance_expr,
@@ -585,6 +655,85 @@ get_model_definition <- function(drug = NULL, model = NULL, include_dev = is_adm
   selected_rows[1, , drop = FALSE]
 }
 
+resolve_renal_value <- function(model_definition, biological, manual_renal_function = NA_real_) {
+  if (
+    is.finite(manual_renal_function) &&
+    manual_renal_function > 0 &&
+    model_definition$renal_metric[[1]] != "none"
+  ) {
+    return(manual_renal_function)
+  }
+
+  if (model_definition$renal_metric[[1]] == "none") {
+    return(NA_real_)
+  }
+
+  biological[[model_definition$renal_metric[[1]]]]
+}
+
+#' Return the default model identifier for a drug.
+#'
+#' @param drug Drug name.
+#' @param include_dev Whether development-only registry entries should be considered.
+#'
+#' @return A single model identifier.
+#' @export
+get_default_model <- function(drug, include_dev = is_admin_mode()) {
+  get_model_definition(drug = drug, include_dev = include_dev)$model[[1]]
+}
+
+#' Resolve model parameters from the file-backed model registry.
+#'
+#' @param model Model identifier.
+#' @param biological Named list of patient covariates used by the registry expressions.
+#' @param drug Optional drug name used to narrow the registry lookup.
+#' @param manual_renal_function Optional manual renal-function override.
+#' @param include_dev Whether development-only registry entries should be considered.
+#'
+#' @return A named list with clearance, variability, dose increment, and renal metadata.
+#' @export
+get_model_parameters <- function(model, biological, drug = NULL, manual_renal_function = NA_real_, include_dev = is_admin_mode()) {
+  model_definition <- get_model_definition(
+    drug = drug,
+    model = model,
+    include_dev = include_dev
+  )
+  renal_value <- resolve_renal_value(model_definition, biological, manual_renal_function)
+
+  cl <- evaluate_model_expression(
+    model_definition$clearance_expr[[1]],
+    biological,
+    renal_value
+  )
+
+  eta_cl <- evaluate_model_expression(
+    model_definition$eta_cl_expr[[1]],
+    biological,
+    renal_value
+  )
+
+  list(
+    cl = cl,
+    eta_cl = eta_cl,
+    dose_increment = as.numeric(model_definition$dose_increment[[1]]),
+    max_dose = as.numeric(model_definition$max_dose[[1]]),
+    toxicity_threshold = as.numeric(model_definition$toxicity_threshold[[1]]),
+    renal_metric = model_definition$renal_metric[[1]],
+    renal_formula = model_definition$renal_formula[[1]],
+    renal_value = renal_value,
+    used_manual_renal = is.finite(manual_renal_function) &&
+      manual_renal_function > 0 &&
+      model_definition$renal_metric[[1]] != "none"
+  )
+}
+
+#' Evaluate a registry expression against patient covariates.
+#'
+#' @param expr Expression string stored in the model registry.
+#' @param biological Named list of patient covariates.
+#' @param renal_value Renal-function value selected for the current model.
+#'
+#' @return The evaluated numeric expression result.
 #' @export
 evaluate_model_expression <- function(expr, biological, renal_value = NA_real_) {
   evaluation_env <- list2env(
