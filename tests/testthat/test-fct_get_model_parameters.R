@@ -1,3 +1,11 @@
+box::use(
+  testthat[expect_equal, expect_error, expect_true, test_that]
+)
+
+box::use(
+  app/logic/model_registry[get_default_model, get_model_parameters]
+)
+
 biological <- list(
   cg_tbw = 70,  # Example total body weight
   cg_lbw = 60,  # Example lean body weight
@@ -115,7 +123,7 @@ test_that("get_model_parameters returns correct values for Klastrup_2020", {
   expect_equal(result_2$eta_cl, 0.533, tolerance = 0.01)
 })
 
-testthat::test_that("get_model_parameters returns correct values for Sukarnjanaset_2019", {
+test_that("get_model_parameters returns correct values for Sukarnjanaset_2019", {
   result <- get_model_parameters("Sukarnjanaset_2019", biological) # Clearance Sukarnjanaset 5.37 + (0.06 * (biological$cg_tbw - 55))
   expect_equal(result$cl, 6.27, tolerance = 0.001)
   expect_equal(result$eta_cl, 0.279, tolerance = 0.01)
@@ -136,41 +144,40 @@ test_that("get_model_parameters returns correct values for Udy_2015", {
 })
 
 # Default model testing ______________________________________________
-test_that("get_model_parameters returns default values for unknown model", {
-  result <- get_model_parameters("unknown_model", biological)
-  expect_equal(result$cl, 1)
-  expect_equal(result$eta_cl, 1)
-
-  result_2 <- get_model_parameters("unknown_model", biological_2)
-  expect_equal(result_2$cl, 1)
-  expect_equal(result_2$eta_cl, 1)
+test_that("get_model_parameters errors for unknown model", {
+  expect_error(get_model_parameters("unknown_model", biological))
+  expect_error(get_model_parameters("unknown_model", biological_2))
 })
 
 
 # Test dose increment and toxicity threshold ______________________________________________
-test_that("get_model_parameters returns correct dose_increment values", {
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Amoxicillin")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Cefepime")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Cefazoline")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Cefotaxim")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Ceftazidime")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Ceftaroline")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Ceftobiprol")$dose_increment, 1.000)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Piperacillin-tazobactam")$dose_increment, 2.000)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "Meropenem")$dose_increment, 0.500)
-  expect_equal(get_model_parameters("Klastrup_2020", biological, "unknown_drug")$dose_increment, 0)
-})
+test_that("get_model_parameters returns registry dose and safety metadata", {
+  cefepime_param <- get_model_parameters("An_2023", biological, "Cefepime")
+  expect_equal(cefepime_param$dose_increment, 1.000)
+  expect_equal(cefepime_param$max_dose, 20)
+  expect_equal(cefepime_param$toxicity_threshold, 20)
 
-test_that("get_model_parameters returns correct toxicity_threshold values", {
-  expect_equal(drug_threshold("Amoxicillin"), NA)
-  expect_equal(drug_threshold("Cefepime"), 20)
-  expect_equal(drug_threshold("Cefazoline"), NA)
-  expect_equal(drug_threshold("Cefotaxim"), NA)
-  expect_equal(drug_threshold("Ceftazidime"), NA)
-  expect_equal(drug_threshold("Ceftaroline"), NA)
-  expect_equal(drug_threshold("Ceftobiprol"), NA)
-  expect_equal(drug_threshold("Piperacillin-tazobactam"), 157)
-  expect_equal(drug_threshold("Meropenem"), 45)
+  ceftazidime_param <- get_model_parameters("Buning_2021", biological, "Ceftazidime")
+  expect_equal(ceftazidime_param$dose_increment, 1.000)
+  expect_equal(ceftazidime_param$max_dose, 20)
+  expect_true(is.na(ceftazidime_param$toxicity_threshold))
+
+  ceftolozane_param <- get_model_parameters("Zhang_2021", biological, "Ceftolozane")
+  expect_equal(ceftolozane_param$dose_increment, 1.000)
+  expect_equal(ceftolozane_param$max_dose, 20)
+  expect_true(is.na(ceftolozane_param$toxicity_threshold))
+
+  meropenem_param <- get_model_parameters("Ehrmann_2019", biological, "Meropenem")
+  expect_equal(meropenem_param$dose_increment, 0.500)
+  expect_equal(meropenem_param$max_dose, 20)
+  expect_equal(meropenem_param$toxicity_threshold, 45)
+
+  piperacillin_param <- get_model_parameters("Klastrup_2020", biological, "Piperacillin-tazobactam")
+  expect_equal(piperacillin_param$dose_increment, 2.000)
+  expect_equal(piperacillin_param$max_dose, 40)
+  expect_equal(piperacillin_param$toxicity_threshold, 157)
+
+  expect_error(get_model_parameters("Klastrup_2020", biological, "unknown_drug"))
 })
 
 test_that("get_model_default returns the right model", {
@@ -179,5 +186,5 @@ test_that("get_model_default returns the right model", {
   expect_equal(get_default_model("Ceftolozane"), "Zhang_2021")
   expect_equal(get_default_model("Cefiderocol"), "Zhar_2022")
   expect_equal(get_default_model("Piperacillin-tazobactam"), "Klastrup_2020")
-  expect_equal(get_default_model("Meropenem"), "Erhmann_2019")
+  expect_equal(get_default_model("Meropenem"), "Ehrmann_2019")
 })

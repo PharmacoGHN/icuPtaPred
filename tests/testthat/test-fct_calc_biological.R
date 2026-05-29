@@ -1,3 +1,11 @@
+box::use(
+  testthat[expect_equal, test_that]
+)
+
+box::use(
+  app/logic/fct_calc_biological[calc_biological]
+)
+
 test_that("calc_biological calculates biological indices correctly", {
   sex <- "Male"
   age <- 30

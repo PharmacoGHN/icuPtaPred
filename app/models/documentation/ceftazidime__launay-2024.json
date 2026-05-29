@@ -1,0 +1,17 @@
+{
+  "drug": "Ceftazidime",
+  "model": "Launay_2024",
+  "Title": "Loading Dose of Ceftazidime Needs to Be Increased in Critically Ill Patients: A Retrospective Study to Evaluate Recommended Loading Dose with Pharmacokinetic Modelling",
+  "Authors": "Launay, et al.",
+  "Year": "2024",
+  "Journal": "Antibiotics",
+  "DOI": "10.3390/antibiotics13080756",
+  "URL": "https://www.mdpi.com/2079-6382/13/8/756",
+  "Abstract_Introduction": "To rapidly achieve ceftazidime target concentrations, a 2 g loading dose (LD) is recommended before continuous infusion, but its adequacy in critically ill patients, given their unique pharmacokinetics, needs investigation. This study included patients from six ICUs in Saint-Etienne and Paris, France, who received continuous ceftazidime infusion with plasma concentration measurements.",
+  "Abstract_Methods": "Using MONOLIX and R, a pharmacokinetic (PK) model was developed, and the literature on ICU patient PK models was reviewed. Simulations calculated the LD needed to reach a 60 mg/L target concentration and assessed ceftazidime exposure for various regimens.",
+  "Abstract_Results": "Among 86 patients with 223 samples, ceftazidime PK was best described by a one-compartment model with glomerular filtration rate explaining clearance variability. Typical clearance and volume of distribution were 4.45 L/h and 88 L, respectively. The literature median volume of distribution was 37.2 L. Simulations indicated that a loading dose higher than 2 g was needed to achieve 60 mg/L in 80% of patients, with a median LD of 4.9 g.",
+  "Abstract_Conclusions": "Our model showed that a 4 g loading dose followed by 6 g/day infusion reached effective concentrations within 1 h, while a 2 g loading dose caused an 18 h delay in achieving target steady state.",
+  "Clearance_Formula": "$$ CL = 4.45 \\times \\left( \\frac{CKDEPI_i}{73.9} \\right)^{0.9} $$",
+  "Model_Description": "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration; the 2009 formula is used.",
+  "Population_Studied": "Critically ill patients, continuous infusion"
+}

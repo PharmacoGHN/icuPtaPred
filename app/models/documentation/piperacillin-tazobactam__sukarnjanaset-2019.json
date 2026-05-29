@@ -1,0 +1,18 @@
+{
+  "drug": "Piperacillin-tazobactam",
+  "model": "Sukarnjanaset_2019",
+  "Title": "Population pharmacokinetics and pharmacodynamics of piperacillin in critically ill patients during the early phase of sepsis",
+  "Authors": "Sukarnjanaset, et al.",
+  "Year": "2019",
+  "Journal": "Journal of Pharmacokinetics and Pharmacodynamics",
+  "DOI": "10.1007/s10928-019-09633-8",
+  "URL": "https://pubmed.ncbi.nlm.nih.gov/30963365/",
+  "Abstract_Introduction": "This study aimed to characterize the population pharmacokinetics of piperacillin and investigate probability of target attainment (PTA) and cumulative fraction of response (CFR) for various dosage regimens in critically ill patients during the early phase of sepsis.",
+  "Abstract_Methods": "Forty-eight patients treated with piperacillin/tazobactam were recruited. Five blood samples were drawn before and during 0-0.5, 0.5-2, 2-4 and 4-6 or 8 h after administration. Population pharmacokinetics were analyzed using NONMEM. The PTA of the 90%fT>MIC target and CFR were determined by Monte Carlo simulation.",
+  "Abstract_Results": "The two-compartment model best described the data. Piperacillin clearance (CL) was 5.37 L/h, central volume of distribution (V1) was 9.35 L, and peripheral volume of distribution was 7.77 L. Creatinine clearance (CLCr) and mean arterial pressure had a significant effect on CL while adjusted body weight had a significant impact on V1. Subtherapeutic concentrations can occur during the early phase of sepsis in critically ill patients with normal renal function. The usual dosage regimen, 4 g of piperacillin infused over 0.5 h every 6 h, could not achieve the target for susceptible organisms with MIC 16 mg/L in patients with CLCr = 60 mL/min. Our proposed regimen for patients with CLCr 60-120 mL/min was an extended 2 h infusion of 4 g of piperacillin every 6 h.",
+  "Abstract_Conclusions": "Most regimens provided CFR = 90% for E. coli infection, while no dosage regimen achieved a CFR of 90% for P. aeruginosa infection.",
+  "Abstract": "",
+  "Clearance_Formula": "$$ CL = 5.37 + \\left( 0.06 \\times (Cl_{CR} - 55)  \\right) + \\left( 0.05 + (MAP - 68) \\right) $$",
+  "Model_Description": "MAP = mean arterial pressure; CL = clearance; CLCr = creatinine clearance. The MAP parameter is currently disabled from CL calculation.",
+  "Population_Studied": "Critically ill patients; pharmacodynamics; piperacillin; population pharmacokinetics; sepsis; beta-lactams."
+}

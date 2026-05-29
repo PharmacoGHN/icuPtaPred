@@ -1,0 +1,868 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Outfit:wght@400;500;600;700&display=swap");
+
+:root {
+  --icu-ink: #132238;
+  --icu-paper: #f6f2ea;
+  --icu-surface: rgba(255, 255, 255, 0.9);
+  --icu-surface-strong: #ffffff;
+  --icu-border: rgba(19, 34, 56, 0.08);
+  --icu-shadow: 0 18px 45px rgba(16, 42, 67, 0.12);
+  --icu-brand: #0f7a6a;
+  --icu-brand-strong: #0c5e52;
+  --icu-highlight: #f2a65a;
+  --icu-accent: #1d4f91;
+}
+
+body,
+.content-wrapper,
+.main-sidebar,
+.main-header,
+.layout-navbar-fixed {
+  font-family: "Outfit", sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(15, 122, 106, 0.2), transparent 35%),
+    radial-gradient(circle at top right, rgba(242, 166, 90, 0.18), transparent 30%),
+    linear-gradient(180deg, #fdf8f2 0%, #eef4f7 100%);
+  color: var(--icu-ink);
+}
+
+.content-wrapper,
+.right-side {
+  background: transparent;
+}
+
+.content {
+  padding: 1.6rem;
+}
+
+.main-header .navbar {
+  background: linear-gradient(135deg, #0c5e52 0%, #17836f 45%, #1f9f88 100%);
+  box-shadow: 0 12px 35px rgba(15, 122, 106, 0.22);
+}
+
+[data-widget="pushmenu"],
+[data-widget="dark-mode"],
+.dark-mode-switch {
+  display: none !important;
+}
+
+.icu-header-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.main-sidebar {
+  background:
+    linear-gradient(180deg, rgba(9, 34, 46, 0.98) 0%, rgba(12, 46, 57, 0.98) 100%),
+    linear-gradient(135deg, rgba(29, 79, 145, 0.1), transparent 60%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 4rem);
+  padding-top: 1rem;
+}
+
+.icu-sidebar-spacer {
+  flex: 1 1 auto;
+}
+
+.icu-sidebar-brand {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(29, 79, 145, 0.22), rgba(15, 122, 106, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  display: flex;
+  gap: 0.9rem;
+  margin: 0 0.8rem 1rem;
+  padding: 0.95rem 1rem;
+}
+
+.icu-sidebar-brand__logo {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  flex: 0 0 52px;
+  height: 52px;
+  object-fit: contain;
+  padding: 0.2rem;
+  width: 52px;
+}
+
+.icu-sidebar-brand__copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.icu-sidebar-brand__title {
+  color: #ffffff;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.icu-sidebar-brand__subtitle,
+.icu-sidebar-brand__version {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+}
+
+.icu-sidebar-brand__subtitle {
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 0.15rem;
+}
+
+.icu-sidebar-brand__version {
+  color: var(--icu-highlight);
+  margin-top: 0.3rem;
+}
+
+.icu-sidebar-nav-heading {
+  color: rgba(255, 255, 255, 0.45);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin: 0 1rem 0.75rem;
+  text-transform: uppercase;
+}
+
+.nav-sidebar > .nav-item > .nav-link {
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  min-height: 46px;
+  padding: 0.85rem 1rem;
+  transition: background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+}
+
+.nav-sidebar > .nav-item > .nav-link.active,
+.nav-sidebar > .nav-item > .nav-link:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.nav-sidebar > .nav-item > .nav-link .nav-icon {
+  margin-right: 0.75rem;
+}
+
+.icu-brand {
+  align-items: center;
+  display: flex;
+  gap: 0.95rem;
+}
+
+.icu-brand__logo {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  height: 46px;
+  object-fit: contain;
+  padding: 0.3rem;
+  width: 46px;
+}
+
+.icu-brand__copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.icu-brand__title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.icu-brand__subtitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.icu-sidebar-panel,
+.icu-sidebar-footer {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  margin: 0 0.8rem 1rem;
+  padding: 1rem;
+}
+
+.icu-sidebar-panel__eyebrow,
+.icu-doc-banner__eyebrow {
+  color: var(--icu-highlight);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.icu-sidebar-panel__caption,
+.icu-sidebar-footer__label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  margin: 0.5rem 0 0;
+}
+
+.icu-sidebar-chipset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.icu-sidebar-chip {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.icu-sidebar-footer {
+  margin-top: 1.5rem;
+}
+
+.icu-sidebar-footer__link {
+  align-items: center;
+  color: #ffffff;
+  display: inline-flex;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.icu-page-shell {
+  padding: 0.35rem 0 1.25rem;
+}
+
+.icu-doc-banner {
+  align-items: end;
+  background:
+    linear-gradient(135deg, rgba(12, 94, 82, 0.95), rgba(29, 79, 145, 0.92)),
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 45%);
+  border-radius: 28px;
+  box-shadow: var(--icu-shadow);
+  color: #ffffff;
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(0, 1.8fr) minmax(240px, 1fr);
+  margin-bottom: 1.35rem;
+  overflow: hidden;
+  padding: 1.4rem 1.5rem;
+  position: relative;
+}
+
+.icu-doc-banner::after {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  content: "";
+  height: 160px;
+  position: absolute;
+  right: -40px;
+  top: -55px;
+  width: 160px;
+}
+
+.icu-doc-banner__title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  margin: 0.35rem 0 0.5rem;
+  max-width: 42rem;
+}
+
+.icu-doc-banner__copy {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 44rem;
+}
+
+.icu-doc-feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+}
+
+.icu-doc-feature {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  padding: 0.45rem 0.8rem;
+}
+
+.card.icu-card,
+.icu-card {
+  background: var(--icu-surface);
+  border: 1px solid var(--icu-border);
+  border-radius: 24px;
+  box-shadow: var(--icu-shadow);
+  overflow: hidden;
+}
+
+.card.icu-card--controls,
+.icu-card--controls {
+  overflow: visible;
+}
+
+.box.icu-card > .box-header,
+.box.icu-card.box-solid > .box-header,
+.icu-card .card-header {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.06), rgba(29, 79, 145, 0.08));
+  border-bottom: 1px solid var(--icu-border);
+  color: var(--icu-ink) !important;
+  font-weight: 600;
+}
+
+.box.icu-card > .box-header .box-title,
+.box.icu-card > .box-header .fa,
+.box.icu-card.box-solid > .box-header .box-title,
+.box.icu-card.box-solid > .box-header .fa,
+.icu-card .card-header,
+.icu-card .card-header .card-title {
+  color: var(--icu-ink) !important;
+}
+
+.icu-card .card-body,
+.icu-card .box-body {
+  padding: 1.15rem;
+}
+
+.icu-card .form-control,
+.icu-card input,
+.icu-card select,
+.icu-card textarea {
+  background: var(--icu-surface-strong);
+  border: 1px solid rgba(19, 34, 56, 0.14);
+  color: var(--icu-ink);
+}
+
+.icu-card .form-control::placeholder,
+.icu-card input::placeholder,
+.icu-card textarea::placeholder {
+  color: rgba(19, 34, 56, 0.45);
+}
+
+.icu-card label,
+.icu-card .help-block,
+.icu-card .text-muted {
+  color: var(--icu-ink);
+}
+
+.icu-card--controls .card-body,
+.icu-card--controls .box-body {
+  overflow: visible;
+}
+
+.icu-card--controls .selectize-control,
+.icu-card--controls .selectize-input,
+.icu-card--controls .selectize-dropdown {
+  overflow: visible;
+}
+
+.icu-card--controls .selectize-dropdown,
+.selectize-dropdown {
+  z-index: 1600;
+}
+
+.icu-card--article .card-body {
+  padding: 1.35rem;
+}
+
+.icu-detail-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 1rem;
+}
+
+.icu-detail-block {
+  background: rgba(246, 242, 234, 0.78);
+  border: 1px solid rgba(19, 34, 56, 0.05);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.icu-detail-block h4 {
+  color: var(--icu-accent);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.65rem;
+  text-transform: uppercase;
+}
+
+.icu-library-tabs .nav-tabs {
+  border-bottom: 0;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.icu-library-tabs .nav-tabs .nav-link {
+  background: rgba(15, 122, 106, 0.08);
+  border: 1px solid var(--icu-border);
+  border-radius: 999px;
+  color: var(--icu-accent);
+  font-weight: 600;
+}
+
+.icu-library-tabs .nav-tabs .nav-link.active,
+.icu-library-tabs .nav-tabs .nav-link:hover {
+  background: var(--icu-accent);
+  color: #ffffff;
+}
+
+.icu-library-tabs .tab-content {
+  padding-top: 0.35rem;
+}
+
+.icu-output-tabs .card.card-tabs .card-header,
+.icu-output-tabs .nav-tabs {
+  background: transparent;
+  border-bottom: none;
+}
+
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-link,
+.icu-output-tabs .nav-tabs .nav-link {
+  background: rgba(19, 34, 56, 0.06);
+  color: rgba(19, 34, 56, 0.72) !important;
+}
+
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-link:hover,
+.icu-output-tabs .nav-tabs .nav-link:hover {
+  color: var(--icu-brand-strong) !important;
+}
+
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-item.show .nav-link,
+.icu-output-tabs .card.card-tabs .nav-tabs .nav-link.active,
+.icu-output-tabs .nav-tabs .nav-item.show .nav-link,
+.icu-output-tabs .nav-tabs .nav-link.active {
+  background: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(15, 122, 106, 0.14);
+  color: var(--icu-brand-strong) !important;
+}
+
+.icu-abstract-sections {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.icu-abstract-section {
+  background: rgba(246, 242, 234, 0.72);
+  border: 1px solid rgba(19, 34, 56, 0.05);
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+}
+
+.icu-abstract-section h5 {
+  color: var(--icu-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.55rem;
+  text-transform: uppercase;
+}
+
+.icu-prose,
+.icu-copy-block,
+.icu-list {
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.icu-prose--plaintext {
+  white-space: pre-line;
+}
+
+.icu-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.icu-doc-list {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.icu-doc-list li {
+  margin-bottom: 0.6rem;
+}
+
+.icu-doc-step-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.icu-doc-step {
+  align-items: start;
+  background: rgba(246, 242, 234, 0.72);
+  border: 1px solid rgba(19, 34, 56, 0.05);
+  border-radius: 18px;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: auto 1fr;
+  padding: 0.95rem 1rem;
+}
+
+.icu-doc-step__index {
+  align-items: center;
+  background: linear-gradient(135deg, #0f7a6a, #1d4f91);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.icu-doc-step__title,
+.icu-doc-point h4 {
+  color: var(--icu-accent);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+}
+
+.icu-doc-step__copy,
+.icu-doc-point p {
+  margin: 0;
+}
+
+.icu-doc-point {
+  background: rgba(246, 242, 234, 0.72);
+  border: 1px solid rgba(19, 34, 56, 0.05);
+  border-radius: 18px;
+  margin-bottom: 0.9rem;
+  padding: 1rem;
+}
+
+.icu-doc-point:last-child {
+  margin-bottom: 0;
+}
+
+.icu-doc-note {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.08), rgba(29, 79, 145, 0.08));
+  border: 1px solid rgba(15, 122, 106, 0.12);
+  border-radius: 18px;
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.icu-doc-note p:last-child {
+  margin-bottom: 0;
+}
+
+.icu-settings-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.icu-settings-link {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.09), rgba(29, 79, 145, 0.08));
+  border: 1px solid rgba(15, 122, 106, 0.12);
+  border-radius: 18px;
+  color: var(--icu-ink);
+  display: inline-flex;
+  gap: 0.7rem;
+  justify-content: center;
+  min-height: 72px;
+  padding: 1rem;
+  text-decoration: none;
+}
+
+.icu-settings-link:hover {
+  color: var(--icu-brand-strong);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.btn.icu-primary-button,
+.icu-primary-button {
+  background: linear-gradient(135deg, #0f7a6a, #1d4f91);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 14px 24px rgba(15, 122, 106, 0.25);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  width: 100%;
+}
+
+.btn.icu-primary-button:hover,
+.icu-primary-button:hover {
+  filter: brightness(1.02);
+}
+
+.icu-inline-note {
+  color: rgba(19, 34, 56, 0.66);
+  font-size: 0.84rem;
+  margin: 0.35rem 0 0.75rem;
+}
+
+.icu-dose-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.icu-dose-badge {
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.38rem 0.78rem;
+}
+
+.icu-footer-note,
+.icu-footer-metrics {
+  color: rgba(19, 34, 56, 0.7);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.icu-footer-metrics span {
+  background: rgba(15, 122, 106, 0.07);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+}
+
+.icu-target-badges {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.55rem;
+}
+
+.icu-target-badge {
+  background: rgba(242, 166, 90, 0.16);
+  border: 1px solid rgba(242, 166, 90, 0.3);
+  border-radius: 999px;
+  color: #8c5712;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  padding: 0.38rem 0.78rem;
+}
+
+.icu-patient-summary {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.07), rgba(29, 79, 145, 0.07));
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 18px;
+  margin-top: 1rem;
+  padding: 0.95rem;
+}
+
+.icu-patient-summary--placeholder {
+  text-align: left;
+}
+
+.icu-patient-summary__header {
+  align-items: start;
+  display: flex;
+  gap: 0.7rem;
+  justify-content: space-between;
+}
+
+.icu-patient-summary__title {
+  color: var(--icu-accent);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.icu-patient-summary__copy {
+  color: rgba(19, 34, 56, 0.68);
+  font-size: 0.86rem;
+  margin: 0.35rem 0 0;
+}
+
+.icu-patient-summary__model {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 999px;
+  color: var(--icu-brand-strong);
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  padding: 0.35rem 0.65rem;
+}
+
+.icu-patient-summary__grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.8rem;
+}
+
+.icu-summary-metric {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(19, 34, 56, 0.06);
+  border-radius: 14px;
+  padding: 0.7rem 0.75rem;
+}
+
+.icu-summary-metric--emphasis {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.16), rgba(29, 79, 145, 0.12));
+  border-color: rgba(15, 122, 106, 0.18);
+}
+
+.icu-summary-metric__label {
+  color: rgba(19, 34, 56, 0.62);
+  display: block;
+  font-size: 0.72rem;
+}
+
+.icu-summary-metric__value {
+  color: var(--icu-ink);
+  display: block;
+  font-size: 0.96rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.icu-renal-note {
+  background: rgba(15, 122, 106, 0.07);
+  border: 1px solid rgba(15, 122, 106, 0.12);
+  border-radius: 14px;
+  margin-top: 0.9rem;
+  padding: 0.8rem 0.85rem;
+}
+
+.icu-renal-note--placeholder {
+  background: rgba(19, 34, 56, 0.04);
+  border-color: rgba(19, 34, 56, 0.08);
+}
+
+.icu-renal-note__title {
+  color: var(--icu-accent);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.icu-renal-note__copy {
+  color: rgba(19, 34, 56, 0.7);
+  font-size: 0.85rem;
+  margin: 0.35rem 0 0;
+}
+
+.card-tabs > .card-header,
+.nav-tabs {
+  border-bottom: none;
+}
+
+.card.card-tabs .card-header {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.08), rgba(29, 79, 145, 0.1));
+}
+
+.card.card-tabs .nav-tabs .nav-link,
+.nav-tabs .nav-link {
+  background: rgba(19, 34, 56, 0.05);
+  border: none;
+  border-radius: 999px;
+  color: rgba(19, 34, 56, 0.65);
+  font-weight: 600;
+  margin-right: 0.35rem;
+  padding: 0.55rem 1rem;
+}
+
+.card.card-tabs .nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:hover {
+  color: var(--icu-brand-strong);
+}
+
+.card.card-tabs .nav-tabs .nav-item.show .nav-link,
+.card.card-tabs .nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  background: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(15, 122, 106, 0.14);
+  color: var(--icu-brand-strong) !important;
+}
+
+.form-control,
+.selectize-input,
+.irs-line,
+.irs-bar,
+.irs-handle {
+  border-radius: 14px;
+}
+
+.form-control,
+.selectize-input {
+  border: 1px solid rgba(19, 34, 56, 0.1);
+  box-shadow: none;
+  min-height: 44px;
+}
+
+.irs-bar,
+.irs-from,
+.irs-to,
+.irs-single {
+  background: var(--icu-brand);
+  border-color: var(--icu-brand);
+}
+
+.irs-handle > i:first-child {
+  background: var(--icu-accent);
+}
+
+@media (max-width: 991px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .icu-doc-banner {
+    border-radius: 22px;
+    grid-template-columns: 1fr;
+    padding: 1.2rem;
+  }
+
+  .icu-patient-summary__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .icu-brand__subtitle {
+    display: none;
+  }
+
+  .icu-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}

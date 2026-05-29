@@ -1,0 +1,17 @@
+{
+  "drug": "Ceftazidime",
+  "model": "Buning_2021",
+  "Title": "Population Pharmacokinetics and Probability of Target Attainment of Different Dosing Regimens of Ceftazidime in Critically Ill Patients with a Proven or Suspected Pseudomonas aeruginosa Infection",
+  "Authors": "Buning, et al.",
+  "Year": "2021",
+  "Journal": "Antibiotics",
+  "DOI": "10.3390/antibiotics10060612",
+  "URL": "https://www.mdpi.com/2079-6382/10/6/612",
+  "Abstract_Introduction": "Altered pharmacokinetics (PK) of hydrophilic antibiotics in critically ill patients is common, with possible consequences for efficacy and resistance. We aimed to describe ceftazidime population PK in critically ill patients with a proven or suspected Pseudomonas aeruginosa infection and to establish optimal dosing.",
+  "Abstract_Methods": "Blood samples were collected for ceftazidime concentration measurement. A population PK model was constructed, and probability of target attainment (PTA) was assessed for targets 100% T > MIC and 100% T > 4 x MIC in the first 24 h.",
+  "Abstract_Results": "Ninety-six patients yielded 368 ceftazidime concentrations. In a one-compartment model, variability in ceftazidime clearance (CL) showed association with CVVH. For patients not receiving CVVH, variability in ceftazidime CL was 103.4% and showed positive associations with creatinine clearance and with the comorbidities hematologic malignancy, trauma or head injury, explaining 65.2% of variability. For patients treated for at least 24 h and assuming a worst-case MIC of 8 mg/L, PTA was 77% for 100% T > MIC and 14% for 100% T > 4 x MIC. Patients receiving loading doses before continuous infusion demonstrated higher PTA than patients who did not (100% T > MIC: 95% (n = 65) vs. 13% (n = 15); p < 0.001 and 100% T > 4 x MIC: 20% vs. 0%; p = 0.058). The considerable IIV in ceftazidime PK in ICU patients could largely be explained by renal function, CVVH use and several comorbidities.",
+  "Abstract_Conclusions": "Critically ill patients are at risk for underexposure to ceftazidime when empirically aiming for the breakpoint MIC for P. aeruginosa. A loading dose is recommended.",
+  "Clearance_Formula": "$$ CL_{nonCVVH} = 3.42 \\times \\left( \\frac{CKDEPI_i}{73} \\right)^{0.72} \\times 1.57^{hemat} \\times 2^{trauma} $$",
+  "Model_Description": "CKD-EPI = Chronic Kidney Disease Epidemiology Collaboration; hemat = hematologic malignancy; trauma = trauma or head injury. Trauma and hematology malignancy are not supported at the moment.",
+  "Population_Studied": "Critically ill patients, CVVH, trauma, hematologic malignancy"
+}
