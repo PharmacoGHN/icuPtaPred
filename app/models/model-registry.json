@@ -2,7 +2,7 @@
   {
     "drug": "Cefepime",
     "model": "An_2023",
-    "is_default": true,
+    "is_default": false,
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": 35,
@@ -14,14 +14,14 @@
   {
     "drug": "Cefepime",
     "model": "Barreto_2023",
-    "is_default": false,
+    "is_default": true,
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": 35,
-    "renal_metric": "none",
-    "renal_formula": "No renal formula",
-    "clearance_expr": "7.84",
-    "eta_cl_expr": "1"
+    "renal_metric": "ckd_2009",
+    "renal_formula": "CKD-EPI 2009",
+    "clearance_expr": "7.84*renal_value/120",
+    "eta_cl_expr": "0.24"
   },
   {
     "drug": "Cefiderocol",
@@ -102,9 +102,9 @@
     "dose_increment": 0.5,
     "max_dose": 20,
     "toxicity_threshold": 45,
-    "renal_metric": "none",
-    "renal_formula": "No renal formula",
-    "clearance_expr": "1",
+    "renal_metric": "cg_tbw",
+    "renal_formula": "Cockcroft-Gault (TBW)",
+    "clearance_expr": "9.25 * (1 + 0.00977*(renal_value-80.8))",
     "eta_cl_expr": "1"
   },
   {
