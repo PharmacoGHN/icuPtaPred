@@ -15,6 +15,10 @@ box::use(
   app/logic/utils[labels]
 )
 
+
+# =================================================================== #
+# GLOBAL VARIABLES -------------------------------------------------- #
+# ==================================================================  #
 renal_metric_choices <- c(
   "No renal formula" = "none",
   "Cockcroft-Gault (TBW)" = "cg_tbw",
@@ -29,6 +33,23 @@ renal_metric_choices <- c(
   "EKFC" = "ekfc"
 )
 
+abstract_section_fields <- c(
+  "Introduction" = "Abstract_Introduction",
+  "Methods" = "Abstract_Methods",
+  "Results" = "Abstract_Results",
+  "Conclusions" = "Abstract_Conclusions"
+)
+
+# ================================================================== #
+# Helper with reactivity ------------------------------------------- #
+# ================================================================== #
+
+#' @description
+#' Given a renal metric value, return the corresponding renal formula label.
+#' used in the registry editor to display the renal formula label for the selected renal metric.
+#' @param metric Renal metric value to look up.
+#' @return A string representing the renal formula label, or "No renal formula" if the metric is not found.
+#' @export
 renal_formula_from_metric <- function(metric) {
   label <- names(renal_metric_choices[renal_metric_choices == metric])
 
@@ -39,6 +60,13 @@ renal_formula_from_metric <- function(metric) {
   label[[1]]
 }
 
+#' @description
+#' Given a numeric value, return a string representation suitable for use in an expression.
+#' If the value is not finite, return an empty string.
+#' used in the registry editor to format eta CL values for display and storage.
+#' @param value Numeric value to format.
+#' @return A string representation of the numeric value, or an empty string if the value is not finite.
+#' @export 
 format_numeric_literal <- function(value) {
   if (!is.finite(value)) {
     return("")
@@ -47,6 +75,14 @@ format_numeric_literal <- function(value) {
   format(value, scientific = FALSE, trim = TRUE, digits = 8)
 }
 
+#' @description
+#' Given a numeric value and a boolean indicating whether it is a coefficient of variation (CV), return an expression string for eta CL.
+#' If the value is not finite, return an empty string. If `is_cv` is TRUE, wrap the value in a function call to `get_sd_from_cv()`.
+#' used in the registry editor to generate eta CL expressions for display and storage.
+#' @param value Numeric value to format.
+#' @param is_cv Boolean indicating whether the value is a coefficient of variation (CV).
+#' @return A string representation of the eta CL expression, or an empty string if the value is not finite.
+#' @export
 eta_expression_from_inputs <- function(value, is_cv) {
   numeric_literal <- format_numeric_literal(value)
 
@@ -61,6 +97,14 @@ eta_expression_from_inputs <- function(value, is_cv) {
   numeric_literal
 }
 
+#' @description
+#' Given an expression string for eta CL, parse it to extract the numeric value and whether it is a coefficient of variation (CV).
+#' If the expression is in the form of `get_sd_from_cv(value)`, return the value and set `is_cv` to TRUE.
+#' If the expression is in the form of `get_cv_from_sd(value)`, return the value and set `is_cv` to FALSE. If the expression is a numeric literal, return the value and set `is_cv` to FALSE.
+#' used in the registry editor to parse eta CL expressions for display and storage.
+#' @param expr Expression string to parse.
+#' @return A list containing the numeric value and a boolean indicating whether it is a coefficient of variation (CV).
+#' @export
 parse_eta_expression <- function(expr) {
   expr <- trimws(expr)
 
@@ -79,13 +123,13 @@ parse_eta_expression <- function(expr) {
   list(value = as.numeric(expr), is_cv = FALSE)
 }
 
-abstract_section_fields <- c(
-  "Introduction" = "Abstract_Introduction",
-  "Methods" = "Abstract_Methods",
-  "Results" = "Abstract_Results",
-  "Conclusions" = "Abstract_Conclusions"
-)
 
+#' @description
+#' Strip legacy HTML markup from abstract text, replacing certain tags with newlines and removing others.
+#' This function is used to clean up abstract text that may contain HTML tags, converting it to plain text for display in the documentation editor.
+#' @param text Character string containing the abstract text with potential HTML markup.
+#' @return A character string with HTML markup stripped and certain tags replaced with newlines.
+#' @export
 strip_legacy_abstract_markup <- function(text) {
   if (is.null(text) || !nzchar(trimws(text))) {
     return("")
@@ -103,6 +147,11 @@ strip_legacy_abstract_markup <- function(text) {
   trimws(text)
 }
 
+#' @description
+#' Process documentation for the editor, structuring abstract sections and cleaning up markup.
+#' @param documentation A list containing the documentation fields.
+#' @return The processed documentation list.
+#' @export
 documentation_for_editor <- function(documentation) {
   has_structured_sections <- any(
     vapply(
@@ -121,10 +170,63 @@ documentation_for_editor <- function(documentation) {
   documentation
 }
 
+default_availability_message <- function() {
+  paste(
+    "This model is included in the library but has not been thoroughly validated yet.",
+    "Review the source and interpret results with caution."
+  )
+}
+
+availability_message_from_definition <- function(model_definition) {
+  if (!isTRUE(model_definition$is_not_available[[1]])) {
+    return("")
+  }
+
+  message <- model_definition$availability_message[[1]]
+
+  if (is.null(message) || !nzchar(trimws(message))) {
+    return(default_availability_message())
+  }
+
+  trimws(message)
+}
+
+render_availability_banner <- function(model_definition) {
+  if (!isTRUE(model_definition$is_not_available[[1]])) {
+    return(NULL)
+  }
+
+  tags$div(
+    class = "icu-model-warning",
+    tags$div(
+      class = "icu-model-warning__icon",
+      icon("triangle-exclamation")
+    ),
+    tags$div(
+      class = "icu-model-warning__body",
+      tags$span("Validation warning", class = "icu-model-warning__eyebrow"),
+      tags$p(availability_message_from_definition(model_definition), class = "icu-model-warning__copy")
+    )
+  )
+}
+
+#' @description
+#' Render a block of plain text with appropriate styling for display in the abstract sections.
+#' This function wraps the provided text in a div with classes for styling, ensuring that it is displayed as plain text without additional formatting.
+#' @param text Character string containing the plain text to render.
+#' @return A Shiny tag object representing the rendered plain text block.
+#' @export
+
 render_plain_text_block <- function(text) {
   tags$div(class = "icu-prose icu-prose--plaintext", text)
 }
 
+#' @description
+#' Render the abstract UI for a given documentation object, displaying structured sections if available.
+#' If structured sections are not available, it falls back to displaying the full abstract text or a message indicating that no abstract is documented.
+#' @param documentation A list containing the documentation fields, including abstract sections.
+#' @return A Shiny tag object representing the rendered abstract UI.
+#' @export
 render_abstract_ui <- function(documentation) {
   structured_sections <- Filter(
     Negate(is.null),
@@ -155,6 +257,11 @@ render_abstract_ui <- function(documentation) {
   tags$p("No abstract documented yet.", class = "icu-copy-block")
 }
 
+
+# ================================================================== #
+# UI COMPONENTS ---------------------------------------------------- #
+# ================================================================== #
+
 registry_editor <- function(ns) {
   if (!isTRUE(in_devmode())) {
     return(NULL)
@@ -171,59 +278,36 @@ registry_editor <- function(ns) {
       class = "icu-copy-block"
     ),
     fluidRow(
-      column(
-        width = 6,
-        selectInput(
-          ns("edit_drug"),
-          "Drug",
-          choices = labels("drug", "choices", "fr"),
-          selectize = FALSE
-        )
-      ),
-      column(
-        width = 6,
-        selectInput(
-          ns("edit_model_lookup"),
-          "Registry model",
-          choices = c("Create new model" = ""),
-          selectize = FALSE
-        )
-      )
+      column(width = 6, selectInput(ns("edit_drug"), "Drug", choices = labels("drug", "choices", "fr"), selectize = FALSE)),
+      column(width = 6, selectInput(ns("edit_model_lookup"), "Registry model", choices = c("Create new model" = ""), selectize = FALSE))
+    ),
+    fluidRow(
+      column(width = 6, textInput(ns("edit_model"), "Model name")),
+      column(width = 3, checkboxInput(ns("edit_is_default"), "Default model", value = FALSE)),
+      column(width = 3, checkboxInput(ns("edit_is_not_available"), "Not Available", value = FALSE))
     ),
     fluidRow(
       column(
-        width = 6,
-        textInput(ns("edit_model"), "Model name")
-      ),
-      column(
-        width = 6,
-        checkboxInput(ns("edit_is_default"), "Default model", value = FALSE)
-      )
-    ),
-    fluidRow(
-      column(
-        width = 6,
-        numericInput(ns("edit_dose_increment"), "Dose increment (g)", value = 1, min = 0.125, step = 0.125)
-      ),
-      column(
-        width = 6,
-        selectInput(
-          ns("edit_renal_metric"),
-          "Renal metric",
-          choices = renal_metric_choices,
-          selectize = FALSE
+        width = 12,
+        textAreaInput(
+          ns("edit_availability_message"),
+          "Warning message shown to users",
+          rows = 3,
+          placeholder = default_availability_message()
+        ),
+        tags$div(
+          class = "icu-inline-note",
+          "Leave this empty to use the default caution message when the model is marked as not available."
         )
       )
     ),
     fluidRow(
-      column(
-        width = 6,
-        numericInput(ns("edit_max_dose"), "Max daily dose (g)", value = 20, min = 0.125, step = 0.125)
-      ),
-      column(
-        width = 6,
-        numericInput(ns("edit_toxicity_threshold"), "Toxicity threshold (mg/L)", value = NA_real_, min = 0, step = 0.1)
-      )
+      column(width = 6, numericInput(ns("edit_dose_increment"), "Dose increment (g)", value = 1, min = 0.125, step = 0.125)),
+      column(width = 6, selectInput(ns("edit_renal_metric"), "Renal metric", choices = renal_metric_choices, selectize = FALSE))
+    ),
+    fluidRow(
+      column(width = 6, numericInput(ns("edit_max_dose"), "Max daily dose (g)", value = 20, min = 0.125, step = 0.125)),
+      column(width = 6, numericInput(ns("edit_toxicity_threshold"), "Toxicity threshold (mg/L)", value = NA_real_, min = 0, step = 0.1))
     ),
     tags$div(
       class = "icu-inline-note",
@@ -231,10 +315,7 @@ registry_editor <- function(ns) {
       textOutput(ns("edit_renal_formula_label"), container = tags$span)
     ),
     fluidRow(
-      column(
-        width = 8,
-        textAreaInput(ns("edit_clearance_expr"), "Clearance expression", rows = 4)
-      ),
+      column(width = 8, textAreaInput(ns("edit_clearance_expr"), "Clearance expression", rows = 4)),
       column(
         width = 4,
         numericInput(ns("edit_eta_cl_value"), "Eta CL value", value = 1, min = 0, step = 0.001),
@@ -268,7 +349,7 @@ documentation_editor <- function(ns) {
 
   box(
     width = 12,
-    title = tagList(icon("file-lines"), "Documentation editor"),
+    title = tagList(tags$div(icon("file-lines"), "Documentation editor", style = "display: flex; align-items: center; gap: 0.5rem; color: #17a2b8;")),
     status = "info",
     solidHeader = TRUE,
     class = "icu-card icu-card--controls",
@@ -283,18 +364,9 @@ documentation_editor <- function(ns) {
         textInput(ns("doc_title"), "Title"),
         textInput(ns("doc_authors"), "Authors"),
         fluidRow(
-          column(
-            width = 4,
-            textInput(ns("doc_year"), "Year")
-          ),
-          column(
-            width = 4,
-            textInput(ns("doc_journal"), "Journal")
-          ),
-          column(
-            width = 4,
-            textInput(ns("doc_doi"), "DOI")
-          )
+          column(width = 4, textInput(ns("doc_year"), "Year")),
+          column(width = 4, textInput(ns("doc_journal"), "Journal")),
+          column(width = 4, textInput(ns("doc_doi"), "DOI"))
         ),
         textInput(ns("doc_url"), "URL"),
         textAreaInput(ns("doc_population_studied"), "Population studied", rows = 4)
@@ -304,24 +376,12 @@ documentation_editor <- function(ns) {
         textAreaInput(ns("doc_model_description"), "Model description", rows = 5),
         textAreaInput(ns("doc_clearance_formula"), "Displayed clearance formula", rows = 4),
         fluidRow(
-          column(
-            width = 6,
-            textAreaInput(ns("doc_abstract_introduction"), "Abstract - introduction", rows = 5)
-          ),
-          column(
-            width = 6,
-            textAreaInput(ns("doc_abstract_methods"), "Abstract - methods", rows = 5)
-          )
+          column(width = 6, textAreaInput(ns("doc_abstract_introduction"), "Abstract - introduction", rows = 5)),
+          column(width = 6, textAreaInput(ns("doc_abstract_methods"), "Abstract - methods", rows = 5))
         ),
         fluidRow(
-          column(
-            width = 6,
-            textAreaInput(ns("doc_abstract_results"), "Abstract - results", rows = 5)
-          ),
-          column(
-            width = 6,
-            textAreaInput(ns("doc_abstract_conclusions"), "Abstract - conclusions", rows = 5)
-          )
+          column(width = 6, textAreaInput(ns("doc_abstract_results"), "Abstract - results", rows = 5)),
+          column(width = 6, textAreaInput(ns("doc_abstract_conclusions"), "Abstract - conclusions", rows = 5))
         )
       )
     ),
@@ -354,10 +414,11 @@ doi_link <- function(model) {
 model_overview_card <- function(ns) {
   box(
     width = 12,
-    title = textOutput(ns("title")),
+    title = tags$div(textOutput(ns("title")), style = "font-size: 1.5rem; font-weight: bold; color: #17a2b8;"),
     status = "success",
     solidHeader = TRUE,
     class = "icu-card icu-card--article",
+    uiOutput(ns("availability_banner")),
     div(
       class = "icu-detail-block",
       tags$h4("Citation"),
@@ -415,6 +476,12 @@ library_tabs <- function(ns) {
   )
 }
 
+
+
+# ================================================================= #
+# MODULE UI AND SERVER -------------------------------------------- #
+# ================================================================= #
+
 #' @export
 ui <- function(id) {
   ns <- NS(id)
@@ -429,18 +496,8 @@ ui <- function(id) {
           status = "primary",
           solidHeader = TRUE,
           class = "icu-card icu-card--controls",
-          selectInput(
-            ns("drug"),
-            "Drug",
-            choices = labels("drug", "choices", "fr"),
-            selectize = FALSE
-          ),
-          selectInput(
-            ns("model"),
-            "Model",
-            choices = "No model currently available",
-            selectize = FALSE
-          )
+          selectInput(ns("drug"), "Drug", choices = labels("drug", "choices", "fr"), selectize = FALSE),
+          selectInput(ns("model"), "Model", choices = "No model currently available", selectize = FALSE)
         )
       ),
       column(
@@ -538,6 +595,10 @@ server <- function(id) {
       render_abstract_ui(selected_documentation())
     })
 
+    output$availability_banner <- renderUI({
+      render_availability_banner(selected_registry_definition())
+    })
+
     output$clearance_formula <- renderUI({
       withMathJax(HTML(selected_documentation()$Clearance_Formula))
     })
@@ -550,6 +611,9 @@ server <- function(id) {
       selected_documentation()$Population_Studied
     })
 
+    # ================================================================== #
+    # devmode-only registry and documentation editor logic ----
+    # ================================================================= #
     if (isTRUE(in_devmode())) {
       output$edit_renal_formula_label <- renderText({
         renal_formula_from_metric(input$edit_renal_metric)
@@ -642,6 +706,8 @@ server <- function(id) {
         updateSelectInput(session, "edit_model_lookup", selected = "")
         updateTextInput(session, "edit_model", value = "")
         updateCheckboxInput(session, "edit_is_default", value = FALSE)
+        updateCheckboxInput(session, "edit_is_not_available", value = FALSE)
+        updateTextAreaInput(session, "edit_availability_message", value = "")
         updateNumericInput(session, "edit_dose_increment", value = 1)
         updateNumericInput(session, "edit_max_dose", value = 20)
         updateNumericInput(session, "edit_toxicity_threshold", value = NA_real_)
@@ -668,6 +734,8 @@ server <- function(id) {
         updateSelectInput(session, "edit_model_lookup", selected = definition$model[[1]])
         updateTextInput(session, "edit_model", value = definition$model[[1]])
         updateCheckboxInput(session, "edit_is_default", value = definition$is_default[[1]])
+        updateCheckboxInput(session, "edit_is_not_available", value = definition$is_not_available[[1]])
+        updateTextAreaInput(session, "edit_availability_message", value = definition$availability_message[[1]])
         updateNumericInput(session, "edit_dose_increment", value = definition$dose_increment[[1]])
         updateNumericInput(session, "edit_max_dose", value = definition$max_dose[[1]])
         updateNumericInput(session, "edit_toxicity_threshold", value = definition$toxicity_threshold[[1]])
@@ -688,6 +756,8 @@ server <- function(id) {
           drug = input$edit_drug,
           model = input$edit_model,
           is_default = input$edit_is_default,
+          is_not_available = input$edit_is_not_available,
+          availability_message = input$edit_availability_message,
           dose_increment = input$edit_dose_increment,
           max_dose = input$edit_max_dose,
           toxicity_threshold = input$edit_toxicity_threshold,
@@ -791,5 +861,6 @@ server <- function(id) {
         )
       })
     }
+
   })
 }

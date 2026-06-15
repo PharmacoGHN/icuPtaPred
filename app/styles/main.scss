@@ -11,6 +11,8 @@
   --icu-brand-strong: #0c5e52;
   --icu-highlight: #f2a65a;
   --icu-accent: #1d4f91;
+  --icu-warning: #be185d;
+  --icu-warning-soft: #fb7185;
 }
 
 body,
@@ -411,6 +413,88 @@ body {
   letter-spacing: 0.03em;
   margin-bottom: 0.65rem;
   text-transform: uppercase;
+}
+
+.icu-model-warning {
+  align-items: start;
+  background:
+    linear-gradient(135deg, rgba(190, 24, 93, 0.12), rgba(251, 113, 133, 0.18)),
+    #fff8fb;
+  border: 1px solid rgba(190, 24, 93, 0.22);
+  border-radius: 20px;
+  box-shadow: 0 18px 28px rgba(190, 24, 93, 0.12);
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: auto 1fr;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.icu-model-warning__icon {
+  align-items: center;
+  background: linear-gradient(135deg, var(--icu-warning), var(--icu-warning-soft));
+  border-radius: 16px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 1rem;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
+}
+
+.icu-model-warning__eyebrow {
+  color: var(--icu-warning);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.icu-model-warning__copy {
+  color: rgba(122, 22, 50, 0.92);
+  margin: 0.35rem 0 0;
+  white-space: pre-line;
+}
+
+.icu-select-label {
+  align-items: center;
+  color: var(--icu-ink);
+  display: flex;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+}
+
+.icu-select-label__warning {
+  color: var(--icu-warning);
+  display: inline-flex;
+}
+
+.icu-select-warning {
+  align-items: start;
+  background: rgba(190, 24, 93, 0.08);
+  border: 1px solid rgba(190, 24, 93, 0.16);
+  border-radius: 14px;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: auto 1fr;
+  margin-top: 0.7rem;
+  padding: 0.75rem 0.8rem;
+}
+
+.icu-select-warning__icon {
+  color: var(--icu-warning);
+  display: inline-flex;
+  font-size: 0.92rem;
+  margin-top: 0.08rem;
+}
+
+.icu-select-warning__copy {
+  color: rgba(122, 22, 50, 0.9);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .icu-library-tabs .nav-tabs {

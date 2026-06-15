@@ -49,6 +49,8 @@ empty_registry <- function() {
     drug = character(0),
     model = character(0),
     is_default = logical(0),
+    is_not_available = logical(0),
+    availability_message = character(0),
     dose_increment = numeric(0),
     max_dose = numeric(0),
     toxicity_threshold = numeric(0),
@@ -64,6 +66,8 @@ registry_columns <- c(
   "drug",
   "model",
   "is_default",
+  "is_not_available",
+  "availability_message",
   "dose_increment",
   "max_dose",
   "toxicity_threshold",
@@ -74,6 +78,14 @@ registry_columns <- c(
 )
 
 add_registry_defaults <- function(registry) {
+  if (!"is_not_available" %in% colnames(registry)) {
+    registry$is_not_available <- rep(FALSE, nrow(registry))
+  }
+
+  if (!"availability_message" %in% colnames(registry)) {
+    registry$availability_message <- rep("", nrow(registry))
+  }
+
   if (!"max_dose" %in% colnames(registry)) {
     registry$max_dose <- vapply(registry$drug, default_max_dose, numeric(1))
   }
@@ -101,6 +113,8 @@ coerce_registry <- function(registry) {
   registry$drug <- trimws(registry$drug)
   registry$model <- trimws(registry$model)
   registry$is_default <- tolower(as.character(registry$is_default)) %in% c("true", "1", "yes")
+  registry$is_not_available <- tolower(as.character(registry$is_not_available)) %in% c("true", "1", "yes")
+  registry$availability_message <- trimws(registry$availability_message)
   registry$dose_increment <- as.numeric(registry$dose_increment)
   registry$max_dose <- as.numeric(registry$max_dose)
   registry$toxicity_threshold <- as.numeric(registry$toxicity_threshold)
@@ -109,6 +123,7 @@ coerce_registry <- function(registry) {
   registry$clearance_expr <- trimws(registry$clearance_expr)
   registry$eta_cl_expr <- trimws(registry$eta_cl_expr)
 
+  registry$availability_message[is.na(registry$availability_message)] <- ""
   registry$renal_metric[registry$renal_metric == ""] <- "none"
   registry$renal_formula[registry$renal_formula == ""] <- "No renal formula"
 
@@ -192,7 +207,7 @@ format_registry_json_value <- function(value, column) {
     return("null")
   }
 
-  if (column == "is_default") {
+  if (column %in% c("is_default", "is_not_available")) {
     return(if (isTRUE(value)) "true" else "false")
   }
 
@@ -525,6 +540,8 @@ upsert_model_definition <- function(
   drug,
   model,
   is_default,
+  is_not_available,
+  availability_message,
   dose_increment,
   max_dose,
   toxicity_threshold,
@@ -542,6 +559,8 @@ upsert_model_definition <- function(
     drug = drug,
     model = model,
     is_default = is_default,
+    is_not_available = is_not_available,
+    availability_message = availability_message,
     dose_increment = dose_increment,
     max_dose = max_dose,
     toxicity_threshold = toxicity_threshold,
@@ -718,6 +737,8 @@ get_model_parameters <- function(model, biological, drug = NULL, manual_renal_fu
     dose_increment = as.numeric(model_definition$dose_increment[[1]]),
     max_dose = as.numeric(model_definition$max_dose[[1]]),
     toxicity_threshold = as.numeric(model_definition$toxicity_threshold[[1]]),
+    is_not_available = isTRUE(model_definition$is_not_available[[1]]),
+    availability_message = model_definition$availability_message[[1]],
     renal_metric = model_definition$renal_metric[[1]],
     renal_formula = model_definition$renal_formula[[1]],
     renal_value = renal_value,

@@ -293,6 +293,53 @@ renal_formula_note <- function(drug, model, manual_renal_function = NA_real_) {
   )
 }
 
+advanced_model_label <- function(model_definition = NULL) {
+  warning_icon <- if (
+    !is.null(model_definition) &&
+    nrow(model_definition) &&
+    isTRUE(model_definition$is_not_available[[1]])
+  ) {
+    shiny$tags$span(
+      class = "icu-select-label__warning",
+      shiny$icon("triangle-exclamation")
+    )
+  } else {
+    NULL
+  }
+
+  shiny$tags$label(
+    class = "control-label icu-select-label",
+    shiny$tags$span("Population PK model"),
+    warning_icon
+  )
+}
+
+advanced_model_warning_note <- function(model_definition = NULL) {
+  if (
+    is.null(model_definition) ||
+    !nrow(model_definition) ||
+    !isTRUE(model_definition$is_not_available[[1]])
+  ) {
+    return(NULL)
+  }
+
+  shiny$tags$div(
+    class = "icu-select-warning",
+    shiny$tags$span(
+      class = "icu-select-warning__icon",
+      shiny$icon("triangle-exclamation")
+    ),
+    shiny$tags$p(
+      paste0(
+        "This selected model requires caution. See the model documentation for ",
+        model_definition$model[[1]],
+        " in the Model Library."
+      ),
+      class = "icu-select-warning__copy"
+    )
+  )
+}
+
 #' @export
 ui <- function(id) {
   ns <- shiny$NS(id)
@@ -341,11 +388,13 @@ ui <- function(id) {
           ),
           shiny$conditionalPanel(
             condition = sprintf("input['%s']", ns("advanced_user_mode")),
+            shiny$uiOutput(ns("model_selected_label")),
             shiny$selectInput(
               ns("model_selected"),
-              "Population PK model",
+              NULL,
               choices = character(0)
-            )
+            ),
+            shiny$uiOutput(ns("model_selected_warning"))
           ),
           shiny$tags$p(
             "The probability interval is fixed at 95%.",
@@ -631,6 +680,32 @@ server <- function(id) {
       }
 
       get_default_model(input$beta_lactamin)
+    })
+
+    selected_model_definition <- shiny$reactive({
+      if (!isTRUE(input$advanced_user_mode)) {
+        return(NULL)
+      }
+
+      if (is.null(input$beta_lactamin) || !nzchar(input$beta_lactamin)) {
+        return(NULL)
+      }
+
+      current_model <- selected_model()
+
+      if (is.null(current_model) || !length(current_model) || !nzchar(current_model)) {
+        return(NULL)
+      }
+
+      get_model_definition(drug = input$beta_lactamin, model = current_model)
+    })
+
+    output$model_selected_label <- shiny$renderUI({
+      advanced_model_label(selected_model_definition())
+    })
+
+    output$model_selected_warning <- shiny$renderUI({
+      advanced_model_warning_note(selected_model_definition())
     })
 
     output$renal_function_method <- shiny$renderUI({
