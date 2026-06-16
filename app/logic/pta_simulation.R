@@ -1,5 +1,5 @@
 box::use(
-  dplyr[bind_cols, mutate],
+  dplyr[mutate],
   stats[quantile]
 )
 
@@ -39,6 +39,7 @@ calc_css_distribution <- function(
   return(css_distribution)
 }
 
+# Convert an absolute concentration threshold into a threshold-to-MIC curve.
 threshold_curve <- function(threshold, mic) {
   if (length(threshold) == 1 && (is.na(threshold) || threshold <= 0)) {
     return(rep(NA_real_, length(mic)))
@@ -47,6 +48,7 @@ threshold_curve <- function(threshold, mic) {
   threshold / mic
 }
 
+# Remove values that cannot be displayed on the log-scaled PTA plots.
 sanitize_log_series <- function(values) {
   values[!is.finite(values) | values <= 0] <- NA_real_
   values
@@ -85,13 +87,15 @@ build_plot_mic_grid <- function(mic, dilution_series = DEFAULT_MIC_PLOT_GRID) {
 #' @param tvcl Typical clearance in liters per hour.
 #' @param eta_cl Inter-individual variability for clearance on the log scale.
 #' @param quantile Probability interval to report for the simulated distribution.
+#' @param css_quantile Percentile used for the default PTA curve at each dose.
 #' @param mic MIC values to evaluate. When omitted, a default doubling dilution grid is used.
 #' @param dose_increment Daily dose increment in milligrams used for neighboring regimen curves.
 #' @param toxicity_threshold Optional concentration threshold in mg/L.
 #' @param additional_threshold Optional secondary concentration threshold in mg/L.
 #' @param n_sim Number of virtual patients to simulate.
 #'
-#' @return A data frame with concentration-to-MIC ratios, uncertainty bounds, and threshold curves.
+#' @return A data frame with the default percentile-based PTA curve, neighboring
+#'   dose curves, probability interval bounds, and threshold curves.
 #' @export
 sim_concentration <- function(
   dose,
@@ -112,31 +116,21 @@ sim_concentration <- function(
   css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim)
   quant <- quantile(css_distribution, probs = quantile)
   dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
-  tv_css_range <- dose_range / (tvcl * 24)
 
-  # calculate the css distribution for all doses in the range
+  # Use the same percentile summary for the selected dose and its neighbors so
+  # the default PTA curve reflects the requested concentration distribution.
   all_dose_css_distribution <- calc_css_distribution(dose_range, tvcl, eta_cl, n_sim)
   quant_all_dose <- apply(all_dose_css_distribution, 2, function(x) quantile(x, probs = css_quantile))
 
-
-  css_mic_range <- data.frame(
-    css_mic_below2 = sanitize_log_series(quant_all_dose[1] / mic),
-    css_mic_below1 = sanitize_log_series(quant_all_dose[2] / mic),
+  concentration_df <- data.frame(
     css_mic = sanitize_log_series(quant_all_dose[3] / mic),
-    css_mic_above1 = sanitize_log_series(quant_all_dose[4] / mic),
-    css_mic_above2 = sanitize_log_series(quant_all_dose[5] / mic)
-  )
-
-  quantile_df <- data.frame(
-    css_mic = sanitize_log_series(tv_css_range[3] / mic),
     mic = mic,
     percentile_2.5 = sanitize_log_series(quant[1] / mic),
-    percentile_97.5 = sanitize_log_series(quant[2] / mic)
-  )
-
-  concentration_df <- bind_cols(
-    quantile_df,
-    css_mic_range,
+    percentile_97.5 = sanitize_log_series(quant[2] / mic),
+    css_mic_below2 = sanitize_log_series(quant_all_dose[1] / mic),
+    css_mic_below1 = sanitize_log_series(quant_all_dose[2] / mic),
+    css_mic_above1 = sanitize_log_series(quant_all_dose[4] / mic),
+    css_mic_above2 = sanitize_log_series(quant_all_dose[5] / mic),
     toxicity_threshold = sanitize_log_series(threshold_curve(toxicity_threshold, mic)),
     additional_threshold = sanitize_log_series(threshold_curve(additional_threshold, mic))
   )

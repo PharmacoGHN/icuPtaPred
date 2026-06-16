@@ -41,7 +41,15 @@ ui <- function(id) {
           selectInput(ns("beta_lactamin"), label = labels("drug", "label", language), choices = labels("drug", "choices", language), selected = character(0)),
           numericInput(ns("drug_dose"), label = labels("dose_input", "label", language), value = 0, step = 0.125, min = 0, max = 32),
           numericInput(ns("additional_concentration"), label = "Additional concentration to plot (mg/L)", value = 0, min = 0, step = 0.5),
-          checkboxInput(ns("advanced_user_mode"), "Advanced user mode", value = FALSE),
+          fluidRow(
+            column(width = 6, checkboxInput(ns("advanced_user_mode"), "Advanced user mode", value = FALSE)),
+            column(width = 5, offset = 1,
+              conditionalPanel(
+                condition = sprintf("input['%s']", ns("advanced_user_mode")),
+                numericInput(ns("concentration_percentile"), "Concentration percentile", value = 0.95, min = 0, max = 1, step = 0.01)
+              )
+            )
+          ),
           conditionalPanel(
             condition = sprintf("input['%s']", ns("advanced_user_mode")),
             uiOutput(ns("model_selected_label")),
@@ -133,27 +141,20 @@ server <- function(id) {
     ecoff <- reactiveVal(NA_real_)
     ecoff_ci <- reactiveVal(NULL)
 
+    # create validator to prevent crashes when computing PTA with invalid inputs
     validator <- InputValidator$new()
-    validator$add_rule("drug_dose", function(value) {
-      if (value == 0) {
-        "Dose must be greater than 0"
-      }
-    })
-    validator$add_rule("height", function(value) {
-      if (value < 10) {
-        "Height must be in cm"
-      }
-    })
-    validator$add_rule("height", function(value) {
-      if (value > 250) {
-        "Height must be less than 250 cm"
-      }
-    })
-    validator$add_rule("weight", function(value) {
-      if (value < 1) {
-        "Weight must be greater than 0"
-      }
-    })
+
+    validator$add_rule("drug_dose", function(value) {if (value == 0) {"Dose must be greater than 0"}})
+    validator$add_rule("height", function(value) {if (value < 10) {"Height must be in cm"}})
+    validator$add_rule("height", function(value) {if (value > 250) {"Height must be less than 250 cm"}})
+    validator$add_rule("weight", function(value) {if (value < 1) {"Weight must be greater than 0"}})
+    validator$add_rule("age", function(value) {if (value <= 0) {"Age must be greater than 0"}})
+    validator$add_rule("age", function(value) {if (value > 120) {"Age must be less than 120"}    })
+    validator$add_rule("manual_renal_function", function(value) {if (!is.na(value) && value < 0) {"Manual renal function must be greater than or equal to 0"}})
+    validator$add_rule("beta_lactamin", function(value) {if (is.null(value) || !nzchar(value)) {"Choose a drug before computing PTA"}})
+    validator$add_rule("model_selected", function(value) {if (isTRUE(input$advanced_user_mode) && (is.null(value) || !nzchar(value))) {"Choose a model when advanced user mode is enabled"}})
+    validator$add_rule("concentration_percentile", function(value) {if (isTRUE(input$advanced_user_mode) && (is.null(value) || !is.finite(value) || value <= 0 || value >= 1)) {"Concentration percentile must be between 0 and 1 when advanced user mode is enabled"}})
+
     validator$add_rule("weight", function(value) {
       max_weight <- if (identical(input$weight_unit, "lbs")) 1100 else 500
 
@@ -161,39 +162,10 @@ server <- function(id) {
         paste0("Weight must be less than ", max_weight, if (identical(input$weight_unit, "lbs")) " lbs" else " kg")
       }
     })
-    validator$add_rule("age", function(value) {
-      if (value <= 0) {
-        "Age must be greater than 0"
-      }
-    })
-    validator$add_rule("age", function(value) {
-      if (value > 120) {
-        "Age must be less than 120"
-      }
-    })
-    validator$add_rule("manual_renal_function", function(value) {
-      if (!is.na(value) && value < 0) {
-        "Manual renal function must be greater than or equal to 0"
-      }
-    })
-    validator$add_rule("beta_lactamin", function(value) {
-      if (is.null(value) || !nzchar(value)) {
-        "Choose a drug before computing PTA"
-      }
-    })
-    validator$add_rule("model_selected", function(value) {
-      if (isTRUE(input$advanced_user_mode) && (is.null(value) || !nzchar(value))) {
-        "Choose a model when advanced user mode is enabled"
-      }
-    })
     validator$enable()
 
     observeEvent(input$beta_lactamin, {
-      model_choices <- if (
-        is.null(input$beta_lactamin) ||
-        !nzchar(input$beta_lactamin) ||
-        !length(list_models_for_drug(input$beta_lactamin))
-      ) {
+      model_choices <- if (is.null(input$beta_lactamin) || !nzchar(input$beta_lactamin) || !length(list_models_for_drug(input$beta_lactamin))) {
         character(0)
       } else {
         list_models_for_drug(input$beta_lactamin)
@@ -285,11 +257,7 @@ server <- function(id) {
     })
 
     observeEvent(list(input$bacteria_select, input$beta_lactamin), {
-      if (
-        identical(input$bacteria_select, "probabilist") ||
-        is.null(input$beta_lactamin) ||
-        !nzchar(input$beta_lactamin)
-      ) {
+      if (identical(input$bacteria_select, "probabilist") || is.null(input$beta_lactamin) || !nzchar(input$beta_lactamin)) {
         mic_information(NULL)
         mic_specie(NULL)
         ecoff(NA_real_)
@@ -328,10 +296,7 @@ server <- function(id) {
         return()
       }
 
-      if (
-        !identical(input$bacteria_select, "probabilist") &&
-        is.null(mic_information())
-      ) {
+      if (!identical(input$bacteria_select, "probabilist") && is.null(mic_information())) {
         showNotification(
           "No MIC distribution is available for the selected bacterium.",
           duration = 8,
@@ -376,6 +341,7 @@ server <- function(id) {
         tvcl = model_param$cl,
         eta_cl = model_param$eta_cl,
         quantile = c(0.025, 0.975),
+        css_quantile = input$concentration_percentile,
         mic = if (identical(input$bacteria_select, "probabilist")) {
           NA
         } else {
@@ -442,22 +408,13 @@ server <- function(id) {
 
       pta_plot <- plot.pta(
         concentration_df,
-        ecoff = if (identical(input$bacteria_select, "probabilist")) {
-          NA
-        } else {
-          ecoff()
-        },
+        ecoff = if (identical(input$bacteria_select, "probabilist")) {NA} else {ecoff()},
         selected_dose = input$drug_dose,
         dose_increment = model_param$dose_increment
       )
 
-      output$pta_output <- renderPlotly({
-        pta_plotly(pta_plot$pta_multiple_doses, concentration_df)
-      })
-
-      output$pta_output_probability <- renderPlotly({
-        pta_plotly(pta_plot$pta_ci_plot, concentration_df)
-      })
+      output$pta_output <- renderPlotly({ pta_plotly(pta_plot$pta_multiple_doses, concentration_df) })
+      output$pta_output_probability <- renderPlotly({ pta_plotly(pta_plot$pta_ci_plot, concentration_df) })
 
       output$footer_pta <- renderUI({
         all_dose <- c(-2, -1, 0, 1, 2) * model_param$dose_increment + input$drug_dose

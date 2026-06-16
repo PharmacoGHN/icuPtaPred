@@ -77,16 +77,15 @@ ui <- function(id) {
   ns <- NS(id)
 
   dashboardPage(
-    title = "ICU PTA Predictor",
+    title = "",
     dark = NULL,
     header = dashboardHeader(
-      title = dashboard_brand(),
+      title = sidebar_brand(app_version()),
       titleWidth = 320
     ),
     sidebar = dashboardSidebar(
       skin = "dark",
       status = "primary",
-      sidebar_brand(app_version()),
       tags$div("Workspace", class = "icu-sidebar-nav-heading"),
       sidebarMenu(
         id = ns("navigation"),
