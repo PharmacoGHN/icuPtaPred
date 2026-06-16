@@ -1,6 +1,7 @@
 box::use(
   dplyr,
   ggplot2,
+  plotly[config, ggplotly, layout],
   scales
 )
 
@@ -9,7 +10,6 @@ positive_finite_values <- function(...) {
   values[is.finite(values) & !is.na(values) & values > 0]
 }
 
-# Format numeric values for hover labels while keeping missing values explicit.
 format_plot_value <- function(value, digits = 6) {
   if (length(value) == 0) {
     return(character())
@@ -23,7 +23,6 @@ format_plot_value <- function(value, digits = 6) {
   formatted_value
 }
 
-# Build a readable label for the selected regimen and neighboring dose steps.
 dose_curve_label <- function(step, selected_dose = NA_real_, dose_increment = NA_real_) {
   if (is.finite(selected_dose) && is.finite(dose_increment) && dose_increment > 0) {
     dose_value <- selected_dose + step * dose_increment
@@ -91,6 +90,52 @@ safe_log_limits <- function(..., fallback_upper = 1) {
 
   if (!is.finite(upper) || upper <= lower) {
     upper <- max(lower * 2, fallback_upper)
+  }
+
+  c(lower, upper)
+}
+
+format_plot_number <- function(value, digits = 6) {
+  if (!is.finite(value) || is.na(value)) {
+    return("NA")
+  }
+
+  format(signif(value, digits), scientific = FALSE, trim = TRUE)
+}
+
+log2_tick_values <- function(values) {
+  positive_values <- values[is.finite(values) & !is.na(values) & values > 0]
+
+  if (!length(positive_values)) {
+    return(numeric(0))
+  }
+
+  exponents <- seq(floor(log2(min(positive_values))), ceiling(log2(max(positive_values))))
+  2^exponents
+}
+
+log2_tick_positions <- function(values) {
+  tick_values <- log2_tick_values(values)
+
+  if (!length(tick_values)) {
+    return(numeric(0))
+  }
+
+  log2(tick_values)
+}
+
+log2_axis_range <- function(values) {
+  positive_values <- values[is.finite(values) & !is.na(values) & values > 0]
+
+  if (!length(positive_values)) {
+    return(c(0, 1))
+  }
+
+  lower <- log2(min(positive_values))
+  upper <- log2(max(positive_values))
+
+  if (!is.finite(upper) || upper <= lower) {
+    upper <- lower + 1
   }
 
   c(lower, upper)
@@ -316,4 +361,94 @@ plot.cfr <- function(data, dose_increment = 0) {
       legend.justification.inside = c(0.9, 0.9),
       legend.box.background = ggplot2$element_rect()
     )
+}
+
+#' @export
+pta_plotly <- function(plot, data) {
+  x_tick_values <- sort(unique(data$mic[is.finite(data$mic) & !is.na(data$mic) & data$mic > 0]))
+  x_tick_positions <- log2(x_tick_values)
+  x_range <- log2_axis_range(data$mic)
+  y_values <- unlist(
+    data[c(
+      "css_mic_below2",
+      "css_mic_below1",
+      "css_mic",
+      "css_mic_above1",
+      "css_mic_above2",
+      "percentile_2.5",
+      "percentile_97.5",
+      "toxicity_threshold",
+      "additional_threshold"
+    )],
+    use.names = FALSE
+  )
+  y_tick_values <- log2_tick_values(y_values)
+  y_tick_positions <- log2_tick_positions(y_values)
+  y_range <- log2_axis_range(y_values)
+
+  plotly_object <- suppressWarnings(ggplotly(plot, tooltip = "text"))
+  plotly_object <- layout(
+    plotly_object,
+    hovermode = "closest",
+    xaxis = list(
+      title = list(text = "Minimum inhibitory concentration (MIC, mg/L)"),
+      autorange = FALSE,
+      range = x_range,
+      tickmode = "array",
+      tickvals = x_tick_positions,
+      ticktext = vapply(x_tick_values, format_plot_number, character(1)),
+      exponentformat = "none",
+      showexponent = "none"
+    ),
+    yaxis = list(
+      title = list(text = "Steady-state concentration to MIC ratio"),
+      autorange = FALSE,
+      range = y_range,
+      tickmode = "array",
+      tickvals = y_tick_positions,
+      ticktext = vapply(y_tick_values, format_plot_number, character(1)),
+      exponentformat = "none",
+      showexponent = "none"
+    )
+  )
+
+  config(
+    plotly_object,
+    displaylogo = FALSE,
+    modeBarButtonsToRemove = c(
+      "lasso2d",
+      "select2d",
+      "zoomIn2d",
+      "zoomOut2d",
+      "autoScale2d",
+      "toggleSpikelines"
+    )
+  )
+}
+
+#' @export
+cfr_plotly <- function(plot) {
+  plotly_object <- suppressWarnings(ggplotly(plot, tooltip = "text"))
+  plotly_object <- layout(
+    plotly_object,
+    hovermode = "closest",
+    xaxis = list(title = list(text = "Daily dose (g/day)")),
+    yaxis = list(
+      title = list(text = "Cumulative fraction of response"),
+      tickformat = ".0%"
+    )
+  )
+
+  config(
+    plotly_object,
+    displaylogo = FALSE,
+    modeBarButtonsToRemove = c(
+      "lasso2d",
+      "select2d",
+      "zoomIn2d",
+      "zoomOut2d",
+      "autoScale2d",
+      "toggleSpikelines"
+    )
+  )
 }

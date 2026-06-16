@@ -3,10 +3,10 @@ box::use(
 )
 
 box::use(
-  app/logic/fct_pta_plot
+  app/view/plot_pta
 )
 
-impl <- attr(fct_pta_plot, "namespace")
+impl <- attr(plot_pta, "namespace")
 
 test_that("format_plot_value handles vector inputs", {
   expect_equal(
@@ -36,7 +36,7 @@ test_that("plot.pta returns the three PTA views", {
   plots <- NULL
 
   expect_no_error({
-    plots <- fct_pta_plot$plot.pta(data, ecoff = 1, selected_dose = 4, dose_increment = 1)
+    plots <- plot_pta$plot.pta(data, ecoff = 1, selected_dose = 4, dose_increment = 1)
   })
 
   expect_s3_class(plots$pta_plot, "ggplot")
@@ -63,8 +63,8 @@ test_that("plot.cfr builds hover text for all rows", {
   plot <- NULL
 
   expect_no_error({
-    plot <- fct_pta_plot$plot.cfr(data)
+    plot <- plot_pta$plot.cfr(data)
   })
 
   expect_s3_class(plot, "ggplot")
-}
+})

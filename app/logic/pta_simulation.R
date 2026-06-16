@@ -1,6 +1,6 @@
 box::use(
-  dplyr,
-  stats
+  dplyr[bind_cols, mutate],
+  stats[quantile]
 )
 
 DEFAULT_MIC_PLOT_GRID <- c(
@@ -9,18 +9,34 @@ DEFAULT_MIC_PLOT_GRID <- c(
   128, 256, 512, 1024
 )
 
-calc_css_distribution <- function(dose, tvcl, eta_cl, n_sim = 50000) {
+
+# ==================================================== #
+#                       Helper functions
+# ==================================================== #
+
+calc_css_distribution <- function(
+  dose,
+  tvcl,
+  eta_cl,
+  n_sim  = 50000
+) {
+  # calculate cl and css distribution PK formula -> css = R0/CL
   set.seed(3917985)
+  if (n_sim == 0) cl_distribution <- tvcl
+  if (n_sim > 0) cl_distribution <- tvcl * stats::rlnorm(n_sim, meanlog = 0, sdlog = eta_cl)
 
-  if (n_sim == 0) {
-    cl_distribution <- tvcl
+  if (length(dose) == 1) {
+    css_distribution <- (dose / 24) / cl_distribution
   }
 
-  if (n_sim > 0) {
-    cl_distribution <- tvcl * stats$rlnorm(n_sim, meanlog = 0, sdlog = eta_cl)
+  if (length(dose) > 1) {
+    css_distribution <- matrix(NA, nrow = n_sim, ncol = length(dose))
+    for (i in seq_along(dose)) {
+      css_distribution[, i] <- (dose[i] / 24) / cl_distribution
+    }
   }
 
-  (dose / 24) / cl_distribution
+  return(css_distribution)
 }
 
 threshold_curve <- function(threshold, mic) {
@@ -35,6 +51,11 @@ sanitize_log_series <- function(values) {
   values[!is.finite(values) | values <= 0] <- NA_real_
   values
 }
+
+
+# ==================================================== #
+#                       Core functions
+# ==================================================== #
 
 #' Expand sparse MIC observations into a continuous plotting grid.
 #'
@@ -77,6 +98,7 @@ sim_concentration <- function(
   tvcl,
   eta_cl,
   quantile = c(0.025, 0.975),
+  css_quantile = 0.95,
   mic = NA,
   dose_increment = 0,
   toxicity_threshold,
@@ -88,15 +110,21 @@ sim_concentration <- function(
   }
 
   css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim)
-  quant <- stats$quantile(css_distribution, probs = quantile)
+  quant <- quantile(css_distribution, probs = quantile)
   dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
   tv_css_range <- dose_range / (tvcl * 24)
 
+  # calculate the css distribution for all doses in the range
+  all_dose_css_distribution <- calc_css_distribution(dose_range, tvcl, eta_cl, n_sim)
+  quant_all_dose <- apply(all_dose_css_distribution, 2, function(x) quantile(x, probs = css_quantile))
+
+
   css_mic_range <- data.frame(
-    css_mic_below2 = sanitize_log_series(tv_css_range[1] / mic),
-    css_mic_below1 = sanitize_log_series(tv_css_range[2] / mic),
-    css_mic_above1 = sanitize_log_series(tv_css_range[4] / mic),
-    css_mic_above2 = sanitize_log_series(tv_css_range[5] / mic)
+    css_mic_below2 = sanitize_log_series(quant_all_dose[1] / mic),
+    css_mic_below1 = sanitize_log_series(quant_all_dose[2] / mic),
+    css_mic = sanitize_log_series(quant_all_dose[3] / mic),
+    css_mic_above1 = sanitize_log_series(quant_all_dose[4] / mic),
+    css_mic_above2 = sanitize_log_series(quant_all_dose[5] / mic)
   )
 
   quantile_df <- data.frame(
@@ -106,7 +134,7 @@ sim_concentration <- function(
     percentile_97.5 = sanitize_log_series(quant[2] / mic)
   )
 
-  concentration_df <- dplyr$bind_cols(
+  concentration_df <- bind_cols(
     quantile_df,
     css_mic_range,
     toxicity_threshold = sanitize_log_series(threshold_curve(toxicity_threshold, mic)),
@@ -129,7 +157,7 @@ calculate_cfr <- function(
   }
 
   cfr <- 0
-  mic_distribution <- dplyr$mutate(
+  mic_distribution <- mutate(
     mic_distribution,
     relative_distribution = distribution / sum(distribution)
   )
