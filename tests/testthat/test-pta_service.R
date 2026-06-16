@@ -82,7 +82,7 @@ test_that("sim_concentration applies the free-fraction multiplier to Css-derived
   )
 
   expect_equal(result$css_mic, c(1, 0.5))
-  expect_equal(result$toxicity_threshold, c(4, 2))
+  expect_equal(result$toxicity_threshold, c(2, 2))
   expect_equal(result$additional_threshold, c(6, 3))
 })
 

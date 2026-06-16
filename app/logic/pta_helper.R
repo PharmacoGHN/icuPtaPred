@@ -50,6 +50,22 @@ concentration_badge <- function(value) {
   )
 }
 
+#' @export
+toxicity_badge <- function(value) {
+  if (!is.finite(value) || value <= 0) {
+    return(NULL)
+  }
+
+  tags$div(
+    class = "icu-target-badges",
+    tags$span(
+      class = "icu-target-badge",
+      style = "background-color: rgba(150, 11, 11, 0.12); border: 1px solid rgba(150, 11, 11, 0.28); color: #960b0b;",
+      paste0("Toxicity threshold: ", round(value, 1), " mg/L")
+    )
+  )
+}
+
 summary_metric <- function(label, value, unit = NULL, digits = 1, emphasis = FALSE) {
   metric_value <- if (is.null(value) || !is.finite(value)) {
     "NA"

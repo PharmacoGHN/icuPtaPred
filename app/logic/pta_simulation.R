@@ -53,6 +53,14 @@ threshold_curve <- function(threshold, mic) {
   threshold / mic
 }
 
+toxicity_threshold_marker <- function(threshold) {
+  if (length(threshold) == 0 || is.na(threshold) || threshold <= 0) {
+    return(NA_real_)
+  }
+
+  threshold
+}
+
 # Remove values that cannot be displayed on the log-scaled PTA plots.
 sanitize_log_series <- function(values) {
   values[!is.finite(values) | values <= 0] <- NA_real_
@@ -137,7 +145,10 @@ sim_concentration <- function(
     css_mic_below1 = sanitize_log_series(quant_all_dose[2] / mic),
     css_mic_above1 = sanitize_log_series(quant_all_dose[4] / mic),
     css_mic_above2 = sanitize_log_series(quant_all_dose[5] / mic),
-    toxicity_threshold = sanitize_log_series(threshold_curve(toxicity_threshold * concentration_multiplier, mic)),
+    toxicity_threshold = rep(
+      toxicity_threshold_marker(toxicity_threshold * concentration_multiplier),
+      length(mic)
+    ),
     additional_threshold = sanitize_log_series(threshold_curve(additional_threshold * concentration_multiplier, mic))
   )
 

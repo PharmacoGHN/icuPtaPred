@@ -1,5 +1,5 @@
 box::use(
-  testthat[expect_equal, expect_no_error, expect_s3_class, test_that]
+  testthat[expect_equal, expect_no_error, expect_s3_class, expect_true, test_that]
 )
 
 box::use(
@@ -29,7 +29,7 @@ test_that("plot.pta returns the three PTA views", {
     css_mic_above2 = c(2.8, 1.4, 0.7),
     percentile_2.5 = c(1.7, 0.9, 0.45),
     percentile_97.5 = c(2.3, 1.1, 0.55),
-    toxicity_threshold = c(4, 2, 1),
+    toxicity_threshold = c(4, 4, 4),
     additional_threshold = c(NA_real_, 1.5, NA_real_)
   )
 
@@ -64,7 +64,7 @@ test_that("plot.pta labels the axis and hover text for free Css", {
     css_mic_above2 = c(2.8, 1.4, 0.7),
     percentile_2.5 = c(1.7, 0.9, 0.45),
     percentile_97.5 = c(2.3, 1.1, 0.55),
-    toxicity_threshold = c(4, 2, 1),
+    toxicity_threshold = c(4, 4, 4),
     additional_threshold = c(NA_real_, 1.5, NA_real_)
   )
 
@@ -73,6 +73,26 @@ test_that("plot.pta labels the axis and hover text for free Css", {
 
   expect_equal(plots$pta_plot$labels$y, "Free Css/MIC ratio")
   expect_true(grepl("free Css/MIC ratio", plot_data$selected_hover[[1]], fixed = TRUE))
+})
+
+test_that("plot.pta builds a single toxicity marker at MIC 1", {
+  data <- data.frame(
+    mic = c(0.25, 0.5, 2),
+    css_mic = c(4, 2, 0.5),
+    css_mic_below1 = c(3.2, 1.6, 0.4),
+    css_mic_below2 = c(2.4, 1.2, 0.3),
+    css_mic_above1 = c(4.8, 2.4, 0.6),
+    css_mic_above2 = c(5.6, 2.8, 0.7),
+    percentile_2.5 = c(3.4, 1.7, 0.45),
+    percentile_97.5 = c(4.6, 2.3, 0.55),
+    toxicity_threshold = c(4, 4, 4),
+    additional_threshold = c(NA_real_, 1.5, NA_real_)
+  )
+
+  toxicity_marker <- impl$build_toxicity_marker_data(data)
+
+  expect_equal(toxicity_marker$mic[[1]], 1)
+  expect_equal(toxicity_marker$toxicity_threshold[[1]], 4)
 })
 
 test_that("plot.cfr builds hover text for all rows", {

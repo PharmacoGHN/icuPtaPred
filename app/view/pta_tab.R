@@ -17,7 +17,7 @@ box::use(
   app/logic/utils[labels],
   app/logic/pta_helper[
     advanced_model_label, advanced_model_warning_note, concentration_badge, dose_badges, footer_note,
-    patient_summary_card, patient_summary_placeholder, renal_formula_note
+    patient_summary_card, patient_summary_placeholder, renal_formula_note, toxicity_badge
   ],
   app/logic/pta_plot[cfr_plotly, plot.cfr, plot.pta, pta_plotly]
 )
@@ -443,6 +443,7 @@ server <- function(id) {
         all_dose <- c(-2, -1, 0, 1, 2) * model_param$dose_increment + input$drug_dose
         tagList(
           dose_badges(all_dose),
+          toxicity_badge(toxicity_threshold * concentration_multiplier),
           concentration_badge(additional_concentration)
         )
       })

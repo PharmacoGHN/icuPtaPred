@@ -1,6 +1,6 @@
 box::use(
   dplyr[mutate],
-  ggplot2[aes, ggplot, geom_line, geom_hline, geom_ribbon, geom_vline, labs, scale_x_continuous, scale_y_continuous, xlab, ylab, theme_bw, theme, element_rect],
+  ggplot2[aes, ggplot, geom_hline, geom_line, geom_point, geom_ribbon, geom_vline, labs, scale_x_continuous, scale_y_continuous, xlab, ylab, theme_bw, theme, element_rect],
   plotly[config, ggplotly, layout],
   scales
 )
@@ -116,6 +116,14 @@ threshold_hover_text <- function(mic, threshold, label) {
   )
 }
 
+toxicity_marker_hover_text <- function(threshold) {
+  paste0(
+    "Reference MIC: 1 mg/L",
+    "<br>", PTA_THRESHOLD_COLUMNS[["toxicity_threshold"]],
+    "<br>Threshold concentration: ", format_plot_value(threshold), " mg/L"
+  )
+}
+
 # Check whether a curve has at least one value that can be shown on the plot.
 has_plot_values <- function(values) {
   any(is.finite(values) & !is.na(values))
@@ -161,6 +169,22 @@ build_interval_hover <- function(mic, lower, upper, label) {
 
 build_threshold_hover <- function(mic, values, label) {
   mapply(threshold_hover_text, mic, values, MoreArgs = list(label = label), USE.NAMES = FALSE)
+}
+
+build_toxicity_marker_data <- function(data) {
+  threshold_values <- data$toxicity_threshold[is.finite(data$toxicity_threshold) & !is.na(data$toxicity_threshold) & data$toxicity_threshold > 0]
+
+  if (!length(threshold_values)) {
+    return(NULL)
+  }
+
+  threshold_value <- threshold_values[[1]]
+
+  data.frame(
+    mic = 1,
+    toxicity_threshold = threshold_value,
+    toxicity_hover = toxicity_marker_hover_text(threshold_value)
+  )
 }
 
 pta_ratio_label <- function(use_free_fraction = FALSE) {
@@ -345,9 +369,10 @@ plot.pta <- function(
   use_free_fraction = FALSE
 ) {
   data <- build_pta_plot_data(data, selected_dose, dose_increment, use_free_fraction)
+  toxicity_marker <- build_toxicity_marker_data(data)
 
-  x_limits <- safe_log_limits(data$mic)
-  y_limits <- safe_log_limits(extract_plot_values(data, PTA_PLOT_VALUE_COLUMNS))
+  x_limits <- safe_log_limits(data$mic, if (!is.null(toxicity_marker)) toxicity_marker$mic)
+  y_limits <- safe_log_limits(extract_plot_values(data, PTA_PLOT_VALUE_COLUMNS), if (!is.null(toxicity_marker)) toxicity_marker$toxicity_threshold)
 
   pta_plot <- ggplot(data = data) +
     geom_hline(mapping = aes(yintercept = 1), col = "#2b94ab", lty = 2, lwd = 0.5) +
@@ -368,13 +393,16 @@ plot.pta <- function(
       legend.box.background = element_rect()
     )
 
-  pta_plot <- add_optional_pta_line(
-    pta_plot,
-    data,
-    "toxicity_threshold",
-    "toxicity_hover",
-    "#960b0b"
-  )
+  if (!is.null(toxicity_marker)) {
+    pta_plot <- pta_plot +
+      geom_point(
+        data = toxicity_marker,
+        mapping = aes(x = .data$mic, y = .data$toxicity_threshold, text = .data$toxicity_hover),
+        col = "#960b0b",
+        size = 3,
+        na.rm = TRUE
+      )
+  }
 
   pta_plot <- add_optional_pta_line(
     pta_plot,
