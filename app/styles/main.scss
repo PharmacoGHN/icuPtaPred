@@ -647,7 +647,7 @@ body {
 }
 
 .icu-doc-note {
-  background: linear-gradient(135deg, rgba(15, 122, 106, 0.08), rgba(29, 79, 145, 0.08));
+  background: linear-gradient(135deg, rgba(226, 143, 42, 0.668), rgba(29, 79, 145, 0.08));
   border: 1px solid rgba(15, 122, 106, 0.12);
   border-radius: 18px;
   margin-bottom: 1rem;
@@ -682,6 +682,59 @@ body {
   color: var(--icu-brand-strong);
   text-decoration: none;
   transform: translateY(-1px);
+}
+
+.icu-doc-navlist .tabbable {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+}
+
+.icu-doc-navlist .nav {
+  background: rgba(19, 34, 56, 0.04);
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 20px;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.65rem;
+}
+
+.icu-doc-navlist .nav > li {
+  float: none;
+}
+
+.icu-doc-navlist .nav > li > a {
+  border-radius: 14px;
+  color: rgba(19, 34, 56, 0.72);
+  font-weight: 600;
+  margin-right: 0;
+}
+
+.icu-doc-navlist .nav > li > a:hover,
+.icu-doc-navlist .nav > li.active > a,
+.icu-doc-navlist .nav > li.active > a:hover,
+.icu-doc-navlist .nav > li.active > a:focus {
+  background: linear-gradient(135deg, rgba(15, 122, 106, 0.12), rgba(29, 79, 145, 0.12));
+  border-color: rgba(15, 122, 106, 0.1);
+  color: var(--icu-brand-strong);
+}
+
+.icu-doc-navlist .tab-content {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 22px;
+  min-height: 420px;
+  padding: 1.2rem;
+}
+
+@media (max-width: 991px) {
+  .icu-doc-navlist .tabbable {
+    grid-template-columns: 1fr;
+  }
+
+  .icu-doc-navlist .tab-content {
+    min-height: auto;
+  }
 }
 
 .btn.icu-primary-button,
@@ -756,6 +809,69 @@ body {
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.74rem;
   padding: 0.38rem 0.78rem;
+}
+
+.general-info-section {
+  background:
+    linear-gradient(180deg, rgba(248, 249, 250, 0.96), rgba(255, 255, 255, 0.98)),
+    radial-gradient(circle at top right, rgba(150, 0, 24, 0.08), transparent 35%);
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 14px 28px rgba(19, 34, 56, 0.08);
+  margin-top: 0.7rem;
+  padding: 1.4rem;
+}
+
+.general-info-section__title {
+  color: #960018;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.general-info-section__heading {
+  color: #132238;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.general-info-section hr {
+  border-top: 1px solid rgba(19, 34, 56, 0.08);
+  margin: 0.55rem 0 0.85rem;
+}
+
+.general-info-section__authors,
+.general-info-section__copy,
+.general-info-section__meta {
+  color: rgba(19, 34, 56, 0.88);
+  font-size: 0.97rem;
+  line-height: 1.7;
+}
+
+.general-info-section__authors strong {
+  color: var(--icu-accent);
+}
+
+.general-info-section__authors a {
+  margin-left: 0.25rem;
+  text-decoration: none;
+}
+
+.general-info-section__link {
+  color: #960018;
+  display: inline-flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.general-info-section__link:hover {
+  color: #6f0012;
+  text-decoration: underline;
 }
 
 .icu-patient-summary {

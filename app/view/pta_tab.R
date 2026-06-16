@@ -330,7 +330,7 @@ server <- function(id) {
         manual_renal_function = input$manual_renal_function
       )
 
-      free_fraction_requested <- isTRUE(input$advanced_user_mode) && isTRUE(input$use_free_fraction)
+      free_fraction_requested <- !isTRUE(input$advanced_user_mode) || isTRUE(input$use_free_fraction)
       use_free_fraction <- free_fraction_requested &&
         is.finite(model_param$fu) &&
         model_param$fu > 0 &&
@@ -338,7 +338,7 @@ server <- function(id) {
       concentration_multiplier <- if (use_free_fraction) model_param$fu else 1
 
       # ponytail: missing fu falls back to total Css so existing registry rows keep working; populate model_registry fu values to enable unbound exposure.
-      if (free_fraction_requested && !use_free_fraction) {
+      if (isTRUE(input$advanced_user_mode) && isTRUE(input$use_free_fraction) && !use_free_fraction) {
         showNotification(
           "The selected model has no valid free fraction configured. Total Css was used.",
           duration = 8,
