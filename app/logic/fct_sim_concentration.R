@@ -14,7 +14,17 @@ calc_css_distribution <- function(
   set.seed(3917985)
   if (n_sim == 0) cl_distribution <- tvcl
   if (n_sim > 0) cl_distribution <- tvcl * stats::rlnorm(n_sim, meanlog = 0, sdlog = eta_cl)
-  css_distribution <- (dose / 24) / cl_distribution
+
+  if (length(dose) == 1) {
+    css_distribution <- (dose / 24) / cl_distribution
+  }
+
+  if (length(dose) > 1) {
+    css_distribution <- matrix(NA, nrow = n_sim, ncol = length(dose))
+    for (i in seq_along(dose)) {
+      css_distribution[, i] <- (dose[i] / 24) / cl_distribution
+    }
+  }
 
   return(css_distribution)
 }
@@ -32,7 +42,8 @@ sim_concentration <- function(
   dose,
   tvcl,
   eta_cl,
-  quantile = c(0.025, 0.975),
+  quantile = c(0.025, 0.5, 0.975),
+  css_quantile = 0.95,
   mic = NA,
   dose_increment = 0,
   toxicity_threshold,
@@ -45,25 +56,36 @@ sim_concentration <- function(
   css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim)
   quant <- stats::quantile(css_distribution, probs = quantile)
 
+  # extract 95th percentile specifically
+  quant_95 <- stats::quantile(css_distribution, probs = 0.95)
+
   # add simulation of 2 dosing above and below if these are not 0
   dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
   tv_css_range <- dose_range / (tvcl * 24)
 
+  # calculate the css distribution for all doses in the range
+  all_dose_css_distribution <- calc_css_distribution(dose_range, tvcl, eta_cl, n_sim)
+  quant_all_dose <- apply(all_dose_css_distribution, 2, function(x) stats::quantile(x, probs = css_quantile))
+
+
+
   # generate dataframe containing several dose target attainment
+  # calculate the css/mic ratio for each dose and mic value default quantile value is 0.95
+  # But can be changed by the user (not available as of v1.0.0)
   css_mic_range <- data.frame(
-    css_mic_below2 = tv_css_range[1] / mic,
-    css_mic_below1 = tv_css_range[2] / mic,
-    css_mic = tv_css_range[3] / mic,
-    css_mic_above1 = tv_css_range[4] / mic,
-    css_mic_above2 = tv_css_range[5] / mic
+    css_mic_below2 = quant_all_dose[1] / mic,
+    css_mic_below1 = quant_all_dose[2] / mic,
+    css_mic = quant_all_dose[3] / mic,
+    css_mic_above1 = quant_all_dose[4] / mic,
+    css_mic_above2 = quant_all_dose[5] / mic
   )
 
   # create the output file containing css distribution summary
   quantile_df <- data.frame(
-    css_mic = tv_css_range[3] / mic, # median_css / mic,
+    css_mic = quant[2] / mic, #median css/mic ratio
     mic = mic,
     percentile_2.5 = quant[1] / mic,
-    percentile_97.5 = quant[2] / mic
+    percentile_97.5 = quant[3] / mic
   )
 
   # bind both data.frame
