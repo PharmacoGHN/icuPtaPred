@@ -1,17 +1,18 @@
 {
   "drug": "Meropenem",
   "model": "Ehrmann_2019",
-  "Title": "",
+  "Title": "Development of a dosing algorithm for meropenem in critically ill patients based on a population pharmacokinetic/pharmacodynamic analysis",
   "Authors": "Ehrmann, et al.",
   "Year": "2019",
   "Journal": "International Journal of Antimicrobial Agents",
-  "DOI": "",
-  "URL": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9951903/",
-  "Abstract_Introduction": "",
-  "Abstract_Methods": "",
-  "Abstract_Results": "",
-  "Abstract_Conclusions": "",
-  "Clearance_Formula": "",
+  "DOI": "10.1016/j.ijantimicag.2019.06.016",
+  "URL": "https://pubmed.ncbi.nlm.nih.gov/31229669/",
+  "Abstract_Introduction": "Effective antibiotic dosing is vital for therapeutic success in critically ill patients. This work aimed to develop an algorithm to identify appropriate meropenem dosing in critically ill patients.",
+  "Abstract_Methods": "Population pharmacokinetic (PK) modelling was performed in NONMEM®7.3 based on densely sampled meropenem serum samples (npatients = 48; nsamples = 1376) and included a systematic analysis of 27 pre-selected covariates to identify factors influencing meropenem exposure. Using Monte Carlo simulations newly considering the uncertainty of PK parameter estimates, standard meropenem dosing was evaluated with respect to attainment of the pharmacokinetic/pharmacodynamic (PK/PD) target and was compared with alternative infusion regimens (short-term, prolonged, continuous; daily dose, 2000-6000 mg). Subsequently, a dosing algorithm was developed to identify appropriate dosing regimens.",
+  "Abstract_Results": "The two-compartment population PK model included three factors influencing meropenem pharmacokinetics: the Cockcroft-Gault creatinine clearance (CLCRCG) on meropenem clearance; and body weight and albumin on the central and peripheral volume of distribution, respectively; of these, only CLCRCG was identified as a vital influencing factor on PK/PD target attainment. A three-level dosing algorithm was developed (considering PK parameter uncertainty), suggesting dosing regimens depending on renal function and the level (L) of knowledge about the infecting pathogen (L1, pathogen unknown; L2, pathogen known; L3(-MIC), pathogen and susceptibility known; L3(+MIC), MIC known). Whereas patients with higher CLCRCG and lower pathogen susceptibility required mainly intensified dosing regimens, lower than standard doses appeared sufficient for highly susceptible pathogens.",
+  "Abstract_Conclusions": "In conclusion, a versatile meropenem dosing algorithm for critically ill patients is proposed, indicating appropriate dosing regimens based on patient- and pathogen-specific information.",
+  "Abstract": "",
+  "Clearance_Formula": "$$Cl_i = 9.25 \\times (1 + 0.00977 \\times (CRCL_{CG} - 80.8)) $$",
   "Model_Description": "",
-  "Population_Studied": ""
+  "Population_Studied": "Critically ill patients; Adults"
 }

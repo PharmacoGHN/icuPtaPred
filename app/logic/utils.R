@@ -74,3 +74,31 @@ get_sd_from_cv <- function(cv) {
 get_cv_from_sd <- function(sd) {
   return(sqrt(exp(sd^2) - 1))
 }
+
+#' @title orcid_icon
+#'
+#' @description  This function creates an ORCID icon with a link to the author's ORCID page.
+#'
+#' @param author_name The name of the author.
+#' @param orcid The ORCID ID of the author (optional).
+#'
+#' @return A shiny span containing the author's name and ORCID icon.
+#'
+#' @keywords internal
+#' @author Romain Garreau
+#' @noRd
+#' @export
+
+orcid_icon <- function(author_name, orcid = NULL) {
+  shiny::span(
+    shiny::strong(author_name),
+    if (!is.null(orcid)) {
+      shiny::tags$a(
+        href = paste0("https://orcid.org/", orcid),
+        target = "_blank",
+        rel = "noopener noreferrer",
+        shiny::span(shiny::icon("orcid", style = "color: #bfdc5f;"), style = "color: black; text-align: center;")
+      )
+    }
+  )
+}

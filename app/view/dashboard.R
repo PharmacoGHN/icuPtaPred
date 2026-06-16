@@ -1,6 +1,6 @@
 box::use(
   bs4Dash[dashboardBody, dashboardHeader, dashboardPage, dashboardSidebar, menuItem, sidebarMenu, tabItem, tabItems],
-  shiny[icon, img, moduleServer, NS, tags],
+  shiny[actionLink, icon, img, moduleServer, NS, span, tags],
 )
 
 box::use(
@@ -10,6 +10,7 @@ box::use(
 )
 
 issue_url <- "https://github.com/PharmacoGHN/icuPtaPred/issues"
+support_email <- "romain.garreau@univ-lyon1.fr"
 
 app_version <- function() {
   description_path <- normalizePath(file.path(getwd(), "DESCRIPTION"), mustWork = FALSE)
@@ -64,6 +65,12 @@ sidebar_footer <- function() {
       class = "icu-sidebar-footer__link",
       icon("github"),
       tags$span("Report an issue")
+    ),
+    tags$a(
+      href = paste0("mailto:", support_email),
+      class = "icu-sidebar-footer__link",
+      icon("envelope"),
+      tags$span("Contact the admin")
     )
   )
 }
@@ -77,16 +84,23 @@ ui <- function(id) {
   ns <- NS(id)
 
   dashboardPage(
-    title = "ICU PTA Predictor",
+    title = "",
     dark = NULL,
+    help = NULL,
+    fullscreen = TRUE,
     header = dashboardHeader(
-      title = dashboard_brand(),
-      titleWidth = 320
+      title = sidebar_brand(app_version()),
+      titleWidth = 320,
+      compact = TRUE,
+      actionLink(
+        "reportIssue",
+        label = span(icon("github", class = "fa-lg"), " ", style = "color: black;"),
+        onclick = paste0("window.open('", "https://github.com/PharmacoGHN/icuPtaPred/", "', '_blank')")
+      )
     ),
     sidebar = dashboardSidebar(
       skin = "dark",
       status = "primary",
-      sidebar_brand(app_version()),
       tags$div("Workspace", class = "icu-sidebar-nav-heading"),
       sidebarMenu(
         id = ns("navigation"),
