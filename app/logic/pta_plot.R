@@ -1,6 +1,6 @@
 box::use(
   dplyr[mutate],
-  ggplot2[aes, ggplot, geom_line, geom_hline, geom_ribbon, labs, scale_x_continuous, scale_y_continuous, xlab, ylab, theme_bw, theme, element_rect],
+  ggplot2[aes, ggplot, geom_line, geom_hline, geom_ribbon, geom_vline, labs, scale_x_continuous, scale_y_continuous, xlab, ylab, theme_bw, theme, element_rect],
   plotly[config, ggplotly, layout],
   scales
 )
@@ -78,20 +78,32 @@ dose_curve_label <- function(
 
 
 pta_hover_text <- function(mic, ratio, label) {
+  ratio_label <- attr(label, "ratio_label")
+
+  if (is.null(ratio_label) || !nzchar(ratio_label)) {
+    ratio_label <- "Css/MIC"
+  }
+
   paste0(
     "MIC: ", format_plot_value(mic), " mg/L",
     "<br>", label,
-    "<br> Css/MIC ratio: ", format_plot_value(ratio)
+    "<br> ", ratio_label, " ratio: ", format_plot_value(ratio)
   )
 }
 
 
 
 pta_interval_hover_text <- function(mic, lower, upper, label) {
+  ratio_label <- attr(label, "ratio_label")
+
+  if (is.null(ratio_label) || !nzchar(ratio_label)) {
+    ratio_label <- "Css/MIC"
+  }
+
   paste0(
     "MIC: ", format_plot_value(mic), " mg/L",
     "<br>", label,
-    "<br>95% interval: ", format_plot_value(lower), " to ", format_plot_value(upper), " Css/MIC"
+    "<br>95% interval: ", format_plot_value(lower), " to ", format_plot_value(upper), " ", ratio_label
   )
 }
 
@@ -151,18 +163,49 @@ build_threshold_hover <- function(mic, values, label) {
   mapply(threshold_hover_text, mic, values, MoreArgs = list(label = label), USE.NAMES = FALSE)
 }
 
+pta_ratio_label <- function(use_free_fraction = FALSE) {
+  if (isTRUE(use_free_fraction)) {
+    return("free Css/MIC")
+  }
+
+  "Css/MIC"
+}
+
+pta_y_axis_label <- function(use_free_fraction = FALSE) {
+  if (isTRUE(use_free_fraction)) {
+    return("Free Css/MIC ratio")
+  }
+
+  "Css/MIC ratio"
+}
+
 # Attach all hover labels up front so the plot construction code only handles geoms.
-build_pta_plot_data <- function(data, selected_dose, dose_increment) {
+build_pta_plot_data <- function(data, selected_dose, dose_increment, use_free_fraction = FALSE) {
   validate_pta_plot_data(data)
 
-  data$selected_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["selected"]]]], dose_curve_label(0, selected_dose, dose_increment))
-  data$below1_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["below1"]]]], dose_curve_label(-1, selected_dose, dose_increment))
-  data$below2_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["below2"]]]], dose_curve_label(-2, selected_dose, dose_increment))
-  data$above1_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["above1"]]]], dose_curve_label(1, selected_dose, dose_increment))
-  data$above2_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["above2"]]]], dose_curve_label(2, selected_dose, dose_increment))
+  ratio_label <- pta_ratio_label(use_free_fraction)
+
+  selected_label <- dose_curve_label(0, selected_dose, dose_increment)
+  attr(selected_label, "ratio_label") <- ratio_label
+  below1_label <- dose_curve_label(-1, selected_dose, dose_increment)
+  attr(below1_label, "ratio_label") <- ratio_label
+  below2_label <- dose_curve_label(-2, selected_dose, dose_increment)
+  attr(below2_label, "ratio_label") <- ratio_label
+  above1_label <- dose_curve_label(1, selected_dose, dose_increment)
+  attr(above1_label, "ratio_label") <- ratio_label
+  above2_label <- dose_curve_label(2, selected_dose, dose_increment)
+  attr(above2_label, "ratio_label") <- ratio_label
+  probability_label <- paste0(dose_curve_label(0, selected_dose, dose_increment), " probability interval")
+  attr(probability_label, "ratio_label") <- ratio_label
+
+  data$selected_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["selected"]]]], selected_label)
+  data$below1_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["below1"]]]], below1_label)
+  data$below2_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["below2"]]]], below2_label)
+  data$above1_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["above1"]]]], above1_label)
+  data$above2_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["above2"]]]], above2_label)
   data$probability_hover <- build_interval_hover(
     data$mic, data[[PTA_INTERVAL_COLUMNS[["lower"]]]], data[[PTA_INTERVAL_COLUMNS[["upper"]]]],
-    paste0(dose_curve_label(0, selected_dose, dose_increment), " probability interval")
+    probability_label
   )
 
   data$toxicity_hover <- build_threshold_hover(data$mic, data$toxicity_threshold, PTA_THRESHOLD_COLUMNS[["toxicity_threshold"]])
@@ -298,9 +341,10 @@ plot.pta <- function(
   data,
   ecoff = NA,
   selected_dose = NA_real_,
-  dose_increment = NA_real_
+  dose_increment = NA_real_,
+  use_free_fraction = FALSE
 ) {
-  data <- build_pta_plot_data(data, selected_dose, dose_increment)
+  data <- build_pta_plot_data(data, selected_dose, dose_increment, use_free_fraction)
 
   x_limits <- safe_log_limits(data$mic)
   y_limits <- safe_log_limits(extract_plot_values(data, PTA_PLOT_VALUE_COLUMNS))
@@ -316,7 +360,7 @@ plot.pta <- function(
     scale_x_continuous(trans = "log2", breaks = data$mic, labels = data$mic, limits = x_limits) +
     scale_y_continuous(trans = "log2", n.breaks = 10, limits = y_limits) +
     xlab("Minimum inhibitory concentration (MIC, mg/L)") +
-    ylab("Steady-state concentration to MIC ratio") +
+    ylab(pta_y_axis_label(use_free_fraction)) +
     theme_bw(base_size = 14) +
     theme(
       legend.position = "inside",
@@ -431,7 +475,7 @@ plot.cfr <- function(data, dose_increment = 0) {
 #'
 #' @return A plotly object with log2 MIC and Css/MIC axes.
 #' @export
-pta_plotly <- function(plot, data) {
+pta_plotly <- function(plot, data, use_free_fraction = FALSE) {
   x_tick_values <- sort(unique(data$mic[is.finite(data$mic) & !is.na(data$mic) & data$mic > 0]))
   x_tick_positions <- log2(x_tick_values)
   x_range <- log2_axis_range(data$mic)
@@ -456,7 +500,7 @@ pta_plotly <- function(plot, data) {
       showexponent = "none"
     ),
     yaxis = list(
-      title = list(text = "Steady-state concentration to MIC ratio"),
+      title = list(text = pta_y_axis_label(use_free_fraction)),
       autorange = FALSE,
       range = y_range,
       tickmode = "array",

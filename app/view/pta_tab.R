@@ -46,7 +46,10 @@ ui <- function(id) {
             column(width = 5, offset = 1,
               conditionalPanel(
                 condition = sprintf("input['%s']", ns("advanced_user_mode")),
-                numericInput(ns("concentration_percentile"), "Concentration percentile", value = 0.95, min = 0, max = 1, step = 0.01)
+                tagList(
+                  checkboxInput(ns("use_free_fraction"), "Use free fraction", value = TRUE),
+                  numericInput(ns("concentration_percentile"), "Concentration percentile", value = 0.95, min = 0, max = 1, step = 0.01)
+                )
               )
             )
           ),
@@ -327,6 +330,23 @@ server <- function(id) {
         manual_renal_function = input$manual_renal_function
       )
 
+      free_fraction_requested <- isTRUE(input$advanced_user_mode) && isTRUE(input$use_free_fraction)
+      use_free_fraction <- free_fraction_requested &&
+        is.finite(model_param$fu) &&
+        model_param$fu > 0 &&
+        model_param$fu <= 1
+      concentration_multiplier <- if (use_free_fraction) model_param$fu else 1
+
+      # ponytail: missing fu falls back to total Css so existing registry rows keep working; populate model_registry fu values to enable unbound exposure.
+      if (free_fraction_requested && !use_free_fraction) {
+        showNotification(
+          "The selected model has no valid free fraction configured. Total Css was used.",
+          duration = 8,
+          type = "warning",
+          closeButton = TRUE
+        )
+      }
+
       toxicity_threshold <- model_param$toxicity_threshold
       additional_concentration <- if (
         is.finite(input$additional_concentration) && input$additional_concentration > 0
@@ -349,7 +369,8 @@ server <- function(id) {
         },
         dose_increment = model_param$dose_increment * 1000,
         toxicity_threshold = toxicity_threshold,
-        additional_threshold = additional_concentration
+        additional_threshold = additional_concentration,
+        concentration_multiplier = concentration_multiplier
       )
 
       if (!identical(input$bacteria_select, "probabilist")) {
@@ -374,7 +395,8 @@ server <- function(id) {
             tvcl = model_param$cl,
             eta_cl = model_param$eta_cl,
             mic_distribution = mic_distribution_df,
-            toxicity_threshold = toxicity_threshold
+            toxicity_threshold = toxicity_threshold,
+            concentration_multiplier = concentration_multiplier
           )
 
           cfr_plot <- plot.cfr(cfr_df)
@@ -410,11 +432,12 @@ server <- function(id) {
         concentration_df,
         ecoff = if (identical(input$bacteria_select, "probabilist")) {NA} else {ecoff()},
         selected_dose = input$drug_dose,
-        dose_increment = model_param$dose_increment
+        dose_increment = model_param$dose_increment,
+        use_free_fraction = use_free_fraction
       )
 
-      output$pta_output <- renderPlotly({ pta_plotly(pta_plot$pta_multiple_doses, concentration_df) })
-      output$pta_output_probability <- renderPlotly({ pta_plotly(pta_plot$pta_ci_plot, concentration_df) })
+      output$pta_output <- renderPlotly({ pta_plotly(pta_plot$pta_multiple_doses, concentration_df, use_free_fraction) })
+      output$pta_output_probability <- renderPlotly({ pta_plotly(pta_plot$pta_ci_plot, concentration_df, use_free_fraction) })
 
       output$footer_pta <- renderUI({
         all_dose <- c(-2, -1, 0, 1, 2) * model_param$dose_increment + input$drug_dose

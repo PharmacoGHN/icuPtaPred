@@ -42,6 +42,7 @@ test_that("plot.pta returns the three PTA views", {
   expect_s3_class(plots$pta_plot, "ggplot")
   expect_s3_class(plots$pta_multiple_doses, "ggplot")
   expect_s3_class(plots$pta_ci_plot, "ggplot")
+  expect_equal(plots$pta_plot$labels$y, "Css/MIC ratio")
 
   ci_layer <- plots$pta_ci_plot$layers[[length(plots$pta_ci_plot$layers)]]
   ci_colour <- ci_layer$aes_params$colour
@@ -51,6 +52,27 @@ test_that("plot.pta returns the three PTA views", {
   }
 
   expect_equal(ci_colour, NA)
+})
+
+test_that("plot.pta labels the axis and hover text for free Css", {
+  data <- data.frame(
+    mic = c(0.5, 1, 2),
+    css_mic = c(2, 1, 0.5),
+    css_mic_below1 = c(1.6, 0.8, 0.4),
+    css_mic_below2 = c(1.2, 0.6, 0.3),
+    css_mic_above1 = c(2.4, 1.2, 0.6),
+    css_mic_above2 = c(2.8, 1.4, 0.7),
+    percentile_2.5 = c(1.7, 0.9, 0.45),
+    percentile_97.5 = c(2.3, 1.1, 0.55),
+    toxicity_threshold = c(4, 2, 1),
+    additional_threshold = c(NA_real_, 1.5, NA_real_)
+  )
+
+  plots <- plot_pta$plot.pta(data, ecoff = 1, selected_dose = 4, dose_increment = 1, use_free_fraction = TRUE)
+  plot_data <- impl$build_pta_plot_data(data, selected_dose = 4, dose_increment = 1, use_free_fraction = TRUE)
+
+  expect_equal(plots$pta_plot$labels$y, "Free Css/MIC ratio")
+  expect_true(grepl("free Css/MIC ratio", plot_data$selected_hover[[1]], fixed = TRUE))
 })
 
 test_that("plot.cfr builds hover text for all rows", {

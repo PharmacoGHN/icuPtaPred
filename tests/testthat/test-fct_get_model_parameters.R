@@ -158,6 +158,7 @@ test_that("get_model_parameters returns registry dose and safety metadata", {
   expect_equal(cefepime_param$dose_increment, 1.000)
   expect_equal(cefepime_param$max_dose, 20)
   expect_equal(cefepime_param$toxicity_threshold, 20)
+  expect_true(is.na(cefepime_param$fu))
   expect_false(cefepime_param$is_not_available)
   expect_equal(cefepime_param$availability_message, "")
 
@@ -212,6 +213,7 @@ test_that("coerce_registry backfills availability metadata for legacy rows", {
 
   expect_false(registry$is_not_available[[1]])
   expect_equal(registry$availability_message[[1]], "")
+  expect_true(is.na(registry$fu[[1]]))
 })
 
 test_that("availability metadata survives registry JSON roundtrip", {
@@ -225,6 +227,7 @@ test_that("availability metadata survives registry JSON roundtrip", {
       dose_increment = 0.5,
       max_dose = 20,
       toxicity_threshold = 45,
+      fu = 0.65,
       renal_metric = "none",
       renal_formula = "No renal formula",
       clearance_expr = "1",
@@ -240,4 +243,5 @@ test_that("availability metadata survives registry JSON roundtrip", {
 
   expect_true(roundtrip_registry$is_not_available[[1]])
   expect_equal(roundtrip_registry$availability_message[[1]], "Not yet validated for routine use.")
+  expect_equal(roundtrip_registry$fu[[1]], 0.65)
 })

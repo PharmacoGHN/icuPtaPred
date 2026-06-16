@@ -13,6 +13,6 @@
   "Abstract_Conclusions": "In patients with high CRCL combined with high-MIC bacterial infections, even a continuous infusion regimen with a daily dose of 24 g may be insufficient to achieve therapeutic concentrations.",
   "Abstract": "",
   "Clearance_Formula": "$$ CL = 2.25 + 0.119  \\times CG_{TBW} $$",
-  "Model_Description": "Nonrenal clearance = 2.25 L/h. Renal clearance = 0.119 x CRCL calculated with Cockcroft-Gault using total body weight (TBW).",
+  "Model_Description": "Nonrenal clearance = 2.25 L/h. Renal clearance = 0.119 x CRCL calculated with Cockcroft-Gault using total body weight (TBW).\nfree fraction = 0.7",
   "Population_Studied": "Critically ill patients"
 }

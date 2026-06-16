@@ -66,6 +66,26 @@ test_that("sim_concentration returns one row per MIC and additional threshold co
   expect_false(any(is.na(result$additional_threshold)))
 })
 
+test_that("sim_concentration applies the free-fraction multiplier to Css-derived series", {
+  result <- pta_service$sim_concentration(
+    dose = 240,
+    tvcl = 10,
+    eta_cl = 0,
+    quantile = c(0.025, 0.975),
+    css_quantile = 0.95,
+    mic = c(0.5, 1),
+    dose_increment = 120,
+    toxicity_threshold = 4,
+    additional_threshold = 6,
+    n_sim = 1,
+    concentration_multiplier = 0.5
+  )
+
+  expect_equal(result$css_mic, c(1, 0.5))
+  expect_equal(result$toxicity_threshold, c(4, 2))
+  expect_equal(result$additional_threshold, c(6, 3))
+})
+
 test_that("calculate_cfr_mulitple_doses reports CFR and toxicity across a dose range", {
   result <- pta_service$calculate_cfr_mulitple_doses(
     dose_increment = 1000,

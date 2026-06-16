@@ -9,6 +9,7 @@ drug: Cefepime
 model: Example_2026
 is_default: FALSE
 dose_increment: 1
+fu: 0.8
 renal_metric: cg_tbw
 renal_formula: Cockcroft-Gault (TBW)
 clearance_expr: 4.2 * (renal_value / 100)^0.5

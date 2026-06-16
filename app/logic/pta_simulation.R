@@ -18,21 +18,26 @@ calc_css_distribution <- function(
   dose,
   tvcl,
   eta_cl,
-  n_sim  = 50000
+  n_sim  = 50000,
+  concentration_multiplier = 1
 ) {
+  if (!is.finite(concentration_multiplier) || concentration_multiplier <= 0) {
+    stop("concentration_multiplier must be a positive numeric value")
+  }
+
   # calculate cl and css distribution PK formula -> css = R0/CL
   set.seed(3917985)
   if (n_sim == 0) cl_distribution <- tvcl
   if (n_sim > 0) cl_distribution <- tvcl * stats::rlnorm(n_sim, meanlog = 0, sdlog = eta_cl)
 
   if (length(dose) == 1) {
-    css_distribution <- (dose / 24) / cl_distribution
+    css_distribution <- ((dose / 24) / cl_distribution) * concentration_multiplier
   }
 
   if (length(dose) > 1) {
     css_distribution <- matrix(NA, nrow = n_sim, ncol = length(dose))
     for (i in seq_along(dose)) {
-      css_distribution[, i] <- (dose[i] / 24) / cl_distribution
+      css_distribution[, i] <- ((dose[i] / 24) / cl_distribution) * concentration_multiplier
     }
   }
 
@@ -107,19 +112,20 @@ sim_concentration <- function(
   dose_increment = 0,
   toxicity_threshold,
   additional_threshold = NA_real_,
-  n_sim = 50000
+  n_sim = 50000,
+  concentration_multiplier = 1
 ) {
   if (length(mic) == 1 && is.na(mic)) {
     mic <- c(0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64)
   }
 
-  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim)
+  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim, concentration_multiplier)
   quant <- quantile(css_distribution, probs = quantile)
   dose_range <- c(-2, -1, 0, 1, 2) * dose_increment + dose
 
   # Use the same percentile summary for the selected dose and its neighbors so
   # the default PTA curve reflects the requested concentration distribution.
-  all_dose_css_distribution <- calc_css_distribution(dose_range, tvcl, eta_cl, n_sim)
+  all_dose_css_distribution <- calc_css_distribution(dose_range, tvcl, eta_cl, n_sim, concentration_multiplier)
   quant_all_dose <- apply(all_dose_css_distribution, 2, function(x) quantile(x, probs = css_quantile))
 
   concentration_df <- data.frame(
@@ -131,8 +137,8 @@ sim_concentration <- function(
     css_mic_below1 = sanitize_log_series(quant_all_dose[2] / mic),
     css_mic_above1 = sanitize_log_series(quant_all_dose[4] / mic),
     css_mic_above2 = sanitize_log_series(quant_all_dose[5] / mic),
-    toxicity_threshold = sanitize_log_series(threshold_curve(toxicity_threshold, mic)),
-    additional_threshold = sanitize_log_series(threshold_curve(additional_threshold, mic))
+    toxicity_threshold = sanitize_log_series(threshold_curve(toxicity_threshold * concentration_multiplier, mic)),
+    additional_threshold = sanitize_log_series(threshold_curve(additional_threshold * concentration_multiplier, mic))
   )
 
   round(concentration_df, digits = 4)
@@ -144,7 +150,8 @@ calculate_cfr <- function(
   dose,
   mic_distribution,
   toxicity_threshold = NULL,
-  n_sim = 50000
+  n_sim = 50000,
+  concentration_multiplier = 1
 ) {
   if (!is.data.frame(mic_distribution)) {
     stop("mic_distribution must be a dataframe")
@@ -155,7 +162,13 @@ calculate_cfr <- function(
     mic_distribution,
     relative_distribution = distribution / sum(distribution)
   )
-  css_distribution <- calc_css_distribution(dose, tvcl, eta_cl, n_sim = n_sim)
+  css_distribution <- calc_css_distribution(
+    dose,
+    tvcl,
+    eta_cl,
+    n_sim = n_sim,
+    concentration_multiplier = concentration_multiplier
+  )
 
   for (index in seq_len(nrow(mic_distribution))) {
     css_distribution_mic <- mean(css_distribution > mic_distribution$mic[index])
@@ -165,7 +178,7 @@ calculate_cfr <- function(
 
   toxicity_proportion <- NULL
   if (!is.null(toxicity_threshold) && is.finite(toxicity_threshold) && toxicity_threshold > 0) {
-    toxicity_proportion <- mean(css_distribution > toxicity_threshold)
+    toxicity_proportion <- mean(css_distribution > (toxicity_threshold * concentration_multiplier))
   }
 
   list(cfr = cfr, toxicity_proportion = toxicity_proportion)
@@ -190,7 +203,8 @@ calculate_cfr_mulitple_doses <- function(
   eta_cl,
   mic_distribution,
   toxicity_threshold = NULL,
-  n_sim = 50000
+  n_sim = 50000,
+  concentration_multiplier = 1
 ) {
   dosing_sequence <- seq(0, dose_max, dose_increment)
 
@@ -201,7 +215,8 @@ calculate_cfr_mulitple_doses <- function(
       dosing_sequence[index],
       mic_distribution,
       toxicity_threshold,
-      n_sim
+      n_sim,
+      concentration_multiplier
     )
 
     current_row <- data.frame(

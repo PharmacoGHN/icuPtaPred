@@ -54,6 +54,7 @@ empty_registry <- function() {
     dose_increment = numeric(0),
     max_dose = numeric(0),
     toxicity_threshold = numeric(0),
+    fu = numeric(0),
     renal_metric = character(0),
     renal_formula = character(0),
     clearance_expr = character(0),
@@ -71,6 +72,7 @@ registry_columns <- c(
   "dose_increment",
   "max_dose",
   "toxicity_threshold",
+  "fu",
   "renal_metric",
   "renal_formula",
   "clearance_expr",
@@ -92,6 +94,10 @@ add_registry_defaults <- function(registry) {
 
   if (!"toxicity_threshold" %in% colnames(registry)) {
     registry$toxicity_threshold <- vapply(registry$drug, default_toxicity_threshold, numeric(1))
+  }
+
+  if (!"fu" %in% colnames(registry)) {
+    registry$fu <- rep(NA_real_, nrow(registry))
   }
 
   registry
@@ -118,6 +124,7 @@ coerce_registry <- function(registry) {
   registry$dose_increment <- as.numeric(registry$dose_increment)
   registry$max_dose <- as.numeric(registry$max_dose)
   registry$toxicity_threshold <- as.numeric(registry$toxicity_threshold)
+  registry$fu <- as.numeric(registry$fu)
   registry$renal_metric <- trimws(registry$renal_metric)
   registry$renal_formula <- trimws(registry$renal_formula)
   registry$clearance_expr <- trimws(registry$clearance_expr)
@@ -156,6 +163,13 @@ validate_registry_row <- function(registry_row) {
     (!is.finite(registry_row$toxicity_threshold[[1]]) || registry_row$toxicity_threshold[[1]] <= 0)
   ) {
     stop("Toxicity threshold must be empty or a positive numeric value.")
+  }
+
+  if (
+    !is.na(registry_row$fu[[1]]) &&
+    (!is.finite(registry_row$fu[[1]]) || registry_row$fu[[1]] <= 0 || registry_row$fu[[1]] > 1)
+  ) {
+    stop("Free fraction must be empty or a numeric value between 0 and 1.")
   }
 
   if (!nzchar(registry_row$clearance_expr[[1]])) {
@@ -211,7 +225,7 @@ format_registry_json_value <- function(value, column) {
     return(if (isTRUE(value)) "true" else "false")
   }
 
-  if (column %in% c("dose_increment", "max_dose", "toxicity_threshold")) {
+  if (column %in% c("dose_increment", "max_dose", "toxicity_threshold", "fu")) {
     return(format(as.numeric(value), scientific = FALSE, trim = TRUE))
   }
 
@@ -545,6 +559,7 @@ upsert_model_definition <- function(
   dose_increment,
   max_dose,
   toxicity_threshold,
+  fu,
   renal_metric,
   renal_formula,
   clearance_expr,
@@ -564,6 +579,7 @@ upsert_model_definition <- function(
     dose_increment = dose_increment,
     max_dose = max_dose,
     toxicity_threshold = toxicity_threshold,
+    fu = fu,
     renal_metric = renal_metric,
     renal_formula = renal_formula,
     clearance_expr = clearance_expr,
@@ -737,6 +753,7 @@ get_model_parameters <- function(model, biological, drug = NULL, manual_renal_fu
     dose_increment = as.numeric(model_definition$dose_increment[[1]]),
     max_dose = as.numeric(model_definition$max_dose[[1]]),
     toxicity_threshold = as.numeric(model_definition$toxicity_threshold[[1]]),
+    fu = as.numeric(model_definition$fu[[1]]),
     is_not_available = isTRUE(model_definition$is_not_available[[1]]),
     availability_message = model_definition$availability_message[[1]],
     renal_metric = model_definition$renal_metric[[1]],
