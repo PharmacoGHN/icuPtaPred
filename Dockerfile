@@ -1,4 +1,4 @@
-FROM rocker/shiny-verse:4.3.0
+FROM rocker/shiny-verse:4.6.0
 
 # Workaround for renv cache
 RUN mkdir /.cache
