@@ -1,17 +1,18 @@
 {
   "drug": "Meropenem",
   "model": "Lan_2022",
-  "Title": "",
+  "Title": "Population Pharmacokinetics Analysis and Dosing Simulations Of Meropenem in Critically Ill Patients with Pulmonary Infection",
   "Authors": "Lan, et al.",
   "Year": "2022",
   "Journal": "Journal of Pharmaceutical Sciences",
-  "DOI": "",
+  "DOI": "10.1016/j.xphs.2022.01.015",
   "URL": "https://pubmed.ncbi.nlm.nih.gov/35090867/",
-  "Abstract_Introduction": "",
-  "Abstract_Methods": "",
-  "Abstract_Results": "",
-  "Abstract_Conclusions": "",
-  "Clearance_Formula": "",
-  "Model_Description": "",
-  "Population_Studied": ""
+  "Abstract_Introduction": "This study aimed to develop a population pharmacokinetic (PPK) model for meropenem to optimize dosing regimens for critically ill patients with pulmonary infection",
+  "Abstract_Methods": "This prospective PPK study of meropenem was conducted on a pooled dataset of 236 blood samples obtained from 48 patients with pulmonary infection in the intensive care unit. Meropenem plasma concentrations were measured by a validated high-performance liquid chromatography-tandem mass spectrometry method, and the data were analyzed using NONMEM. The effect of covariates on meropenem pharmacokinetics was investigated. The probability of target attainment (PTA) to achieve the target of 100% fT>MIC at the proposed dosage regimens were investigated by Monte Carlo simulations.",
+  "Abstract_Results": "A two-compartment model adequately described the data with estimated glomerular filtration rate (eGFR) as a covariate significantly associated with the clearance (CL) from the central compartment. The typical value of CL was 7.48 L/h, with an eGFR adjustment factor of 0.0103 mL/1.73 m²/min, and the typical values of volume of the central compartment (V1), peripheral compartmental clearance (Q), and volume of the peripheral compartment (V2) were 15.9 L, 15.8 L/h, and 14.8 L, respectively. The goodness-of-fit plots, normalized prediction distribution error, and visual predictive checks showed good fitting and predictability of the final PPK model.\nWhen eGFR was >90 mL/min/1.73 m², and there was a short duration of infusion (<60min), it was difficult for the probability target attainment (PTA) to reach >90% for MIC ≥ 2. Continuous infusion and frequent administration were necessary to achieve the target of 100% fT>MIC for critically ill patients with pulmonary infection",
+  "Abstract_Conclusions": "To achieve the optimal PTA, meropenem must be administered by frequent administration or continuously by an intravenous infusion. Our findings provide important information to optimize the meropenem regime in critically ill patients with pulmonary infection depending on eGFR values",
+  "Abstract": "",
+  "Clearance_Formula": "$$CL = 7.48 \\times (1 + (eGFR - 47) \\times  0.0103)$$",
+  "Model_Description": "eGFR was calculated with CKD-EPI 2009",
+  "Population_Studied": "Critically ill patient with Pulmonary infection"
 }

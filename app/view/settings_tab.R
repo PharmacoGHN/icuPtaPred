@@ -1,7 +1,7 @@
 box::use(
   bs4Dash[box, tabsetPanel],
   shiny[
-    actionLink, column, fluidRow, icon, moduleServer, navlistPanel, NS, span, tags, tagList, tabPanel, tabsetPanel, uiOutput
+    actionLink, column, fluidRow, icon, includeMarkdown, moduleServer, navlistPanel, NS, span, tags, tagList, tabPanel, tabsetPanel, uiOutput
   ],
 )
 
@@ -139,6 +139,10 @@ ui <- function(id) {
                 documentation_point("CFR", "Summarizes how well a regimen is expected to cover the selected organism distribution instead of a single MIC value.")
               )
             )
+          ),
+          tabPanel(
+            "Changelog",
+            includeMarkdown("app/changelog/changelog.md")
           )
         )
       )

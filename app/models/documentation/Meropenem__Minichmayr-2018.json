@@ -1,17 +1,18 @@
 {
   "drug": "Meropenem",
   "model": "Minichmayr_2018",
-  "Title": "",
+  "Title": "Development of a dosing nomogram for continuous-infusion meropenem in critically ill patients based on a validated population pharmacokinetic model",
   "Authors": "Minichmayr, et al.",
   "Year": "2018",
   "Journal": "Journal of Antimicrobial Chemotherapy",
   "DOI": "10.1093/jac/dky354",
   "URL": "https://pubmed.ncbi.nlm.nih.gov/29425283/",
-  "Abstract_Introduction": "",
-  "Abstract_Methods": "",
-  "Abstract_Results": "",
-  "Abstract_Conclusions": "",
-  "Clearance_Formula": "",
-  "Model_Description": "",
-  "Population_Studied": ""
+  "Abstract_Introduction": "Optimal antibiotic exposure is a vital but challenging prerequisite for achieving clinical success in ICU patients.\nTo develop and externally validate a population pharmacokinetic model for continuous-infusion meropenem in critically ill patients and to establish a nomogram based on a routinely available marker of renal function.",
+  "Abstract_Methods": "A population pharmacokinetic model was developed in NONMEM 7.3 based on steady-state meropenem concentrations (CSS) collected during therapeutic drug monitoring. Different serum creatinine-based markers of renal function were compared for their influence on meropenem clearance (the Cockcroft–Gault creatinine clearance CLCRCG, the CLCR bedside estimate according to Jelliffe, the Chronic Kidney Disease\nEpidemiology Collaboration equation and the four-variable Modification of Diet in Renal Disease equation). \nAfter validation of the pharmacokinetic model with independent data, a dosing nomogram was developed, relating renal function to the daily doses required to achieve selected target concentrations (4/8/16 mg/L) in 90% of the patients. Probability of target attainment was determined for efficacy (CSS > 8 mg/L) and potentially increased likelihood of adverse drug reactions (CSS > 32 mg/L).",
+  "Abstract_Results": "In total, 433 plasma concentrations (3.20–48.0mg/L) from 195 patients (median/P0.05–P0.95 at baseline: weight 77.0/55.0–114 kg, CLCRCG 63.0/19.6–168mL/min) were used formodel building.We found that CLCRCG best described meropenem clearance (CL = 7.71 L/h, CLCRCG = 80mL/min). The developed model was successfully validated with external data (n = 171, 73 patients). \nAccording to the nomogram, daily doses of 910/1480/2050/2800/3940mg were required to reach a target CSS = 8mg/L in 90% of patients with CLCRCG = 20/50/80/120/180mL/min, respectively. A low probability of adverse drug reactions (<0.5%) was associated with these doses.",
+  "Abstract_Conclusions": "A dosing nomogram was developed for continuous-infusion meropenem based on renal function in a critically ill population.",
+  "Abstract": "",
+  "Clearance_Formula": "$$9.25 \\times ( 1 + 0.00977 \\times (CG_{TBW}-80))$$",
+  "Model_Description": "CG = Cockcroft-Gault formula with total body Weight",
+  "Population_Studied": "Critically ill ; Continuous Infusion ; Adults"
 }

@@ -1,17 +1,18 @@
 {
   "drug": "Meropenem",
   "model": "Gijsen_2021",
-  "Title": "",
+  "Title": "Meropenem Target Attainment and Population Pharmacokinetics in Critically Ill Septic Patients with Preserved or Increased Renal Function",
   "Authors": "Gijsen, et al.",
   "Year": "2021",
   "Journal": "Infectious Diseases Reports",
   "DOI": "10.3390/idr12010001",
   "URL": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8754504/",
-  "Abstract_Introduction": "",
-  "Abstract_Methods": "",
-  "Abstract_Results": "",
-  "Abstract_Conclusions": "",
-  "Clearance_Formula": "",
-  "Model_Description": "",
-  "Population_Studied": ""
+  "Abstract_Introduction": "Critically ill patients with preserved or increased renal function have been shown to be at risk of underexposure to meropenem. Although many meropenem population\npharmacokinetic (PK) models have been published, there is no large prospective population PK study with rich sampling focusing on patients most at risk of suboptimal pharmacokinetic/pharmacodynamic (PK/PD) target attainment. Therefore, the aim of the present study was to evaluate PK/PD target attainment and to perform a thorough covariate screening using population PK modelling of meropenem in septic patients with preserved or increased renal function.",
+  "Abstract_Methods": "A single-centre prospective observational PK study was performed in the intensive care unit (ICU) of the University Hospitals Leuven. Patients with severe sepsis or septic shock and treated with meropenem in the ICU were screened for inclusion.\nPatients were excluded if they received renal replacement therapy or had an estimated glomerular filtration rate according to the Chronic Kidney Disease Epidemiology collaboration equation <70 mL/min/1.73m2 on the day of PK sampling. Successful PK/PD target\nattainment was defined as an unbound meropenem trough concentration above 2 mg/L or 8 mg/L. Population PK modelling was performed with NONMEM7.4.",
+  "Abstract_Results": "In total, 58 patients were included, contributing 345 plasma samples over 70 dosing intervals. The 2 mg/L and 8 mg/L targets were successfully attained in 46% and 11% of all dosing intervals, respectively. A two-compartment population PK model with linear elimination and interindividual variability on clearance best described meropenem PK. The estimated creatinine clearance according to the Cockcroft-Gault equation was the only covariate retained during population PK analysis.",
+  "Abstract_Conclusions": "This study provided detailed insight into meropenem PK in critically ill patients with preserved or increased renal function. We observed poor PK/PD target attainment, for which renal function was the only significant covariate",
+  "Abstract": "",
+  "Clearance_Formula": "$$CL = 13.7 \\times \\left( \\frac{CG_{TBW}}{111.7} \\right) ^{0.725}$$",
+  "Model_Description": "CG = Cockcroft - Gault formula with total body weight",
+  "Population_Studied": "Critical care Patient with normal or Augmented Renal function"
 }
