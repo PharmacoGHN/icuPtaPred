@@ -1,7 +1,7 @@
 box::use(
-  bs4Dash[box, tabBox],
+  bs4Dash[actionButton, box, tabBox],
   shiny[
-    tags, fluidRow, column, selectInput, textInput, numericInput, checkboxInput, textAreaInput, actionButton, updateSelectInput,
+    tags, fluidRow, column, selectInput, textInput, numericInput, checkboxInput, textAreaInput, updateSelectInput,
     updateTextInput, updateNumericInput, updateCheckboxInput, updateTextAreaInput, renderText, renderUI, withMathJax,
     showNotification, NS, moduleServer, tagList, HTML, icon, in_devmode, div, tabPanel, textOutput, uiOutput, reactiveVal,
     reactive, observeEvent, req, tag
@@ -331,13 +331,13 @@ registry_editor <- function(ns) {
     fluidRow(
       column(
         width = 12,
-        actionButton(ns("load_selected_model"), "Load selected model", class = "btn-default"),
+        actionButton(ns("load_selected_model"), "Load selected model", status = "info", flat = TRUE),
         tags$span(style = "display:inline-block; width: 0.5rem;"),
-        actionButton(ns("new_model"), "New model", class = "btn-default"),
+        actionButton(ns("new_model"), "New model", status = "primary", flat = TRUE),
         tags$span(style = "display:inline-block; width: 0.5rem;"),
-        actionButton(ns("save_model"), "Save model", class = "btn-warning"),
+        actionButton(ns("save_model"), "Save model", status = "success", flat = TRUE),
         tags$span(style = "display:inline-block; width: 0.5rem;"),
-        actionButton(ns("delete_model"), "Delete model", class = "btn-danger")
+        actionButton(ns("delete_model"), "Delete model", status = "danger", flat = TRUE)
       )
     )
   )
@@ -389,9 +389,9 @@ documentation_editor <- function(ns) {
     fluidRow(
       column(
         width = 12,
-        actionButton(ns("reload_selected_documentation"), "Reload selected documentation", class = "btn-default"),
+        actionButton(ns("reload_selected_documentation"), "Reload selected documentation", status = "primary", flat = TRUE),
         tags$span(style = "display:inline-block; width: 0.5rem;"),
-        actionButton(ns("save_documentation"), "Save documentation", class = "btn-info")
+        actionButton(ns("save_documentation"), "Save documentation", status = "success", flat = TRUE)
       )
     )
   )
