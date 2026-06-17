@@ -18,7 +18,7 @@ calc_css_distribution <- function(
   dose,
   tvcl,
   eta_cl,
-  n_sim  = 50000,
+  n_sim  = 3000,
   concentration_multiplier = 1
 ) {
   if (!is.finite(concentration_multiplier) || concentration_multiplier <= 0) {
