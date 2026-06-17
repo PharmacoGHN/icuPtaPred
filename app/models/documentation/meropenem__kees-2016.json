@@ -1,0 +1,18 @@
+{
+  "drug": "Meropenem",
+  "model": "Kees_2016",
+  "Title": "Kees_2016",
+  "Authors": "Kees et al.,",
+  "Year": "2016",
+  "Journal": "Journal of Clinical Pharmacology",
+  "DOI": "10.1002/jcph.600",
+  "URL": "https://accp1.onlinelibrary.wiley.com/doi/abs/10.1002/jcph.600",
+  "Abstract_Introduction": "Continuous infusion of meropenem is a candidate strategy for optimization of its pharmacokinetic/pharmacodynamic profile. However, plasma concentrations are difficult to predict in critically ill patients.",
+  "Abstract_Methods": "Population pharmacokinetic  models were developed using NONMEM, which described total meropenem clearance and its relationship with several estimates of renal function (measured creatinine clearance CLCR, Cockcroft-Gault formula CLCG,Hoek formula, 1/plasma creatinine, 1/plasma cystatinC) and other patient characteristics\nUrine was collected for the quantification of renal clearance of meropenem and creatinine. Cystatin C was measured as an additional marker of renal function.",
+  "Abstract_Results": "Steady-state concentrations of meropenem were determined prospectively during continuous infusion in 32 surgical ICU patients (aged 21-85years, body weight 55-125kg, APACHEII 5-29, measured creatinine clearance 22.7-297mL/min).\nAny estimate of renal function improved the model performance. The strongest association of clearance was found with CLCR , followed by 1/plasma cystatin C; CLCG was the least predictive covariate. Neither age, weight, nor sex was found to be significant.",
+  "Abstract_Conclusions": "These models can be used to predict dosing requirements or meropenem concentrations during continuous infusion. The covariate CLCR offers the best predictive performance; if not available, cystatin C may provide a promising alternative to plasma creatinine.",
+  "Abstract": "",
+  "Clearance_Formula": "$$11.3 \\times (1 + 0.00932 \\times (CL_{CR} - 80))$$",
+  "Model_Description": "Editable registry model for Meropenem. Dose increment: 1 g.",
+  "Population_Studied": "Critically ill ; Adults; Continuous Infusion; Surgical ICU"
+}
