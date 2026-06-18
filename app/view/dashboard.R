@@ -19,7 +19,7 @@ app_version <- function() {
     return(read.dcf(description_path, fields = "Version")[1, 1])
   }
 
-  "1.1.0.0"
+  "1.1.0.1"
 }
 
 sidebar_brand <- function(version) {

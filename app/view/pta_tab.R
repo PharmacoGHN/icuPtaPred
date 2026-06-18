@@ -2,7 +2,7 @@ box::use(
   bs4Dash[box, tabBox],
   plotly[plotlyOutput, renderPlotly],
   shiny[
-    actionButton, column, checkboxInput, conditionalPanel, div, fluidRow, icon,
+    actionButton, br, column, checkboxInput, conditionalPanel, div, fluidRow, icon,
     moduleServer, NS, numericInput, observeEvent, reactive, reactiveVal, renderUI,
     selectInput, tabPanel, tags, tagList, uiOutput, updateSelectInput, updateNumericInput, showNotification
   ],
@@ -16,7 +16,7 @@ box::use(
   app/logic/pta_simulation[build_plot_mic_grid, calculate_cfr_mulitple_doses, sim_concentration],
   app/logic/utils[labels],
   app/logic/pta_helper[
-    advanced_model_label, advanced_model_warning_note, concentration_badge, dose_badges, footer_note,
+    advanced_model_label, advanced_model_warning_note, concentration_badge, concentration_percentile_badge, dose_badges, footer_note,
     patient_summary_card, patient_summary_placeholder, renal_formula_note, toxicity_badge
   ],
   app/logic/pta_plot[cfr_plotly, plot.cfr, plot.pta, pta_plotly]
@@ -37,7 +37,7 @@ ui <- function(id) {
           status = "primary",
           solidHeader = TRUE,
           class = "icu-card icu-card--controls",
-          selectInput(ns("bacteria_select"), "Bacterium", choices = c("Probabilistic" = "probabilist")),
+          selectInput(ns("bacteria_select"), "Bacteria", choices = c("Probabilistic" = "probabilist")),
           selectInput(ns("beta_lactamin"), label = labels("drug", "label", language), choices = labels("drug", "choices", language), selected = character(0)),
           numericInput(ns("drug_dose"), label = labels("dose_input", "label", language), value = 0, step = 0.125, min = 0, max = 32),
           numericInput(ns("additional_concentration"), label = "Additional concentration to plot (mg/L)", value = 0, min = 0, step = 0.5),
@@ -48,7 +48,7 @@ ui <- function(id) {
                 condition = sprintf("input['%s']", ns("advanced_user_mode")),
                 tagList(
                   checkboxInput(ns("use_free_fraction"), "Use free fraction", value = TRUE),
-                  numericInput(ns("concentration_percentile"), "Concentration percentile", value = 0.95, min = 0, max = 1, step = 0.01)
+                  numericInput(ns("concentration_percentile"), "Concentration percentile", value = 0.05, min = 0, max = 1, step = 0.01)
                 )
               )
             )
@@ -79,7 +79,7 @@ ui <- function(id) {
             class = "icu-output-tabs",
             tabBox(
               width = 12,
-              height = "760px",
+              height = "55vh",
               type = "tabs",
               background = "white",
               solidHeader = FALSE,
@@ -87,11 +87,13 @@ ui <- function(id) {
               selected = "Dose-response",
               tabPanel(
                 title = "Dose-response",
+                uiOutput(ns("header_pta")),
                 plotlyOutput(ns("pta_output"), height = "620px"),
                 uiOutput(ns("footer_pta"))
               ),
               tabPanel(
                 title = "Probability interval",
+                uiOutput(ns("header_pta_probability")),
                 plotlyOutput(ns("pta_output_probability"), height = "620px"),
                 uiOutput(ns("footer_pta_probability"))
               ),
@@ -108,6 +110,7 @@ ui <- function(id) {
         width = 3,
         box(
           width = 12,
+          height = "55vh",
           title = tagList(icon("user-injured"), "Patient profile"),
           status = "warning",
           solidHeader = TRUE,
@@ -439,13 +442,24 @@ server <- function(id) {
       output$pta_output <- renderPlotly({ pta_plotly(pta_plot$pta_multiple_doses, concentration_df, use_free_fraction) })
       output$pta_output_probability <- renderPlotly({ pta_plotly(pta_plot$pta_ci_plot, concentration_df, use_free_fraction) })
 
+      output$header_pta <- renderUI({
+        concentration_percentile_badge(input$concentration_percentile)
+      })
+
       output$footer_pta <- renderUI({
         all_dose <- c(-2, -1, 0, 1, 2) * model_param$dose_increment + input$drug_dose
         tagList(
           dose_badges(all_dose),
           toxicity_badge(toxicity_threshold * concentration_multiplier),
-          concentration_badge(additional_concentration)
+          concentration_badge(additional_concentration)#,
+          # br(),
+          # concentration_percentile_badge(input$concentration_percentile)
         )
+      })
+
+
+      output$header_pta_probability <- renderUI({
+        concentration_percentile_badge(input$concentration_percentile)
       })
 
       output$footer_pta_probability <- renderUI({

@@ -66,6 +66,29 @@ toxicity_badge <- function(value) {
   )
 }
 
+#' @export
+concentration_percentile_badge <- function(value) {
+  if (!is.finite(value) || value <= 0 || value > 1) {
+    return(NULL)
+  }
+
+  term <- dplyr::case_when(
+    (value * 100) %% 10 == 1 ~ "st",
+    (value * 100) %% 10 == 2 ~ "nd",
+    (value * 100) %% 10 == 3 ~ "rd",
+    .default = "th"
+  )
+
+  tags$div(
+    class = "icu-target-badges",
+    tags$span(
+      class = "icu-target-info-badge",
+      style = "background-color: rgba(42, 51, 104, 0.12); border: 1px solid rgba(9, 50, 121, 0.28); color: #31658d;",
+    paste0("The Css/MIC values correspond to the ", round(value * 100, 0), term, " percentile (", round((1 - value) * 100, 0), "% of patients are expected to have higher concentration).")
+    )
+  )
+}
+
 summary_metric <- function(label, value, unit = NULL, digits = 1, emphasis = FALSE) {
   metric_value <- if (is.null(value) || !is.finite(value)) {
     "NA"

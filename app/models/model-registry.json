@@ -38,7 +38,7 @@
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": null,
-    "fu": 0.84,
+    "fu": 1,
     "renal_metric": "ckd_2009",
     "renal_formula": "CKD-EPI 2009",
     "clearance_expr": "7.38 * (renal_value / 100)^0.467",
@@ -53,7 +53,7 @@
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": 78,
-    "fu": 0.85,
+    "fu": 0.9,
     "renal_metric": "ckd_2009",
     "renal_formula": "CKD-EPI 2009",
     "clearance_expr": "3.42 * (renal_value / 73)^0.772",
@@ -83,7 +83,7 @@
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": 78,
-    "fu": 0.85,
+    "fu": 0.9,
     "renal_metric": "ckd_2009",
     "renal_formula": "CKD-EPI 2009",
     "clearance_expr": "4.45 * (renal_value / 73.9)^0.9",
@@ -98,7 +98,7 @@
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": null,
-    "fu": 0.81,
+    "fu": 0.815,
     "renal_metric": "cg_tbw",
     "renal_formula": "Cockcroft-Gault (TBW)",
     "clearance_expr": "5.11 * 1.215 * (renal_value / 109)^0.715",
@@ -113,11 +113,11 @@
     "dose_increment": 1,
     "max_dose": 20,
     "toxicity_threshold": null,
-    "fu": 0.81,
+    "fu": 0.815,
     "renal_metric": "cg_tbw",
     "renal_formula": "Cockcroft-Gault (TBW)",
     "clearance_expr": "4.84 * (renal_value / 100)^0.701",
-    "eta_cl_expr": "get_sd_from_cv(0.429)"
+    "eta_cl_expr": "get_sd_from_cv(0.361)"
   },
   {
     "drug": "Meropenem",
@@ -233,11 +233,11 @@
     "dose_increment": 2,
     "max_dose": 40,
     "toxicity_threshold": 157,
-    "fu": 0.7,
+    "fu": 0.81,
     "renal_metric": "cg_tbw",
     "renal_formula": "Cockcroft-Gault (TBW)",
     "clearance_expr": "2.25 + 0.119 * renal_value",
-    "eta_cl_expr": "0.533"
+    "eta_cl_expr": "get_sd_from_cv(0.574)"
   },
   {
     "drug": "Piperacillin-tazobactam",
@@ -248,7 +248,7 @@
     "dose_increment": 2,
     "max_dose": 40,
     "toxicity_threshold": 157,
-    "fu": 0.7,
+    "fu": 0.81,
     "renal_metric": "cg_tbw",
     "renal_formula": "Cockcroft-Gault (TBW)",
     "clearance_expr": "5.37 + 0.06 * (renal_value - 55)",
@@ -263,10 +263,10 @@
     "dose_increment": 2,
     "max_dose": 40,
     "toxicity_threshold": 157,
-    "fu": 0.7,
+    "fu": 0.81,
     "renal_metric": "cg_tbw",
     "renal_formula": "Cockcroft-Gault (TBW)",
     "clearance_expr": "16.3 * (renal_value / 100)",
-    "eta_cl_expr": "0.56"
+    "eta_cl_expr": "get_sd_from_cv(0.56)"
   }
 ]
