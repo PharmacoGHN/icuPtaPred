@@ -209,8 +209,16 @@ build_pta_plot_data <- function(data, selected_dose, dose_increment, use_free_fr
 
   ratio_label <- pta_ratio_label(use_free_fraction)
 
+  # ponytail: fallback keeps legacy callers working when `css_mic_median` is absent.
+  # Ceiling: median equals selected percentile for those callers; upgrade by passing `css_mic_median` from simulation output.
+  if (!"css_mic_median" %in% colnames(data)) {
+    data$css_mic_median <- data[[PTA_RATIO_COLUMNS[["selected"]]]]
+  }
+
   selected_label <- dose_curve_label(0, selected_dose, dose_increment)
   attr(selected_label, "ratio_label") <- ratio_label
+  median_label <- "Median regimen (50th percentile)"
+  attr(median_label, "ratio_label") <- ratio_label
   below1_label <- dose_curve_label(-1, selected_dose, dose_increment)
   attr(below1_label, "ratio_label") <- ratio_label
   below2_label <- dose_curve_label(-2, selected_dose, dose_increment)
@@ -223,6 +231,7 @@ build_pta_plot_data <- function(data, selected_dose, dose_increment, use_free_fr
   attr(probability_label, "ratio_label") <- ratio_label
 
   data$selected_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["selected"]]]], selected_label)
+  data$median_hover <- build_ratio_hover(data$mic, data$css_mic_median, median_label)
   data$below1_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["below1"]]]], below1_label)
   data$below2_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["below2"]]]], below2_label)
   data$above1_hover <- build_ratio_hover(data$mic, data[[PTA_RATIO_COLUMNS[["above1"]]]], above1_label)
@@ -440,6 +449,11 @@ plot.pta <- function(
     geom_ribbon(
       data = data, aes(ymin = .data$percentile_2.5, ymax = .data$percentile_97.5, x = .data$mic, text = .data$probability_hover, group = 1),
       fill = "#0889f1", alpha = 0.1, col = NA, na.rm = TRUE
+    ) +
+    geom_line(
+      data = data,
+      mapping = aes(x = .data$mic, y = .data$css_mic_median, text = .data$median_hover, group = 1),
+      col = "#1d4f91", lty = 2, lwd = 1, na.rm = TRUE
     )
 
   list(

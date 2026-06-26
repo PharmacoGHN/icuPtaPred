@@ -79,7 +79,6 @@ ui <- function(id) {
             class = "icu-output-tabs",
             tabBox(
               width = 12,
-              height = "55vh",
               type = "tabs",
               background = "white",
               solidHeader = FALSE,
@@ -88,18 +87,18 @@ ui <- function(id) {
               tabPanel(
                 title = "Dose-response",
                 uiOutput(ns("header_pta")),
-                plotlyOutput(ns("pta_output"), height = "620px"),
+                plotlyOutput(ns("pta_output"), height = "56vh"),
                 uiOutput(ns("footer_pta"))
               ),
               tabPanel(
                 title = "Probability interval",
                 uiOutput(ns("header_pta_probability")),
-                plotlyOutput(ns("pta_output_probability"), height = "620px"),
+                plotlyOutput(ns("pta_output_probability"), height = "56vh"),
                 uiOutput(ns("footer_pta_probability"))
               ),
               tabPanel(
                 title = "CFR",
-                plotlyOutput(ns("cfr_output"), height = "620px"),
+                plotlyOutput(ns("cfr_output"), height = "56vh"),
                 uiOutput(ns("footer_cfr"))
               )
             )
@@ -110,7 +109,6 @@ ui <- function(id) {
         width = 3,
         box(
           width = 12,
-          height = "55vh",
           title = tagList(icon("user-injured"), "Patient profile"),
           status = "warning",
           solidHeader = TRUE,

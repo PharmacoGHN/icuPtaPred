@@ -135,9 +135,11 @@ sim_concentration <- function(
   # the default PTA curve reflects the requested concentration distribution.
   all_dose_css_distribution <- calc_css_distribution(dose_range, tvcl, eta_cl, n_sim, concentration_multiplier)
   quant_all_dose <- apply(all_dose_css_distribution, 2, function(x) quantile(x, probs = css_quantile))
+  quant_all_dose_median <- apply(all_dose_css_distribution, 2, function(x) quantile(x, probs = 0.5))
 
   concentration_df <- data.frame(
     css_mic = sanitize_log_series(quant_all_dose[3] / mic),
+    css_mic_median = sanitize_log_series(quant_all_dose_median[3] / mic),
     mic = mic,
     percentile_2.5 = sanitize_log_series(quant[1] / mic),
     percentile_97.5 = sanitize_log_series(quant[2] / mic),
