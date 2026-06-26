@@ -50,6 +50,7 @@ test_that("sim_concentration returns one row per MIC and additional threshold co
     colnames(result),
     c(
       "css_mic",
+      "css_mic_median",
       "mic",
       "percentile_2.5",
       "percentile_97.5",
